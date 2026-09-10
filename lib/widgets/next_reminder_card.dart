@@ -9,35 +9,39 @@
 
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
+import '../core/localization/app_localizations.dart';
 
 class NextReminderCard extends StatelessWidget {
-  final String title;
+  final String? title;
   final String time;
-  final String note;
+  final String? note;
   final VoidCallback onTap;
 
   const NextReminderCard({
     super.key,
-    this.title = 'Morning Medicine',
+    this.title,
     this.time = '10:00 AM',
-    this.note = 'Take with a glass of water after breakfast',
+    this.note,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final displayTitle = title ?? context.tr('reminders.morningMedicine', defaultText: 'Morning Medicine');
+    final displayNote = note ?? context.tr('reminders.morningMedicineNote', defaultText: 'Take with a glass of water after breakfast');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              Icon(Icons.alarm_on_rounded, size: 20, color: AppColors.amber),
-              SizedBox(width: 8),
+              const Icon(Icons.alarm_on_rounded, size: 20, color: AppColors.amber),
+              const SizedBox(width: 8),
               Text(
-                'Next Reminder',
-                style: TextStyle(
+                context.tr('reminders.nextReminder', defaultText: 'Next Reminder'),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -57,7 +61,7 @@ class NextReminderCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [
                     AppColors.amberPale,
                     AppColors.surface,
@@ -67,12 +71,12 @@ class NextReminderCard extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
-                  color: AppColors.amber.withOpacity(0.35),
+                  color: AppColors.amber.withValues(alpha: 0.35),
                   width: 1.8,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.amber.withOpacity(0.08),
+                    color: AppColors.amber.withValues(alpha: 0.08),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -85,10 +89,10 @@ class NextReminderCard extends StatelessWidget {
                     width: 54,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: AppColors.amber.withOpacity(0.15),
+                      color: AppColors.amber.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.amber.withOpacity(0.3),
+                        color: AppColors.amber.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -112,7 +116,7 @@ class NextReminderCard extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                title,
+                                displayTitle,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
@@ -156,7 +160,7 @@ class NextReminderCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          note,
+                          displayNote,
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,

@@ -1,8 +1,11 @@
 // lib/features/caregiver/widgets/emergency_safety_section.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
+import '../../../services/emergency_service.dart';
+import '../../../screens/caregiver/emergency_settings_screen.dart';
 
 class EmergencySafetySection extends StatefulWidget {
   const EmergencySafetySection({super.key});
@@ -67,12 +70,36 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Text('${contact.name} (${contact.relationship})', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 2),
-              Text('Primary: ${contact.phone}', style: const TextStyle(fontSize: 13, color: AppColors.inkSoft)),
-              if (contact.secondaryPhone.isNotEmpty)
-                Text('Secondary: ${contact.secondaryPhone}', style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+              Builder(
+                builder: (context) {
+                  final em = EmergencyService.instance.settings;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${em.primaryName} (${em.primaryRelationship})',
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.phone_rounded, size: 14, color: AppColors.teal),
+                          const SizedBox(width: 6),
+                          Text('Primary: ${em.primaryNumber}',
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.inkSoft)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.phone_forwarded_rounded, size: 14, color: AppColors.violet),
+                          const SizedBox(width: 6),
+                          Text('Secondary: ${em.secondaryNumber} (${em.secondaryName})',
+                              style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -129,7 +156,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
           decoration: BoxDecoration(
             color: AppColors.coralPale,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.coral.withOpacity(0.35), width: 1.5),
+            border: Border.all(color: AppColors.coral.withValues(alpha: 0.35), width: 1.5),
           ),
           child: Row(
             children: [
@@ -162,49 +189,11 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
   }
 
   void _openEditContactDialog(BuildContext context, EmergencyContact cur) {
-    final nameCtrl = TextEditingController(text: cur.name);
-    final relCtrl = TextEditingController(text: cur.relationship);
-    final phoneCtrl = TextEditingController(text: cur.phone);
-    final secCtrl = TextEditingController(text: cur.secondaryPhone);
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Edit Caregiver Contact'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
-              TextField(controller: relCtrl, decoration: const InputDecoration(labelText: 'Relationship')),
-              TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Primary Phone')),
-              TextField(controller: secCtrl, decoration: const InputDecoration(labelText: 'Secondary Phone')),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
-            onPressed: () async {
-              final updated = EmergencyContact(
-                name: nameCtrl.text.trim(),
-                relationship: relCtrl.text.trim(),
-                phone: phoneCtrl.text.trim(),
-                secondaryPhone: secCtrl.text.trim(),
-                updatedAt: DateTime.now(),
-              );
-              await CaregiverService.instance.saveEmergencyContact(updated);
-              if (context.mounted) {
-                Navigator.pop(ctx);
-                setState(() {});
-              }
-            },
-            child: const Text('Save', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+    EmergencySettingsScreen.show(
+      context,
+      onSaved: () {
+        setState(() {});
+      },
     );
   }
 
@@ -217,7 +206,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Edit Safe Home Location'),
+        title: Text(context.tr('caregiver.editHomeLocation', defaultText: 'Edit Safe Home Location')),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -229,7 +218,10 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.amberDeep),
             onPressed: () async {
@@ -245,7 +237,10 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                 setState(() {});
               }
             },
-            child: const Text('Save', style: TextStyle(color: Colors.white)),
+            child: Text(
+              context.tr('common.save', defaultText: 'Save'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

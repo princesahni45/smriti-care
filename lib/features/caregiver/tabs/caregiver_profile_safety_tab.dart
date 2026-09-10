@@ -11,8 +11,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
+import '../../../core/services/caregiver_auth_service.dart';
+import '../../../services/emergency_service.dart';
+import '../../../screens/caregiver/emergency_settings_screen.dart';
 
 class CaregiverProfileSafetyTab extends StatefulWidget {
   final VoidCallback onSwitchToPatient;
@@ -59,14 +63,19 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           // Caregiver Account Card
           _buildCaregiverAccountCard(caregiver),
 
+          const SizedBox(height: 16),
+
+          // Multilingual Regional Settings Card
+          _buildLanguageSettingsCard(context),
+
           const SizedBox(height: 24),
 
           // Family Memories Management Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.photo_library_outlined, color: AppColors.violetDeep, size: 20),
                   SizedBox(width: 8),
                   Text(
@@ -107,8 +116,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           const SizedBox(height: 24),
 
           // Emergency & Location Safety Section
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.shield_rounded, color: AppColors.coral, size: 20),
               SizedBox(width: 8),
               Text(
@@ -139,8 +148,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           const SizedBox(height: 20),
 
           // SOS Alert History Log
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.history_toggle_off_rounded, color: AppColors.coral, size: 18),
               SizedBox(width: 6),
               Text(
@@ -163,8 +172,11 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.borderLight),
               ),
-              child: const Center(
-                child: Text('No emergency SOS records found.', style: TextStyle(color: AppColors.muted, fontSize: 12)),
+              child: Center(
+                child: Text(
+                  context.tr('caregiver.noSosRecords', defaultText: 'No emergency SOS records found.'),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 12),
+                ),
               ),
             )
           else
@@ -172,11 +184,14 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
 
           const SizedBox(height: 28),
 
-          // Role Switcher & Logout
+          // ── Exit Caregiver Mode & Switch to Patient ───────────────────
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: widget.onSwitchToPatient,
+              onPressed: () {
+                CaregiverAuthService.instance.switchToPatientMode();
+                widget.onSwitchToPatient();
+              },
               icon: const Icon(Icons.swap_horiz_rounded, color: AppColors.tealDark),
               label: const Text(
                 'Switch to Patient Dashboard',
@@ -192,15 +207,22 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: TextButton.icon(
-              onPressed: () => context.go('/role-select'),
-              icon: const Icon(Icons.logout_rounded, color: AppColors.coralDeep, size: 18),
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                await CaregiverAuthService.instance.exitCaregiverMode();
+                widget.onSwitchToPatient();
+              },
+              icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 18),
               label: const Text(
-                'Log Out',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.coralDeep),
+                'Exit Caregiver Mode',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
               ),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.coralDeep,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                elevation: 0,
               ),
             ),
           ),
@@ -220,7 +242,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
         border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -274,9 +296,9 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    const Text(
                       'Linked: ',
-                      style: const TextStyle(fontSize: 11, color: AppColors.muted, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 11, color: AppColors.muted, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -285,6 +307,135 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLanguageSettingsCard(BuildContext context) {
+    return ValueListenableBuilder<Locale>(
+      valueListenable: LocalizationService.instance.currentLocaleNotifier,
+      builder: (context, currentLocale, _) {
+        final currentLang = AppLocalizations.supportedLanguages.firstWhere(
+          (l) => l.code == currentLocale.languageCode,
+          orElse: () => AppLocalizations.supportedLanguages.first,
+        );
+
+        return Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.borderLight, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppColors.tealPale,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.language_rounded,
+                        color: AppColors.teal,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.tr('languageSelector.title',
+                              defaultText: 'Language & Regional Settings'),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${currentLang.nativeName} (${currentLang.englishName})',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.tealDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => context.push('/language-select'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.teal,
+                      foregroundColor: Colors.white,
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      context.tr('common.edit', defaultText: 'Change'),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.softSection,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.teal,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        context.tr('landing.featMultilingualDesc',
+                            defaultText:
+                                '10 Northeast and Indian regional languages supported.'),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.inkSoft,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -366,7 +517,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
         color: isEmergency ? AppColors.coralPale : AppColors.tealPale,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isEmergency ? AppColors.coral : AppColors.teal.withOpacity(0.4),
+          color: isEmergency ? AppColors.coral : AppColors.teal.withValues(alpha: 0.4),
           width: 1.5,
         ),
       ),
@@ -420,7 +571,10 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 setState(() {});
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.coral),
-              child: const Text('Resolve', style: TextStyle(color: Colors.white, fontSize: 12)),
+              child: Text(
+                context.tr('caregiver.resolve', defaultText: 'Resolve'),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
             ),
         ],
       ),
@@ -428,6 +582,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
   }
 
   Widget _buildEmergencyContactCard(EmergencyContact contact) {
+    final em = EmergencyService.instance.settings;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -441,41 +597,103 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
-                  Icon(Icons.contact_phone_outlined, color: AppColors.teal, size: 18),
+              const Row(
+                children: [
+                  Icon(Icons.contact_phone_rounded, color: AppColors.teal, size: 18),
                   SizedBox(width: 8),
                   Text(
-                    'Primary Emergency Contact',
+                    'Emergency Mobile Numbers',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
                   ),
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.phone_rounded, color: AppColors.teal, size: 20),
+                icon: const Icon(Icons.edit_note_rounded, color: AppColors.teal, size: 22),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Simulated calling primary contact: '),
-                      backgroundColor: AppColors.tealDark,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
+                  EmergencySettingsScreen.show(
+                    context,
+                    onSaved: () {
+                      setState(() {});
+                    },
                   );
                 },
-                tooltip: 'Call Primary Contact',
+                tooltip: 'Edit Emergency Numbers',
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            ' ()',
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.ink),
+          const SizedBox(height: 10),
+
+          // Primary Number
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.tealPale.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.phone_in_talk_rounded, color: AppColors.teal, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Primary: ${em.primaryName} (${em.primaryRelationship})',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDeep),
+                      ),
+                      Text(
+                        em.primaryNumber,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.phone_rounded, color: AppColors.teal, size: 18),
+                  onPressed: () => EmergencyService.instance.launchCall(em.primaryNumber),
+                  tooltip: 'Call Primary',
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 2),
-          Text('Primary: ', style: const TextStyle(fontSize: 12, color: AppColors.inkSoft)),
-          if (contact.secondaryPhone.isNotEmpty)
-            Text('Secondary: ', style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+
+          const SizedBox(height: 8),
+
+          // Secondary Number
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.violetLight.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.phone_forwarded_rounded, color: AppColors.violet, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Secondary: ${em.secondaryName} (${em.secondaryRelationship})',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.violetDeep),
+                      ),
+                      Text(
+                        em.secondaryNumber,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.phone_rounded, color: AppColors.violet, size: 18),
+                  onPressed: () => EmergencyService.instance.launchCall(em.secondaryNumber),
+                  tooltip: 'Call Secondary',
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -495,8 +713,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.location_on_rounded, color: AppColors.amberDeep, size: 18),
                   SizedBox(width: 8),
                   Text(
@@ -524,9 +742,9 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
           ),
           const SizedBox(height: 4),
-          Text(
+          const Text(
             'Latitude: ° N • Longitude: ° E (Radius: 500m)',
-            style: const TextStyle(fontSize: 11, color: AppColors.muted),
+            style: TextStyle(fontSize: 11, color: AppColors.muted),
           ),
           const SizedBox(height: 10),
           // Visual safe zone indicator bar
@@ -566,9 +784,9 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   ' • / :',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.ink),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -609,7 +827,10 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Add Family Member', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          title: Text(
+            context.tr('caregiver.addFamilyMember', defaultText: 'Add Family Member'),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -620,7 +841,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: relationship,
+                  initialValue: relationship,
                   decoration: const InputDecoration(labelText: 'Relationship'),
                   items: const [
                     DropdownMenuItem(value: 'Son', child: Text('Son')),
@@ -637,7 +858,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: emoji,
+                  initialValue: emoji,
                   decoration: const InputDecoration(labelText: 'Avatar Icon / Photo Placeholder'),
                   items: const [
                     DropdownMenuItem(value: '👨', child: Text('👨 Adult Male')),
@@ -663,7 +884,10 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
+            ),
             ElevatedButton(
               onPressed: () async {
                 if (nameCtrl.text.trim().isEmpty) return;
@@ -679,13 +903,18 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                   createdAt: DateTime.now(),
                 );
                 await CaregiverService.instance.addFamilyMember(newMember);
-                if (mounted) {
+                if (ctx.mounted) {
                   Navigator.pop(ctx);
+                }
+                if (mounted) {
                   setState(() {});
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.violetDeep),
-              child: const Text('Save Profile', style: TextStyle(color: Colors.white)),
+              child: Text(
+                context.tr('caregiver.saveProfile', defaultText: 'Save Profile'),
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),

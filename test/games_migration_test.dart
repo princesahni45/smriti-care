@@ -178,10 +178,14 @@ void main() {
       expect(find.text('Wonderful job! You have unlocked Level 3.'), findsOneWidget);
 
       // Tap Play Again
+      await tester.ensureVisible(find.text('Play Again'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Play Again'));
       expect(playAgainTapped, isTrue);
 
       // Tap Back to Games
+      await tester.ensureVisible(find.text('Back to Games'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Back to Games'));
       expect(backToGamesTapped, isTrue);
     });

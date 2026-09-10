@@ -46,7 +46,11 @@
     "contact": "পাউ ফাওনবা",
     "patientLogin": "অনাবাগী লোগইন",
     "caregiverLogin": "য়েংশিনবীবগী লোগইন",
-    "language": "লোন"
+    "language": "লোন",
+    "games": "শন্নাপোৎ",
+    "reminders": "নিংশিংহনবা",
+    "progress": "মাংজিল",
+    "profile": "প্রোফাইল"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,7 +384,30 @@
     "insightText": "ইমুংগী ফোতো য়েংবদা রমেশনা অফবা মওংদা মশক খঙবা ঙমখি।",
     "mood": "ৱাখলগী ফীভম",
     "calmEngaged": "শান্তি ওইবা অমসুং শরুক য়াবা",
-    "role": "য়োকখৎপা"
+    "role": "য়োকখৎপা",
+    "healthSummary": "হকশেল অমসুং ৱাখলগী ৱাফম",
+    "monitoringSubtitle": "য়েংশিনবা অমসুং চাউখৎলকপা য়েংবা",
+    "switchPatient": "হোংদোকপা",
+    "riskAndRemindersTitle": "থোইদোকপা য়েংশিনবা",
+    "riskAndRemindersSubtitle": "ৱাখলগী কান্নবা য়েংশিনবা অমসুং নুমিৎ খুদিংগী থবক।",
+    "intelligentAlerts": "অকুপ্পা য়েংশিনগী চেকশিনৱা",
+    "noAlerts": "হৌজিক্কী ওইনা চেকশিনৱা লৈত্ৰে।",
+    "manageReminders": "নীংশিংবা য়েংশিনবা",
+    "add": "হাপচিনবা",
+    "allReminders": "নীংশিংবা পুম্নমক",
+    "appointments": "উন্নবা মতম",
+    "noRemindersCategory": "মসিগী কাংলুপ্তা অমত্তা ফংদে।",
+    "deleteReminder": "মুথৎপা",
+    "saveReminder": "থম্বা",
+    "addFamilyMember": "ইমুংগী মী হাপচিনবা",
+    "saveProfile": "প্রোফাইল থম্বা",
+    "noSosRecords": "এসওএস ৰেকৰ্ড অমত্তা লৈত্ৰে।",
+    "resolve": "ৱারোইশিন পুরকপা",
+    "notesSaved": "ইরোইশিন মপুংফানা থম্লে।",
+    "saveNotes": "ইরোইশিন থম্বা",
+    "linkPatient": "অনাবা মী শম্নহনবা",
+    "editHomeLocation": "য়ুমগী মফম হোংবা",
+    "caregiverOnlyEmergency": "য়াখোইদে: কেয়ারগিভার খক্তনা হোংবা য়াগনি।"
   },
   "games": {
     "catalogTitle": "ৱাখলগী শান্নপোৎশিং",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "নীংশিং চাংয়েন (Memory Match)"
+    "memoryMatch": "নীংশিং চাংয়েন (Memory Match)",
+    "immediateRecall": "হৌজিক নীংশিংবা",
+    "delayedRecall": "মতুম খরগী মতুংদা নীংশিংবা"
   },
   "safety": {
     "title": "য়ুমদা পুখৎপা",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "য়ুমগী মফম হোংদোকপা",
     "emergencyHelpline": "অতৌবা মতেংগী হেল্পলাইন",
     "nationalResponseNumber": "লৈবাক্কী অতৌবা মতেং নম্বর",
-    "configureNumber": "নম্বর শেমজিনবা"
+    "configureNumber": "নম্বর শেমজিনবা",
+    "latitude": "লেটিচ্যুড:",
+    "longitude": "লোঞ্জিচ্যুড:",
+    "accuracy": "চুম্বা:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "স্মার্ত নীংশিংহনবা",
     "subtitle": "অনাবগী নোংমগী থৌরমগীদমক নীংশিংহনবা শেম-শাবীয়ু।",
-    "escalationRules": "চেকশিনৱা নিয়ম"
+    "escalationRules": "চেকশিনৱা নিয়ম",
+    "nextReminder": "মথংগী নীংশিংবা",
+    "morningMedicine": "অয়ুক্কী হিদাক",
+    "morningMedicineNote": "অয়ুক্কী চা-থক তারগা ঈশিং গ্লাস অমগা লোয়ননা চাবা"
   },
   "voice": {
     "available": "নহাক্কী লোনদা খোন্থাওগী মতেং ফংই।",
     "unavailable": "দিভাইস অসিদা লোন অসিগী খোন্থাও য়াওদে।",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "থাংজা",
+    "tuesday": "লৈপাকপোকপা",
+    "wednesday": "য়ুমশকৈশা",
+    "thursday": "শগোলশেন",
+    "friday": "ইরাই",
+    "saturday": "থাংজা",
+    "sunday": "নোংমাইজিং",
+    "january": "ৱাকচিং",
+    "february": "ফাইরেন",
+    "march": "লামতা",
+    "april": "সাজিবু",
+    "may": "কালেন",
+    "june": "ইঙা",
+    "july": "ইঙেন",
+    "august": "থৌৱান",
+    "september": "লাংবন",
+    "october": "মেরা",
+    "november": "হিয়াংগৈ",
+    "december": "পোইনু"
+  },
+  "progress": {
+    "yourProgress": "নহাক্কী চাউখৎলকপা",
+    "memory": "নীংশিংবা",
+    "attention": "মীৎয়েং থম্বা",
+    "pattern": "প্যাটার্ন",
+    "weeklySummary": "চয়োগ্কী ৱাখলগী ৱাফম",
+    "viewDetails": "অকুপ্পা য়েংবা"
   }
 }

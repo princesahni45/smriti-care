@@ -12,6 +12,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/services/caregiver_service.dart';
 import 'widgets/caregiver_header_bar.dart';
 import 'tabs/caregiver_home_tab.dart';
@@ -134,7 +135,7 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
           border: const Border(top: BorderSide(color: AppColors.borderLight, width: 1.5)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -152,31 +153,31 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
           unselectedFontSize: 11,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.2),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home_rounded),
-              label: 'Home',
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home_rounded),
+              label: context.tr('common.home', defaultText: 'Home'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_pin_outlined),
-              activeIcon: Icon(Icons.person_pin_rounded),
-              label: 'Patient',
+              icon: const Icon(Icons.person_pin_outlined),
+              activeIcon: const Icon(Icons.person_pin_rounded),
+              label: context.tr('caregiver.yourPatient', defaultText: 'Patient'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart_outlined),
-              activeIcon: Icon(Icons.bar_chart_rounded),
-              label: 'Progress',
+              icon: const Icon(Icons.bar_chart_outlined),
+              activeIcon: const Icon(Icons.bar_chart_rounded),
+              label: context.tr('nav.progress', defaultText: 'Progress'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none_rounded),
-              activeIcon: Icon(Icons.notifications_rounded),
-              label: 'Alerts',
+              icon: const Icon(Icons.notifications_none_rounded),
+              activeIcon: const Icon(Icons.notifications_rounded),
+              label: context.tr('reminders.title', defaultText: 'Alerts'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shield_outlined),
-              activeIcon: Icon(Icons.shield_rounded),
-              label: 'Profile',
+              icon: const Icon(Icons.shield_outlined),
+              activeIcon: const Icon(Icons.shield_rounded),
+              label: context.tr('nav.profile', defaultText: 'Profile'),
             ),
           ],
         ),

@@ -46,7 +46,11 @@
     "contact": "Grongani",
     "patientLogin": "Patient Login",
     "caregiverLogin": "Caregiver Login",
-    "language": "Ku·sik"
+    "language": "Ku·sik",
+    "games": "Kal·susaanirang",
+    "reminders": "Gisik Ra·atpilani",
+    "progress": "Mikkangchi Re·baani",
+    "profile": "An·tang Gimin"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,7 +384,30 @@
     "insightText": "Ramesh nokdangni nokskalrangko nango gisik ra·e namgipa aganchakaniko on·aha.",
     "mood": "Gisikni obosta",
     "calmEngaged": "Tomi-tomi aro kusi ong·e",
-    "role": "Nitanipa"
+    "role": "Nitanipa",
+    "healthSummary": "An·sengani aro gisikni bibor",
+    "monitoringSubtitle": "Ni·rokani aro namroroani",
+    "switchPatient": "Dingtangata",
+    "riskAndRemindersTitle": "Kenani aro gisik ra·atani",
+    "riskAndRemindersSubtitle": "Gisik aro jolo salanti kamrangko matchotani.",
+    "intelligentAlerts": "U·iatani katchi",
+    "noAlerts": "U·iatani dongja.",
+    "manageReminders": "Gisik ra·atanirangko ni·roka",
+    "add": "On·dapa",
+    "allReminders": "Pilak gisik ra·atanirang",
+    "appointments": "Grongani somoi",
+    "noRemindersCategory": "Iani gimin gisik ra·atani dongja.",
+    "deleteReminder": "Gisik ra·ataniko gimaata",
+    "saveReminder": "Gisik ra·ataniko rakkia",
+    "addFamilyMember": "Nokdangni manderangko on·dapa",
+    "saveProfile": "Profile rakkia",
+    "noSosRecords": "SOS record dongja.",
+    "resolve": "Namata",
+    "notesSaved": "Sea lekharangko name rakkiman·aha.",
+    "saveNotes": "Lekharangko rakkia",
+    "linkPatient": "Sani sagipako bak rima",
+    "editHomeLocation": "Nokni biapko dingtangata",
+    "caregiverOnlyEmergency": "Man·ja: Ni·gipasan nambate dingtangatna man·a."
   },
   "games": {
     "catalogTitle": "U·i-ma·siani Kal·anirang",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "Gisik Ra·ani Kal·ani (Memory Match)"
+    "memoryMatch": "Gisik Ra·ani Kal·ani (Memory Match)",
+    "immediateRecall": "Rang·san gisik ra·ani",
+    "delayedRecall": "Ru·ute gisik ra·ani"
   },
   "safety": {
     "title": "Nokona Dilangbo",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "Nokni biapko dingtangatbo",
     "emergencyHelpline": "Emergency Helpline",
     "nationalResponseNumber": "Jatni emergency number",
-    "configureNumber": "Number-ko namatbo"
+    "configureNumber": "Number-ko namatbo",
+    "latitude": "Latitude:",
+    "longitude": "Longitude:",
+    "accuracy": "Accuracy:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "GIPIN GANDANI REMINDER",
     "subtitle": "Sagipani da·salni kamrangna reminder-ko tari·bo.",
-    "escalationRules": "Dakchakani Niamrang"
+    "escalationRules": "Dakchakani Niamrang",
+    "nextReminder": "Ja·mano gisik ra·atani",
+    "morningMedicine": "Pringni sam",
+    "morningMedicineNote": "Mi cha·man·o chi glass sasa sam cha·bo"
   },
   "voice": {
     "available": "Ia ku·sikchi ku·rang donga.",
     "unavailable": "Ia device-o ia ku·sikna ku·rang dongkuja.",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "Sombar",
+    "tuesday": "Mongolbar",
+    "wednesday": "Budbar",
+    "thursday": "Brihospotibar",
+    "friday": "Sukrobar",
+    "saturday": "Sonibar",
+    "sunday": "Robibar",
+    "january": "Januari",
+    "february": "Februari",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "progress": {
+    "yourProgress": "Nang·ni namroroani",
+    "memory": "Gisik ra·ani",
+    "attention": "Gisik on·ani",
+    "pattern": "Dak",
+    "weeklySummary": "Antini gisik ra·ani",
+    "viewDetails": "Bitala nina"
   }
 }

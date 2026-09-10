@@ -8,6 +8,7 @@
 
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
+import '../core/localization/app_localizations.dart';
 
 class ProgressSummaryCard extends StatelessWidget {
   final int memoryScore;
@@ -78,15 +79,15 @@ class ProgressSummaryCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              Icon(Icons.trending_up_rounded, size: 20, color: AppColors.violet),
-              SizedBox(width: 8),
+              const Icon(Icons.trending_up_rounded, size: 20, color: AppColors.violet),
+              const SizedBox(width: 8),
               Text(
-                'Your Progress',
-                style: TextStyle(
+                context.tr('progress.yourProgress', defaultText: 'Your Progress'),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -111,7 +112,7 @@ class ProgressSummaryCard extends StatelessWidget {
                 border: Border.all(color: AppColors.borderLight, width: 1.6),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -121,21 +122,21 @@ class ProgressSummaryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProgressRow(
-                    title: 'Memory',
+                    title: context.tr('progress.memory', defaultText: 'Memory'),
                     percentage: memoryScore,
                     icon: Icons.psychology_rounded,
                     color: AppColors.teal,
                   ),
                   const SizedBox(height: 18),
                   _buildProgressRow(
-                    title: 'Attention',
+                    title: context.tr('progress.attention', defaultText: 'Attention'),
                     percentage: attentionScore,
                     icon: Icons.center_focus_strong_rounded,
                     color: AppColors.blue,
                   ),
                   const SizedBox(height: 18),
                   _buildProgressRow(
-                    title: 'Pattern',
+                    title: context.tr('progress.pattern', defaultText: 'Pattern'),
                     percentage: patternScore,
                     icon: Icons.grid_view_rounded,
                     color: AppColors.violet,
@@ -145,10 +146,10 @@ class ProgressSummaryCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
-                        'Weekly cognitive summary',
-                        style: TextStyle(
+                        context.tr('progress.weeklySummary', defaultText: 'Weekly cognitive summary'),
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: AppColors.muted,
@@ -157,15 +158,15 @@ class ProgressSummaryCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'View Details',
-                            style: TextStyle(
+                            context.tr('progress.viewDetails', defaultText: 'View Details'),
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: AppColors.violet,
                             ),
                           ),
-                          SizedBox(width: 4),
-                          Icon(
+                          const SizedBox(width: 4),
+                          const Icon(
                             Icons.arrow_forward_ios_rounded,
                             size: 12,
                             color: AppColors.violet,

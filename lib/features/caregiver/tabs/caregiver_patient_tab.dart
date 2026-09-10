@@ -8,6 +8,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
 
@@ -76,9 +77,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Linked Patients ()',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -128,8 +129,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: const [
+                    const Row(
+                      children: [
                         Icon(Icons.notes_rounded, color: AppColors.teal, size: 20),
                         SizedBox(width: 8),
                         Text(
@@ -187,7 +188,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       setState(() => _isNotesSaved = true);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text('Caregiver notes saved offline successfully.'),
+                          content: Text(
+                            context.tr('caregiver.notesSaved', defaultText: 'Caregiver notes saved offline successfully.'),
+                          ),
                           backgroundColor: AppColors.tealDark,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -199,9 +202,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text(
-                      'Save Notes',
-                      style: TextStyle(
+                    child: Text(
+                      context.tr('caregiver.saveNotes', defaultText: 'Save Notes'),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -228,7 +231,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
         border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -291,9 +294,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       'ID:  •  yrs • Blood Group: ',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.muted,
                         fontWeight: FontWeight.w600,
@@ -385,9 +388,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           patient.fullName,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
-        subtitle: Text(
+        subtitle: const Text(
           ' yrs • ID:  •  Stage',
-          style: const TextStyle(fontSize: 12, color: AppColors.muted),
+          style: TextStyle(fontSize: 12, color: AppColors.muted),
         ),
         trailing: isSelected
             ? const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 24)
@@ -476,7 +479,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -496,14 +499,19 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               );
 
               await CaregiverService.instance.linkPatient(newP);
-              if (mounted) {
+              if (ctx.mounted) {
                 Navigator.pop(ctx);
+              }
+              if (mounted) {
                 setState(() {});
                 widget.onPatientChanged();
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
-            child: const Text('Link Patient', style: TextStyle(color: Colors.white)),
+            child: Text(
+              context.tr('caregiver.linkPatient', defaultText: 'Link Patient'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

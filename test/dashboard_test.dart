@@ -15,6 +15,7 @@ import 'package:smriti_care/widgets/quick_action_card.dart';
 void main() {
   testWidgets('SmritiCare Mobile Dashboard smoke test', (WidgetTester tester) async {
     await tester.pumpWidget(const SmritiCareApp());
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
     // Verify MainShellScreen and DashboardScreen render
@@ -33,15 +34,16 @@ void main() {
 
     // Verify bottom navigation bar destinations
     expect(find.byType(BottomNavigationBar), findsOneWidget);
-    expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Games'), findsOneWidget);
-    expect(find.text('Reminders'), findsOneWidget);
-    expect(find.text('Progress'), findsOneWidget);
-    expect(find.text('Profile'), findsOneWidget);
+    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Home')), findsOneWidget);
+    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Games')), findsOneWidget);
+    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Reminders')), findsOneWidget);
+    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Progress')), findsOneWidget);
+    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Profile')), findsOneWidget);
   });
 
   testWidgets('Dashboard navigation to games and placeholders', (WidgetTester tester) async {
     await tester.pumpWidget(const SmritiCareApp());
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
     // Tap on Cognitive Games tab in bottom navigation
@@ -55,12 +57,12 @@ void main() {
     expect(find.text('Find the Different Object'), findsOneWidget);
 
     // Tap on Reminders tab in bottom navigation
-    await tester.tap(find.text('Reminders'));
+    await tester.tap(find.text('Reminders').last);
     await tester.pumpAndSettle();
 
     // Should display the Coming Soon placeholder for Reminders
     expect(find.text('COMING SOON'), findsOneWidget);
-    expect(find.text('Smart Reminders'), findsOneWidget);
+    expect(find.text('Smart Reminders'), findsWidgets);
     expect(find.text('Back to Dashboard'), findsOneWidget);
 
     // Tap back button

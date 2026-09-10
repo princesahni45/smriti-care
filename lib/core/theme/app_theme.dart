@@ -44,6 +44,8 @@ class AppColors {
   static const Color violet        = Color(0xFF7162B5);
   static const Color violetDeep    = Color(0xFF4B3D9E);
   static const Color violetPale    = Color(0xFFEDE9FC);
+  static const Color violetLight   = Color(0xFFF3F0FE);  // soft lavender fill (role switcher bg)
+  static const Color violetBorder  = Color(0xFF9B8FD4);  // mid-violet outline (role switcher border)
 
   // ── Accent: coral
   static const Color coral         = Color(0xFFCE625D);
@@ -70,7 +72,7 @@ class AppTheme {
   static ThemeData get light {
     final base = ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme(
+      colorScheme: const ColorScheme(
         brightness: Brightness.light,
         primary:          AppColors.teal,
         onPrimary:        Colors.white,
@@ -105,7 +107,7 @@ class AppTheme {
       outlinedButtonTheme: _outlinedButtonTheme(),
       inputDecorationTheme: _inputDecorationTheme(),
       dividerTheme: const DividerThemeData(color: AppColors.borderLight, thickness: 1),
-      navigationBarTheme: NavigationBarThemeData(
+      navigationBarTheme: const NavigationBarThemeData(
         backgroundColor: AppColors.surface,
         indicatorColor: AppColors.tealPale,
         elevation: 0,

@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
+import '../core/localization/app_localizations.dart';
 
 class QuickActionItem {
   final String id;
@@ -45,12 +46,12 @@ class QuickActionCard extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: item.color.withOpacity(0.35),
+              color: item.color.withValues(alpha: 0.35),
               width: 1.6,
             ),
             boxShadow: [
               BoxShadow(
-                color: item.color.withOpacity(0.08),
+                color: item.color.withValues(alpha: 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -68,7 +69,7 @@ class QuickActionCard extends StatelessWidget {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: item.color.withOpacity(0.12),
+                      color: item.color.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -82,7 +83,7 @@ class QuickActionCard extends StatelessWidget {
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 14,
-                    color: item.color.withOpacity(0.7),
+                    color: item.color.withValues(alpha: 0.7),
                   ),
                 ],
               ),
@@ -129,46 +130,46 @@ class QuickActionsGrid extends StatelessWidget {
 
   const QuickActionsGrid({super.key, required this.onActionTap});
 
-  static const List<QuickActionItem> items = [
+  List<QuickActionItem> _getItems(BuildContext context) => [
     QuickActionItem(
       id: 'games',
-      title: 'Cognitive Games',
-      subtitle: 'Gentle brain play',
+      title: context.tr('landing.cognitiveGames', defaultText: 'Cognitive Games'),
+      subtitle: context.tr('patient.trainMemory', defaultText: 'Gentle brain play'),
       icon: Icons.psychology_rounded,
       color: AppColors.teal,
     ),
     QuickActionItem(
-      id: 'reminders',
-      title: 'Reminders',
-      subtitle: 'Pills & schedules',
-      icon: Icons.access_time_filled_rounded,
-      color: AppColors.amber,
+      id: 'assessment',
+      title: context.tr('landing.aiPersonalization', defaultText: 'Cognitive Check'),
+      subtitle: context.tr('landing.featAIDesc', defaultText: 'Gentle assessment'),
+      icon: Icons.assignment_turned_in_rounded,
+      color: AppColors.blue,
+    ),
+    const QuickActionItem(
+      id: 'mri',
+      title: 'MRI Screening',
+      subtitle: 'AI structural scan',
+      icon: Icons.document_scanner_rounded,
+      color: AppColors.violet,
     ),
     QuickActionItem(
       id: 'emergency',
-      title: 'Emergency SOS',
-      subtitle: 'One-tap alerts',
+      title: context.tr('sos.sosButton', defaultText: 'Emergency SOS'),
+      subtitle: context.tr('sos.takeMeHome', defaultText: 'Take me home'),
       icon: Icons.emergency_rounded,
       color: AppColors.coral,
     ),
     QuickActionItem(
-      id: 'location',
-      title: 'Safe Location',
-      subtitle: 'Take me home',
-      icon: Icons.location_on_rounded,
-      color: AppColors.blue,
-    ),
-    QuickActionItem(
-      id: 'progress',
-      title: 'Your Progress',
-      subtitle: 'Daily memory stats',
-      icon: Icons.bar_chart_rounded,
-      color: AppColors.violet,
+      id: 'reminders',
+      title: context.tr('reminders.title', defaultText: 'Reminders'),
+      subtitle: context.tr('reminders.routine', defaultText: 'Pills & routine'),
+      icon: Icons.access_time_filled_rounded,
+      color: AppColors.amber,
     ),
     QuickActionItem(
       id: 'caregiver',
-      title: 'Caregiver',
-      subtitle: 'Family connection',
+      title: context.tr('caregiver.portal', defaultText: 'Caregiver Portal'),
+      subtitle: context.tr('landing.careCircle', defaultText: 'Family & insights'),
       icon: Icons.family_restroom_rounded,
       color: AppColors.navy,
     ),
@@ -176,18 +177,20 @@ class QuickActionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activeItems = _getItems(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              Icon(Icons.touch_app_rounded, size: 22, color: AppColors.teal),
-              SizedBox(width: 8),
+              const Icon(Icons.touch_app_rounded, size: 22, color: AppColors.teal),
+              const SizedBox(width: 8),
               Text(
-                'Quick Actions',
-                style: TextStyle(
+                context.tr('patient.todayActivities', defaultText: 'Quick Actions'),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -201,7 +204,7 @@ class QuickActionsGrid extends StatelessWidget {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: items.length,
+          itemCount: activeItems.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 14,
@@ -209,7 +212,7 @@ class QuickActionsGrid extends StatelessWidget {
             childAspectRatio: 1.15,
           ),
           itemBuilder: (context, index) {
-            final item = items[index];
+            final item = activeItems[index];
             return QuickActionCard(
               item: item,
               onTap: () => onActionTap(item.id),

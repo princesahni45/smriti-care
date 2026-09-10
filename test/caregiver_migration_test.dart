@@ -14,6 +14,7 @@ import 'package:smriti_care/features/caregiver/caregiver_dashboard_screen.dart';
 import 'package:smriti_care/features/caregiver/widgets/caregiver_header_bar.dart';
 import 'package:smriti_care/features/caregiver/widgets/patient_banner_card.dart';
 import 'package:smriti_care/features/caregiver/widgets/weekly_engagement_chart.dart';
+import 'package:smriti_care/widgets/dashboard_role_switcher.dart';
 
 void main() {
   group('Caregiver Data Models Tests', () {
@@ -47,7 +48,7 @@ void main() {
     });
 
     test('CaregiverReminder serializes, deserializes, and supports copyWith', () {
-      final reminder = CaregiverReminder(
+      const reminder = CaregiverReminder(
         id: 'rem-test-01',
         patientId: 'MC-2048',
         type: 'medication',
@@ -126,7 +127,7 @@ void main() {
 
       final initialCount = service.getReminders().length;
 
-      final testRem = CaregiverReminder(
+      const testRem = CaregiverReminder(
         id: 'rem-unit-test',
         patientId: 'MC-2048',
         type: 'hydration',
@@ -163,7 +164,7 @@ void main() {
       // Header Bar
       expect(find.byType(CaregiverHeaderBar), findsOneWidget);
       expect(find.text('Caregiver portal'), findsOneWidget);
-      expect(find.text('Patient View'), findsOneWidget);
+      expect(find.byType(DashboardRoleSwitcher), findsOneWidget);
 
       // Patient Banner
       expect(find.byType(PatientBannerCard), findsOneWidget);

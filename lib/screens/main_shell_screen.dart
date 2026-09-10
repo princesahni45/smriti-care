@@ -9,11 +9,17 @@
 // 4. Profile (Patient Profile & Settings Placeholder)
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
+import '../core/localization/app_localizations.dart';
+import '../core/services/caregiver_auth_service.dart';
 import 'dashboard_screen.dart';
 import 'placeholder_screen.dart';
+import 'language_select_screen.dart';
 import '../features/games/games_hub_screen.dart';
-import '../features/caregiver/caregiver_dashboard_screen.dart';
+import '../features/emergency/take_me_home_screen.dart';
+import '../features/mri/mri_screening_screen.dart';
+import '../features/assessment/cognitive_assessment_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
@@ -56,16 +62,57 @@ class _MainShellScreenState extends State<MainShellScreen> {
         _onTabTapped(4);
         break;
       case 'caregiver':
+        final authService = CaregiverAuthService.instance;
+        if (authService.switchToCaregiverModeIfAuthenticated()) {
+          // Existing session active — go directly to caregiver dashboard
+          context.go('/caregiver');
+        } else {
+          // No active session — show caregiver login screen
+          context.push('/caregiver-login');
+        }
+        break;
+      case 'emergency':
+      case 'sos':
+      case 'location':
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (ctx) => CaregiverDashboardScreen(
-              onBackToPatient: () => Navigator.of(ctx).pop(),
+            builder: (ctx) => TakeMeHomeScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
+      case 'mri':
+      case 'mri-screening':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => MriScreeningScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
+      case 'assessment':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => CognitiveAssessmentScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
+      case 'language':
+      case 'lang':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => LanguageSelectScreen(
+              onBack: () => Navigator.of(ctx).pop(),
             ),
           ),
         );
         break;
       default:
-        // For Emergency, Location, Caregiver, push the dedicated PlaceholderScreen
+        // For remaining upcoming modules, push the dedicated PlaceholderScreen
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (ctx) => PlaceholderScreen.forModule(
@@ -115,7 +162,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -3),
             ),
@@ -139,31 +186,31 @@ class _MainShellScreenState extends State<MainShellScreen> {
             fontWeight: FontWeight.w600,
           ),
           iconSize: 26,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home_rounded),
-              label: 'Home',
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home_rounded),
+              label: context.tr('common.home', defaultText: 'Home'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.psychology_outlined),
-              activeIcon: Icon(Icons.psychology_rounded),
-              label: 'Games',
+              icon: const Icon(Icons.psychology_outlined),
+              activeIcon: const Icon(Icons.psychology_rounded),
+              label: context.tr('nav.games', defaultText: 'Games'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.access_time_rounded),
-              activeIcon: Icon(Icons.access_time_filled_rounded),
-              label: 'Reminders',
+              icon: const Icon(Icons.access_time_rounded),
+              activeIcon: const Icon(Icons.access_time_filled_rounded),
+              label: context.tr('nav.reminders', defaultText: 'Reminders'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart_outlined),
-              activeIcon: Icon(Icons.bar_chart_rounded),
-              label: 'Progress',
+              icon: const Icon(Icons.bar_chart_outlined),
+              activeIcon: const Icon(Icons.bar_chart_rounded),
+              label: context.tr('nav.progress', defaultText: 'Progress'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_rounded),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
+              icon: const Icon(Icons.person_outline_rounded),
+              activeIcon: const Icon(Icons.person_rounded),
+              label: context.tr('nav.profile', defaultText: 'Profile'),
             ),
           ],
         ),

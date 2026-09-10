@@ -8,6 +8,7 @@
 
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
+import '../core/localization/app_localizations.dart';
 
 class TodayActivitySection extends StatelessWidget {
   final int gamesCompleted;
@@ -37,7 +38,7 @@ class TodayActivitySection extends StatelessWidget {
           border: Border.all(color: AppColors.borderLight, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -96,15 +97,15 @@ class TodayActivitySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              Icon(Icons.calendar_today_rounded, size: 20, color: AppColors.teal),
-              SizedBox(width: 8),
+              const Icon(Icons.calendar_today_rounded, size: 20, color: AppColors.teal),
+              const SizedBox(width: 8),
               Text(
-                "Today's Activity",
-                style: TextStyle(
+                context.tr('landing.todaysActivity', defaultText: "Today's Activity"),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -118,7 +119,7 @@ class TodayActivitySection extends StatelessWidget {
         Row(
           children: [
             _buildStatCard(
-              label: 'Games Completed',
+              label: context.tr('patient.progressCompleted', defaultText: 'Games Completed'),
               value: '$gamesCompleted',
               icon: Icons.videogame_asset_rounded,
               iconColor: AppColors.teal,
@@ -126,7 +127,7 @@ class TodayActivitySection extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             _buildStatCard(
-              label: 'Current Streak',
+              label: context.tr('caregiver.statActivity', defaultText: 'Current Streak'),
               value: '$streakDays days',
               icon: Icons.local_fire_department_rounded,
               iconColor: AppColors.coral,
@@ -134,7 +135,7 @@ class TodayActivitySection extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             _buildStatCard(
-              label: "Today's Score",
+              label: context.tr('games.score', defaultText: "Today's Score"),
               value: '$todayScore',
               icon: Icons.stars_rounded,
               iconColor: AppColors.amber,

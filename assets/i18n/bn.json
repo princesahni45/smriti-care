@@ -46,7 +46,11 @@
     "contact": "যোগাযোগ",
     "patientLogin": "রোগীর লগইন",
     "caregiverLogin": "সেবাদানকারীর লগইন",
-    "language": "ভাষা"
+    "language": "ভাষা",
+    "games": "খেলা",
+    "reminders": "অনুস্মারক",
+    "progress": "অগ্রগতি",
+    "profile": "প্রোফাইল"
   },
   "landing": {
     "heroEyebrow": "উত্তর-পূর্ব ভারতের জন্য সযত্নে তৈরি",
@@ -380,7 +384,30 @@
     "insightText": "পারিবারিক ছবি দেখার কার্যকলাপে রমেশ দারুণ সাড়া দিয়েছেন।",
     "mood": "মেজাজ",
     "calmEngaged": "শান্ত ও সক্রিয়",
-    "role": "সেবাকারী"
+    "role": "সেবাকারী",
+    "healthSummary": "স্বাস্থ্য ও মানসিক সারাংশ",
+    "monitoringSubtitle": "যত্ন ও মানসিক অগ্রগতি পর্যবেক্ষণ",
+    "switchPatient": "পরিবর্তন",
+    "riskAndRemindersTitle": "ঝুঁকি স্ক্রীনিং ও অনুস্মারক",
+    "riskAndRemindersSubtitle": "রিয়েল-টাইম জ্ঞানীয় সুরক্ষা স্ক্রীনিং এবং রুটিন সময়সূচী।",
+    "intelligentAlerts": "স্মার্ট যত্ন সতর্কতা",
+    "noAlerts": "কোনো সক্রিয় সতর্কতা নেই।",
+    "manageReminders": "অনুস্মারক পরিচালনা করুন",
+    "add": "যোগ করুন",
+    "allReminders": "সকল অনুস্মারক",
+    "appointments": "সাক্ষাৎকার",
+    "noRemindersCategory": "এই বিভাগের জন্য কোনো অনুস্মারক পাওয়া যায়নি।",
+    "deleteReminder": "অনুস্মারক মুছুন",
+    "saveReminder": "অনুস্মারক সংরক্ষণ করুন",
+    "addFamilyMember": "পরিবারের সদস্য যোগ করুন",
+    "saveProfile": "প্রোফাইল সংরক্ষণ করুন",
+    "noSosRecords": "কোনো জরুরি এসওএস রেকর্ড পাওয়া যায়নি।",
+    "resolve": "সমাধান করুন",
+    "notesSaved": "যত্নকারীর নোট অফলাইনে সফলভাবে সংরক্ষিত হয়েছে।",
+    "saveNotes": "নোট সংরক্ষণ করুন",
+    "linkPatient": "রোগী সংযুক্ত করুন",
+    "editHomeLocation": "নিরাপদ বাড়ির অবস্থান সম্পাদনা করুন",
+    "caregiverOnlyEmergency": "প্রবেশ প্রত্যাখ্যাত: কেবল যাচাইকৃত যত্নকারীরা জরুরি নম্বর সম্পাদনা করতে পারবেন।"
   },
   "games": {
     "catalogTitle": "মানসিক খেলা",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "শব্দ চেনা ও মনে রাখা",
     "wordRecallDesc": "পরিচিত শব্দগুলি পড়ুন, একটু অন্য কাজে সময় কাটান এবং পরে মনে করার চেষ্টা করুন।",
     "wordRecallInstruction": "একটি সহজ ও আনন্দদায়ক স্মৃতি পরীক্ষা",
-    "memoryMatch": "স্মৃতি মেলানো (Memory Match)"
+    "memoryMatch": "স্মৃতি মেলানো (Memory Match)",
+    "immediateRecall": "তাত্ক্ষণিক স্মরণ",
+    "delayedRecall": "বিলম্বিত স্মরণ"
   },
   "safety": {
     "title": "আমাকে বাড়ি নিয়ে চলুন",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "বাড়ির অবস্থান পরিবর্তন",
     "emergencyHelpline": "জরুরি সেবা হেল্পলাইন",
     "nationalResponseNumber": "জাতীয় জরুরি সহায়তা নম্বর",
-    "configureNumber": "নম্বর কনফিগার করুন"
+    "configureNumber": "নম্বর কনফিগার করুন",
+    "latitude": "অক্ষাংশ:",
+    "longitude": "দ্রাঘিমাংশ:",
+    "accuracy": "নির্ভুলতা:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "স্মার্ট অনুস্মারক ও রুটিন",
     "kicker": "স্মার্ট রিমাইন্ডার",
     "subtitle": "রোগীর প্রতিদিনের রুটিনের জন্য রিমাইন্ডার পরিচালনা করুন।",
-    "escalationRules": "সতর্কতা নিয়ম"
+    "escalationRules": "সতর্কতা নিয়ম",
+    "nextReminder": "পরবর্তী অনুস্মারক",
+    "morningMedicine": "সকালের ওষুধ",
+    "morningMedicineNote": "সকালের নাস্তার পর এক গ্লাস জল দিয়ে খান"
   },
   "voice": {
     "available": "আপনার ভাষায় ভয়েস গাইডেন্স উপলব্ধ।",
     "unavailable": "এই ডিভাইসে এই ভাষার ভয়েস উপলব্ধ নেই।",
     "reading": "পড়ে শোনানো হচ্ছে..."
+  },
+  "dates": {
+    "monday": "সোমবার",
+    "tuesday": "মঙ্গলবার",
+    "wednesday": "বুধবার",
+    "thursday": "বৃহস্পতিবার",
+    "friday": "শুক্রবার",
+    "saturday": "শনিবার",
+    "sunday": "রবিবার",
+    "january": "জানুয়ারি",
+    "february": "ফেব্রুয়ারি",
+    "march": "মার্চ",
+    "april": "এপ্রিল",
+    "may": "মে",
+    "june": "জুন",
+    "july": "জুলাই",
+    "august": "আগস্ট",
+    "september": "সেপ্টেম্বর",
+    "october": "অক্টোবর",
+    "november": "নভেম্বর",
+    "december": "ডিসেম্বর"
+  },
+  "progress": {
+    "yourProgress": "আপনার অগ্রগতি",
+    "memory": "স্মৃতিশক্তি",
+    "attention": "মনোযোগ",
+    "pattern": "প্যাটার্ন",
+    "weeklySummary": "সাপ্তাহিক মানসিক সারাংশ",
+    "viewDetails": "বিস্তারিত দেখুন"
   }
 }

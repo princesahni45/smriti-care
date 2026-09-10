@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
 import '../game_result_screen.dart';
@@ -247,10 +248,12 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Find the Different Object',
-                    style: Theme.of(context).textTheme.titleMedium),
                 Text(
-                  'Gentle category recognition',
+                  context.tr('games.findDifferentTitle', defaultText: 'Find the Different Object'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(
+                  context.tr('games.findDifferentSubtitle', defaultText: 'Gentle category recognition'),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -371,7 +374,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Find the object that is different from the others.',
+                      context.tr('games.findDifferentInstruction', defaultText: 'Find the object that is different from the others.'),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.ink,
@@ -381,12 +384,13 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                   IconButton(
                     icon: const Icon(Icons.volume_up_rounded,
                         color: AppColors.teal),
-                    tooltip: 'Read Aloud',
+                    tooltip: context.tr('games.readAloud', defaultText: 'Read Aloud'),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text(
-                              'Voice instruction: Find the object that is different from the others.'),
+                          content: Text(
+                            context.tr('games.findDifferentInstruction', defaultText: 'Find the object that is different from the others.'),
+                          ),
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
@@ -413,8 +417,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
             if (_isAnswered)
               SmritiButton(
                 label: _currentIndex + 1 < _questions.length
-                    ? 'Next Question'
-                    : 'View Results',
+                    ? context.tr('games.next', defaultText: 'Next Question')
+                    : context.tr('progress.viewDetails', defaultText: 'View Results'),
                 width: double.infinity,
                 icon: const Icon(Icons.arrow_forward_rounded, size: 20),
                 onPressed: _handleNextQuestion,
@@ -474,7 +478,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                   border: Border.all(color: borderColor, width: borderWidth),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),

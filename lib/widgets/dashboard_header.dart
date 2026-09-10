@@ -8,34 +8,45 @@
 // - Patient profile card with caregiver connection indicator
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
 import '../core/constants/app_constants.dart';
+import '../core/localization/app_localizations.dart';
+import 'dashboard_role_switcher.dart';
 
 class DashboardHeader extends StatelessWidget {
   final VoidCallback? onProfileTap;
 
   const DashboardHeader({super.key, this.onProfileTap});
 
-  /// Dynamic time-of-day greeting
-  String get _greeting {
+  /// Dynamic time-of-day greeting with multilingual support
+  String _getGreeting(BuildContext context) {
     final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) return 'Good Morning 👋';
-    if (hour >= 12 && hour < 17) return 'Good Afternoon ☀️';
-    if (hour >= 17 && hour < 21) return 'Good Evening 🌇';
-    return 'Good Night 🌙';
+    if (hour >= 5 && hour < 12) {
+      return '${context.tr('patient.greetingMorning', defaultText: 'Good Morning')} 👋';
+    }
+    if (hour >= 12 && hour < 17) {
+      return '${context.tr('patient.greetingAfternoon', defaultText: 'Good Afternoon')} ☀️';
+    }
+    if (hour >= 17 && hour < 21) {
+      return '${context.tr('patient.greetingEvening', defaultText: 'Good Evening')} 🌇';
+    }
+    return '${context.tr('patient.greetingNight', defaultText: 'Good Night')} 🌙';
   }
 
-  /// Formatted date matching SmritiCare design
-  String get _formattedDate {
+  /// Formatted date matching SmritiCare design with localization
+  String _formattedDate(BuildContext context) {
     final now = DateTime.now();
-    const weekdays = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    const weekdayKeys = [
+      'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
     ];
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+    const monthKeys = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
     ];
-    return '${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}';
+    final weekdayName = context.tr('dates.${weekdayKeys[now.weekday - 1]}');
+    final monthName = context.tr('dates.${monthKeys[now.month - 1]}');
+    return '$weekdayName, $monthName ${now.day}';
   }
 
   @override
@@ -49,12 +60,12 @@ class DashboardHeader extends StatelessWidget {
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
         ),
-        border: Border(
+        border: const Border(
           bottom: BorderSide(color: AppColors.borderLight, width: 1.5),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.tealDeep.withOpacity(0.05),
+            color: AppColors.tealDeep.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -69,86 +80,106 @@ class DashboardHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Brand badge
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.tealLight,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: AppColors.teal.withOpacity(0.25),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.psychology_rounded,
-                        color: AppColors.teal,
-                        size: 26,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'SmritiCare',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.ink,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                      Text(
-                        'Cognitive Care Companion',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.tealDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              // Caregiver Connection status pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.tealPale,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.teal.withOpacity(0.25),
-                  ),
-                ),
+              Expanded(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.teal,
-                        shape: BoxShape.circle,
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.tealLight,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.teal.withValues(alpha: 0.25),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.psychology_rounded,
+                          color: AppColors.teal,
+                          size: 24,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Protected',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.tealDeep,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'SmritiCare',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.ink,
+                              letterSpacing: -0.4,
+                            ),
+                          ),
+                          Text(
+                            context.tr('landing.footerTagline', defaultText: 'Cognitive Companion'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.tealDark,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 8),
+
+              // Right Action Buttons (Role Switcher & Language selector)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Role Switcher Pill [ 👤 Patient ▼ ] / [ 👥 Caregiver ▼ ]
+                  const DashboardRoleSwitcher(),
+                  const SizedBox(width: 6),
+
+                  // Language Switcher Pill Button [ 🌐 EN ]
+                  InkWell(
+                    onTap: () => context.push('/language-select'),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.softSection,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderLight),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.language_rounded, size: 16, color: AppColors.teal),
+                          const SizedBox(width: 4),
+                          ValueListenableBuilder<Locale>(
+                            valueListenable:
+                                LocalizationService.instance.currentLocaleNotifier,
+                            builder: (context, loc, _) {
+                              return Text(
+                                loc.languageCode.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.ink,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -157,7 +188,7 @@ class DashboardHeader extends StatelessWidget {
 
           // ── Friendly Greeting & Date ────────────────────────────────
           Text(
-            _greeting,
+            _getGreeting(context),
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -168,7 +199,7 @@ class DashboardHeader extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            _formattedDate,
+            _formattedDate(context),
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w500,
@@ -192,10 +223,10 @@ class DashboardHeader extends StatelessWidget {
               child: Row(
                 children: [
                   // Patient Avatar
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 22,
                     backgroundColor: AppColors.teal,
-                    child: const Text(
+                    child: Text(
                       'R',
                       style: TextStyle(
                         fontSize: 20,
@@ -229,7 +260,7 @@ class DashboardHeader extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Caregiver: ${AppConstants.caregiverName}',
+                              '${context.tr('caregiver.role', defaultText: 'Caregiver')}: ${AppConstants.caregiverName}',
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,

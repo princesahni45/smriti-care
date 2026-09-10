@@ -138,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
 
                 // ── Full name
-                _FieldLabel('Full name'),
+                const _FieldLabel('Full name'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
@@ -156,7 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 18),
 
                 // ── Email
-                _FieldLabel('Email address'),
+                const _FieldLabel('Email address'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
@@ -176,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 18),
 
                 // ── Password
-                _FieldLabel('Password'),
+                const _FieldLabel('Password'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 18),
 
                 // ── Confirm password
-                _FieldLabel('Confirm password'),
+                const _FieldLabel('Confirm password'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _confirmController,
@@ -267,7 +267,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.amberPale,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.amber.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.amber.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [

@@ -148,10 +148,10 @@ class PlaceholderScreen extends StatelessWidget {
                   width: 104,
                   height: 104,
                   decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.12),
+                    color: accentColor.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: accentColor.withOpacity(0.28),
+                      color: accentColor.withValues(alpha: 0.28),
                       width: 2,
                     ),
                   ),
@@ -167,7 +167,7 @@ class PlaceholderScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.amberPale,
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.amber.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.amber.withValues(alpha: 0.3)),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
@@ -222,7 +222,7 @@ class PlaceholderScreen extends StatelessWidget {
                       border: Border.all(color: AppColors.borderLight, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),

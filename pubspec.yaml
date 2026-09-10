@@ -10,6 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+
   # Navigation
   go_router: ^14.0.0
 
@@ -19,8 +23,16 @@ dependencies:
   # Local file storage for offline games & stats
   path_provider: ^2.1.2
 
+  # Networking for FastAPI AI backend communication
+  http: ^1.2.2
+
   # Icons
   cupertino_icons: ^1.0.8
+  firebase_core: ^4.14.0
+  firebase_auth: ^6.6.1
+  cloud_firestore: ^6.9.0
+  geolocator: ^14.0.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

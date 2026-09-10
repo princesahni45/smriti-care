@@ -192,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.errorLight,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
@@ -267,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               : AppConstants.caregiverPassword;
                           setState(() => _errorMessage = null);
                         },
-                        child: Text(
+                        child: const Text(
                           'Tap to auto-fill',
                           style: TextStyle(
                             fontSize: 12,

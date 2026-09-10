@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/caregiver_stat_grid.dart
+// lib/features/caregiver/widgets/caregiver_stat_grid.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -77,7 +77,7 @@ class CaregiverStatGrid extends StatelessWidget {
         border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

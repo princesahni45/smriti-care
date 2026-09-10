@@ -46,7 +46,11 @@
     "contact": "Biakpawhna",
     "patientLogin": "Damlo Luhna",
     "caregiverLogin": "Enkawnitu Luhna",
-    "language": "Ṭawng"
+    "language": "Ṭawng",
+    "games": "Infiamnate",
+    "reminders": "Hriatnawntirna",
+    "progress": "Hmasawnna",
+    "profile": "Mimal"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,7 +384,30 @@
     "insightText": "Ramesh-a hian chhungkaw thlalakah hriat theihna tha tak a lantir e.",
     "mood": "Rilru awmdan",
     "calmEngaged": "Thlamuang leh tui em em",
-    "role": "Enkawltu"
+    "role": "Enkawltu",
+    "healthSummary": "Hriselna leh hriatna khaikhawmna",
+    "monitoringSubtitle": "Enkawlna leh hmasawnna vil",
+    "switchPatient": "Thlak rawh",
+    "riskAndRemindersTitle": "Hlauhawm endikna leh hriattirna",
+    "riskAndRemindersSubtitle": "Hriatna himna endikna leh nitin hunbi ruahmanna.",
+    "intelligentAlerts": "Enkawltu hriattirna fing",
+    "noAlerts": "Hriattirna a awm lo.",
+    "manageReminders": "Hriattirna enkawl",
+    "add": "Dah belh",
+    "allReminders": "Hriattirna zawng zawng",
+    "appointments": "Inhmuhna hun",
+    "noRemindersCategory": "He huanga hriattirna a awm lo.",
+    "deleteReminder": "Hriattirna paih",
+    "saveReminder": "Hriattirna vawng ṭha",
+    "addFamilyMember": "Chhungkua mi belh",
+    "saveProfile": "Profile vawng ṭha",
+    "noSosRecords": "SOS chanchin a awm lo.",
+    "resolve": "Chingfel rawh",
+    "notesSaved": "Enkawltu chhinchhiahna vawn ṭhat a ni e.",
+    "saveNotes": "Chhinchhiahna vawng ṭha",
+    "linkPatient": "Damlo thlunzawm",
+    "editHomeLocation": "In himna hmun siamṭha rawh",
+    "caregiverOnlyEmergency": "Phal a ni lo: Enkawltu chauhvin an siamṭha thei."
   },
   "games": {
     "catalogTitle": "Rilru Hman Thiamna Infiamna",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "Hriatrengna Inzawm (Memory Match)"
+    "memoryMatch": "Hriatrengna Inzawm (Memory Match)",
+    "immediateRecall": "Hriat chhuah nghal",
+    "delayedRecall": "Hun engemaw hnuah hriat chhuah"
   },
   "safety": {
     "title": "In lamah mi hruai rawh",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "In hmun thlak rawh",
     "emergencyHelpline": "Emergency Helpline",
     "nationalResponseNumber": "Ram pum emergency number",
-    "configureNumber": "Number siamrem rawh"
+    "configureNumber": "Number siamrem rawh",
+    "latitude": "Latitude:",
+    "longitude": "Longitude:",
+    "accuracy": "Accuracy:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "HRIATTIRNA FIN",
     "subtitle": "Damlou nitin hun hman tur hriattirna enkawl rawh.",
-    "escalationRules": "Hriattirna Dan"
+    "escalationRules": "Hriattirna Dan",
+    "nextReminder": "Hriattirna dawt",
+    "morningMedicine": "Zing damdawi",
+    "morningMedicineNote": "Tukṭhuan eikhamah tui no khat nen ei tur"
   },
   "voice": {
     "available": "He ṭawng hian aw a hman theih e.",
     "unavailable": "He phone-ah hian he ṭawng aw hi a la awm lo.",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "Thawhṭanni",
+    "tuesday": "Thawhlehni",
+    "wednesday": "Nilaini",
+    "thursday": "Ningani",
+    "friday": "Zirtawpni",
+    "saturday": "Inrinni",
+    "sunday": "Pathianni",
+    "january": "Pawlkut thla",
+    "february": "Ramtuk thla",
+    "march": "Vau thla",
+    "april": "Ṭawhhawk thla",
+    "may": "Ṭoṭha thla",
+    "june": "Nikir thla",
+    "july": "Vawkhniahzawn thla",
+    "august": "Thitin thla",
+    "september": "Mimkut thla",
+    "october": "Khuangchawi thla",
+    "november": "Sahmulphur thla",
+    "december": "Pawltlak thla"
+  },
+  "progress": {
+    "yourProgress": "I hmasawnna",
+    "memory": "Hriatna",
+    "attention": "Ngaihsakna",
+    "pattern": "Ziar",
+    "weeklySummary": "Kar khat hriatna khaikhawmna",
+    "viewDetails": "Chipchiar en rawh"
   }
 }

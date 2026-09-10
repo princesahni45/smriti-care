@@ -1,8 +1,11 @@
 // lib/features/caregiver/widgets/caregiver_header_bar.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
+import '../../../core/localization/app_localizations.dart';
+import '../../../widgets/dashboard_role_switcher.dart';
 import '../../../shared/widgets/app_logo.dart';
 
 class CaregiverHeaderBar extends StatelessWidget {
@@ -24,7 +27,7 @@ class CaregiverHeaderBar extends StatelessWidget {
         border: const Border(bottom: BorderSide(color: AppColors.borderLight, width: 1.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -42,9 +45,9 @@ class CaregiverHeaderBar extends StatelessWidget {
                 color: AppColors.tealPale,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Text(
-                'Caregiver portal',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.tealDark),
+              child: Text(
+                context.tr('caregiver.portal', defaultText: 'Caregiver portal'),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.tealDark),
               ),
             ),
             const Spacer(),
@@ -130,19 +133,43 @@ class CaregiverHeaderBar extends StatelessWidget {
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13),
               ),
             ),
-            const SizedBox(width: 10),
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.border),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            const SizedBox(width: 8),
+            DashboardRoleSwitcher(
+              onSwitchToPatient: onSwitchToPatient,
+            ),
+            const SizedBox(width: 6),
+            InkWell(
+              onTap: () => context.push('/language-select'),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.softSection,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.borderLight),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.language_rounded, size: 15, color: AppColors.teal),
+                    const SizedBox(width: 3),
+                    ValueListenableBuilder<Locale>(
+                      valueListenable:
+                          LocalizationService.instance.currentLocaleNotifier,
+                      builder: (context, loc, _) {
+                        return Text(
+                          loc.languageCode.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-              icon: const Icon(Icons.swap_horiz_rounded, size: 16, color: AppColors.ink),
-              label: const Text(
-                'Patient View',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.ink),
-              ),
-              onPressed: onSwitchToPatient,
             ),
           ],
         ),

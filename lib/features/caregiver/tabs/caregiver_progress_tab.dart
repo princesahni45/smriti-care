@@ -96,7 +96,7 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               border: Border.all(color: AppColors.borderLight, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -145,8 +145,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           const SizedBox(height: 24),
 
           // 7 Dedicated Cognitive Game Reports Breakdown
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.psychology_rounded, color: AppColors.teal, size: 22),
               SizedBox(width: 8),
               Text(
@@ -173,8 +173,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           const SizedBox(height: 24),
 
           // Assessment History Log
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.history_rounded, color: AppColors.teal, size: 22),
               SizedBox(width: 8),
               Text(
@@ -255,7 +255,7 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
           boxShadow: isSelected
-              ? [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4)]
+              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4)]
               : null,
         ),
         child: Text(
@@ -337,9 +337,9 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     '%',
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.muted),
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.muted),
                   ),
                   const SizedBox(height: 4),
                   Container(
@@ -378,12 +378,12 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
         children: [
           Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColors.tealPale,
                 child: Text(
                   '%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: AppColors.tealDark,
@@ -426,16 +426,16 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               color: AppColors.softSection,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   ': ',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
                 ),
                 Text(
                   ': ',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
                 ),
               ],
             ),

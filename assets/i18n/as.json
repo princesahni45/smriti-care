@@ -46,7 +46,11 @@
     "contact": "যোগাযোগ",
     "patientLogin": "ৰোগীৰ প্ৰৱেশ",
     "caregiverLogin": "যত্নকৰ্তাৰ লগইন",
-    "language": "ভাষা"
+    "language": "ভাষা",
+    "games": "খেলসমূহ",
+    "reminders": "সোঁৱৰণি",
+    "progress": "অগ্ৰগতি",
+    "profile": "প্ৰফাইল"
   },
   "landing": {
     "heroEyebrow": "উত্তৰ-পূব ভাৰতৰ বাবে সযত্নে নিৰ্মিত",
@@ -380,7 +384,30 @@
     "insightText": "পৰিয়ালৰ ফটো চিনাক্তকৰণত ৰমেশে সুন্দৰ সঁহাৰি জনায়।",
     "mood": "মেজাজ",
     "calmEngaged": "শান্ত আৰু সক্ৰিয়",
-    "role": "যত্নকৰ্তা"
+    "role": "যত্নকৰ্তা",
+    "healthSummary": "স্বাস্থ্য আৰু মানসিক সাৰাংশ",
+    "monitoringSubtitle": "যত্ন আৰু মানসিক অগ্ৰগতি নিৰীক্ষণ",
+    "switchPatient": "সলনি কৰক",
+    "riskAndRemindersTitle": "বিপদ পৰীক্ষণ আৰু সোঁৱৰণী",
+    "riskAndRemindersSubtitle": "প্ৰকৃত সময়ৰ মানসিক সুৰক্ষা পৰীক্ষণ আৰু ৰোগীৰ সূচী নিৰ্ধাৰণ।",
+    "intelligentAlerts": "স্মাৰ্ট যত্ন সতৰ্কবাৰ্তা",
+    "noAlerts": "কোনো সক্ৰিয় সতৰ্কবাৰ্তা নাই।",
+    "manageReminders": "সোঁৱৰণী পৰিচালনা কৰক",
+    "add": "যোগ কৰক",
+    "allReminders": "সকলো সোঁৱৰণী",
+    "appointments": "সাক্ষাৎ",
+    "noRemindersCategory": "এই শ্ৰেণীৰ বাবে কোনো সোঁৱৰণী পোৱা নগ'ল।",
+    "deleteReminder": "সোঁৱৰণী মচক",
+    "saveReminder": "সোঁৱৰণী সংৰক্ষণ কৰক",
+    "addFamilyMember": "পৰিয়ালৰ সদস্য যোগ কৰক",
+    "saveProfile": "প্ৰফাইল সংৰক্ষণ কৰক",
+    "noSosRecords": "কোনো জৰুৰীকালীন SOS ৰেকৰ্ড পোৱা নগ'ল।",
+    "resolve": "সমাধান কৰক",
+    "notesSaved": "যত্নকৰ্তাৰ টোকা অফলাইনত সফলতাৰে সংৰক্ষণ কৰা হ'ল।",
+    "saveNotes": "টোকা সংৰক্ষণ কৰক",
+    "linkPatient": "ৰোগী সংযোগ কৰক",
+    "editHomeLocation": "সুৰক্ষিত ঘৰৰ স্থান সলনি কৰক",
+    "caregiverOnlyEmergency": "প্ৰৱেশ অস্বীকাৰ: কেৱল পৰীক্ষিত যত্নকৰ্তাই জৰুৰীকালীন নম্বৰ সলনি কৰিব পাৰে।"
   },
   "games": {
     "catalogTitle": "মানসিক খেল",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "শব্দ চিনি পোৱা আৰু মনত ৰখা",
     "wordRecallDesc": "দৈনন্দিন চিনাকি শব্দ পঢ়ক, অলপ জিৰণি লওক আৰু পাছত কোনবোৰ মনত থাকিল চাওক।",
     "wordRecallInstruction": "এক শান্ত আৰু মধুৰ স্মৃতি সোঁৱৰণ খেল",
-    "memoryMatch": "স্মৃতি মিলোৱা (Memory Match)"
+    "memoryMatch": "স্মৃতি মিলোৱা (Memory Match)",
+    "immediateRecall": "তৎক্ষণাৎ সোঁৱৰণ",
+    "delayedRecall": "বিলম্বিত সোঁৱৰণ"
   },
   "safety": {
     "title": "ঘৰলৈ নিয়া",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "ঘৰৰ অৱস্থান সলনি কৰক",
     "emergencyHelpline": "জৰুৰীকালীন সেৱা হেল্পলাইন",
     "nationalResponseNumber": "ৰাষ্ট্ৰীয় জৰুৰীকালীন সাহায্য নম্বৰ",
-    "configureNumber": "নম্বৰ সংৰূপণ কৰক"
+    "configureNumber": "নম্বৰ সংৰূপণ কৰক",
+    "latitude": "অক্ষাংশ:",
+    "longitude": "দ্ৰাঘিমাংশ:",
+    "accuracy": "সঠিকতা:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "স্মাৰ্ট সংকেত আৰু দিনলিপি",
     "kicker": "স্মাৰ্ট অনুস্মাৰক",
     "subtitle": "ৰোগীৰ দৈনিক দিনচৰ্যাৰ বাবে অনুস্মাৰক পৰিচালনা কৰক।",
-    "escalationRules": "সতৰ্কতা নিয়ম"
+    "escalationRules": "সতৰ্কতা নিয়ম",
+    "nextReminder": "পৰৱৰ্তী সোঁৱৰণী",
+    "morningMedicine": "পুৱাৰ ঔষধ",
+    "morningMedicineNote": "পুৱাৰ আহাৰৰ পিছত এগিলাচ পানীৰে খাব"
   },
   "voice": {
     "available": "আপোনাৰ ভাষাত মাতৰ নিৰ্দেশনা উপলব্ধ।",
     "unavailable": "এই যন্ত্ৰত এই ভাষাৰ বাবে মাত উপলব্ধ নহয়।",
     "reading": "পঢ়ি থকা হৈছে..."
+  },
+  "dates": {
+    "monday": "সোমবাৰ",
+    "tuesday": "মঙ্গলবাৰ",
+    "wednesday": "বুধবাৰ",
+    "thursday": "বৃহস্পতিবাৰ",
+    "friday": "শুক্ৰবাৰ",
+    "saturday": "শনিবাৰ",
+    "sunday": "দেওবাৰ",
+    "january": "জানুৱাৰী",
+    "february": "ফেব্ৰুৱাৰী",
+    "march": "মাৰ্চ",
+    "april": "এপ্ৰিল",
+    "may": "মে'",
+    "june": "জুন",
+    "july": "জুলাই",
+    "august": "আগষ্ট",
+    "september": "ছেপ্টেম্বৰ",
+    "october": "অক্টোবৰ",
+    "november": "নৱেম্বৰ",
+    "december": "ডিচেম্বৰ"
+  },
+  "progress": {
+    "yourProgress": "আপোনাৰ অগ্ৰগতি",
+    "memory": "স্মৃতিশক্তি",
+    "attention": "মনোযোগ",
+    "pattern": "বিন্যাস",
+    "weeklySummary": "সাপ্তাহিক মানসিক সাৰাংশ",
+    "viewDetails": "বিৱৰণ চাওক"
   }
 }

@@ -1,6 +1,7 @@
-﻿// lib/features/caregiver/widgets/reminder_management_section.dart
+// lib/features/caregiver/widgets/reminder_management_section.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
 
@@ -42,7 +43,10 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                 elevation: 0,
               ),
               icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text('Add Reminder', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+              label: Text(
+                context.tr('reminders.addReminder', defaultText: 'Add Reminder'),
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              ),
               onPressed: () => _openAddReminderDialog(context),
             ),
           ],
@@ -165,9 +169,9 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(
+                const Text(
                   ' • ',
-                  style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                  style: TextStyle(fontSize: 12, color: AppColors.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -177,7 +181,7 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
           const SizedBox(width: 8),
           Switch(
             value: r.enabled,
-            activeColor: AppColors.teal,
+            activeThumbColor: AppColors.teal,
             onChanged: (val) async {
               await CaregiverService.instance.toggleReminder(r.id);
               setState(() {});
@@ -199,7 +203,10 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Add Patient Reminder', style: TextStyle(fontWeight: FontWeight.w800)),
+          title: Text(
+            context.tr('reminders.addReminder', defaultText: 'Add Patient Reminder'),
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -207,10 +214,10 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
               children: [
                 TextField(
                   controller: titleCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Reminder Title',
+                  decoration: InputDecoration(
+                    labelText: context.tr('reminders.title', defaultText: 'Reminder Title'),
                     hintText: 'e.g. Afternoon Medicine',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -224,14 +231,14 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedType,
+                  initialValue: selectedType,
                   decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
-                  items: const [
-                    DropdownMenuItem(value: 'medication', child: Text('💊 Medication')),
-                    DropdownMenuItem(value: 'hydration', child: Text('💧 Hydration')),
-                    DropdownMenuItem(value: 'cognitive_activity', child: Text('🧠 Brain Activity')),
-                    DropdownMenuItem(value: 'appointment', child: Text('📅 Appointment')),
-                    DropdownMenuItem(value: 'daily_routine', child: Text('🚶 Daily Routine')),
+                  items: [
+                    DropdownMenuItem(value: 'medication', child: Text('💊 ${context.tr('reminders.morningMedicine', defaultText: 'Medication')}')),
+                    DropdownMenuItem(value: 'hydration', child: Text('💧 ${context.tr('reminders.hydration', defaultText: 'Hydration')}')),
+                    DropdownMenuItem(value: 'cognitive_activity', child: Text('🧠 ${context.tr('reminders.activity', defaultText: 'Brain Activity')}')),
+                    DropdownMenuItem(value: 'appointment', child: Text('📅 ${context.tr('reminders.appointment', defaultText: 'Appointment')}')),
+                    DropdownMenuItem(value: 'daily_routine', child: Text('🚶 ${context.tr('reminders.routine', defaultText: 'Daily Routine')}')),
                   ],
                   onChanged: (v) => setDlgState(() => selectedType = v ?? 'medication'),
                 ),
@@ -250,7 +257,7 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
@@ -273,7 +280,10 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                   setState(() {});
                 }
               },
-              child: const Text('Save Reminder', style: TextStyle(color: Colors.white)),
+              child: Text(
+                context.tr('caregiver.saveReminder', defaultText: 'Save Reminder'),
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
