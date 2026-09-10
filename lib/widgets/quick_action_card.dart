@@ -40,7 +40,7 @@ class QuickActionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
@@ -65,8 +65,8 @@ class QuickActionCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
                       color: item.color.withOpacity(0.12),
                       shape: BoxShape.circle,
@@ -206,7 +206,7 @@ class QuickActionsGrid extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 14,
             mainAxisSpacing: 14,
-            childAspectRatio: 1.25,
+            childAspectRatio: 1.15,
           ),
           itemBuilder: (context, index) {
             final item = items[index];

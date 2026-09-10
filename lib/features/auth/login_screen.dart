@@ -53,7 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
       if (result.success) {
-        context.go('/patient-dashboard');
+        UserSessionService.instance.setActiveRole(UserRole.patient);
+        context.go('/dashboard');
       } else {
         setState(() { _errorMessage = result.error; _isLoading = false; });
       }
@@ -63,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
       if (result.success) {
+        UserSessionService.instance.setActiveRole(UserRole.caregiver);
         context.go('/caregiver-dashboard');
       } else {
         setState(() { _errorMessage = result.error; _isLoading = false; });

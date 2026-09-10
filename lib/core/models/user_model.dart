@@ -129,3 +129,20 @@ class AuthService {
     return (success: false, error: "That PIN isn't correct. Please try again.");
   }
 }
+
+/// Global session state manager for active role
+class UserSessionService {
+  UserSessionService._();
+  static final UserSessionService instance = UserSessionService._();
+
+  UserRole _activeRole = UserRole.patient;
+  UserRole get activeRole => _activeRole;
+
+  bool get isCaregiver => _activeRole == UserRole.caregiver;
+  bool get isPatient => _activeRole == UserRole.patient;
+
+  void setActiveRole(UserRole role) {
+    _activeRole = role;
+  }
+}
+

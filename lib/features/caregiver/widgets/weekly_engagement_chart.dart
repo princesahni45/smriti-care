@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/weekly_engagement_chart.dart
+// lib/features/caregiver/widgets/weekly_engagement_chart.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -73,21 +73,17 @@ class WeeklyEngagementChart extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          '',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                            color: isToday ? AppColors.tealDeep : AppColors.muted,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        FractionallySizedBox(
-                          heightFactor: pct * 0.75,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: isToday ? AppColors.teal : AppColors.tealPale,
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FractionallySizedBox(
+                              heightFactor: pct * 0.75,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isToday ? AppColors.teal : AppColors.tealPale,
+                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                ),
+                              ),
                             ),
                           ),
                         ),

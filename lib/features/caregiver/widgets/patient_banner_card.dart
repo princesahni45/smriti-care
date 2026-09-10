@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/patient_banner_card.dart
+// lib/features/caregiver/widgets/patient_banner_card.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
@@ -67,7 +67,7 @@ class PatientBannerCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      ' •  yrs',
+                      '${patient.fullName} • ${patient.age} yrs',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -81,7 +81,7 @@ class PatientBannerCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            ' • ID: ',
+                            '${patient.location} • ID: ${patient.id}',
                             style: const TextStyle(fontSize: 12, color: AppColors.muted),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -109,7 +109,7 @@ class PatientBannerCard extends StatelessWidget {
                     const Icon(Icons.shield_outlined, size: 14, color: AppColors.amberDeep),
                     const SizedBox(width: 6),
                     Text(
-                      ' Dementia (Needs regular support)',
+                      '${patient.dementiaLevel} Dementia (Needs regular support)',
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,

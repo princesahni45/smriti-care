@@ -1,4 +1,4 @@
-﻿// test/caregiver_migration_test.dart
+// test/caregiver_migration_test.dart
 //
 // Comprehensive unit and widget tests for the SmritiCare Caregiver Portal.
 // Tests:
@@ -170,18 +170,20 @@ void main() {
       expect(find.text('Mr. Ramesh Das • 72 yrs'), findsOneWidget);
       expect(find.text('RD'), findsOneWidget);
 
-      // Weekly Engagement Chart
-      expect(find.byType(WeeklyEngagementChart), findsOneWidget);
-      expect(find.text('Weekly engagement'), findsOneWidget);
+      // Summary Cards & Sections on Home Tab
+      expect(find.text('Health & Cognitive Summary'), findsOneWidget);
+      expect(find.text('Cognitive Score'), findsOneWidget);
+      expect(find.text('Daily Streak'), findsOneWidget);
 
-      // Bottom Navigation Bar tabs
-      expect(find.text('Overview'), findsOneWidget);
-      expect(find.text('Cognitive'), findsOneWidget);
-      expect(find.text('Reminders'), findsOneWidget);
-      expect(find.text('Safety'), findsOneWidget);
+      // Bottom Navigation Bar tabs (5 Tabs)
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Patient'), findsOneWidget);
+      expect(find.text('Progress'), findsOneWidget);
+      expect(find.text('Alerts'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
     });
 
-    testWidgets('Tapping bottom tabs switches between Cognitive, Reminders, and Safety',
+    testWidgets('Tapping bottom tabs switches between Patient, Progress, Alerts, and Profile',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -190,24 +192,31 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Tap on Cognitive tab
-      await tester.tap(find.text('Cognitive'));
+      // Tap on Patient tab
+      await tester.tap(find.text('Patient'));
       await tester.pumpAndSettle();
-      expect(find.text('Recent Game Sessions'), findsOneWidget);
+      expect(find.text('Patient Profile & Linking'), findsOneWidget);
+      expect(find.textContaining('Linked Patients'), findsOneWidget);
 
-      // Tap on Reminders tab
-      await tester.tap(find.text('Reminders'));
+      // Tap on Progress tab
+      await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
-      expect(find.text("Today's Reminders"), findsOneWidget);
-      expect(find.text('Add Reminder'), findsOneWidget);
+      expect(find.text('Cognitive Progress & Reports'), findsOneWidget);
+      expect(find.byType(WeeklyEngagementChart), findsOneWidget);
+      expect(find.text('Individual Game Reports'), findsOneWidget);
 
-      // Tap on Safety tab
-      await tester.tap(find.text('Safety'));
+      // Tap on Alerts tab
+      await tester.tap(find.text('Alerts'));
       await tester.pumpAndSettle();
-      expect(find.text('Emergency & Safety Settings'), findsOneWidget);
-      expect(find.text('Primary Caregiver Contact'), findsOneWidget);
-      expect(find.text('Safe Home Location'), findsOneWidget);
-      expect(find.text('Emergency Hotline: 112'), findsOneWidget);
+      expect(find.text('Risk Screening & Reminders'), findsOneWidget);
+      expect(find.text('Manage Reminders'), findsOneWidget);
+
+      // Tap on Profile tab
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+      expect(find.text('Profile & Safety Hub'), findsOneWidget);
+      expect(find.text('Family Memories'), findsOneWidget);
+      expect(find.text('Emergency & Location Safety'), findsOneWidget);
     });
   });
 }

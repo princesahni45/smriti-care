@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/activity_timeline_section.dart
+// lib/features/caregiver/widgets/activity_timeline_section.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
@@ -15,7 +15,7 @@ class ActivityTimelineSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          \"Recent Patient Activity\",
+          'Recent Patient Activity',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 12),

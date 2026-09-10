@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/cognitive_performance_section.dart
+// lib/features/caregiver/widgets/cognitive_performance_section.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/game_result.dart';
@@ -19,11 +19,11 @@ class CognitivePerformanceSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            _buildMiniMetric('Completed', ' games', Icons.emoji_events_rounded, AppColors.teal),
+            _buildMiniMetric('Completed', '$totalGames games', Icons.emoji_events_rounded, AppColors.teal),
             const SizedBox(width: 10),
-            _buildMiniMetric('Streak', ' days', Icons.local_fire_department_rounded, AppColors.coral),
+            _buildMiniMetric('Streak', '$streak days', Icons.local_fire_department_rounded, AppColors.coral),
             const SizedBox(width: 10),
-            _buildMiniMetric('Today Avg', '%', Icons.stars_rounded, AppColors.amberDeep),
+            _buildMiniMetric('Today Avg', '$avgScore%', Icons.stars_rounded, AppColors.amberDeep),
           ],
         ),
         const SizedBox(height: 20),
@@ -92,7 +92,7 @@ class CognitivePerformanceSection extends StatelessWidget {
             radius: 22,
             backgroundColor: AppColors.tealPale,
             child: Text(
-              '%',
+              '${r.score}%',
               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.tealDeep),
             ),
           ),
@@ -107,7 +107,7 @@ class CognitivePerformanceSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  ' • Accuracy: % • Correct: ',
+                  '${r.difficulty} • Accuracy: ${r.accuracy}% • Correct: ${r.correctAnswers}/${r.attempts}',
                   style: const TextStyle(fontSize: 12, color: AppColors.muted),
                 ),
                 if (r.recommendation.isNotEmpty) ...[

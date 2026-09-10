@@ -1,9 +1,7 @@
-﻿// lib/core/models/caregiver_models.dart
+// lib/core/models/caregiver_models.dart
 //
 // Data models for the SmritiCare Caregiver Portal.
 // Faithful to the web implementation in src/App.jsx, src/reminders/, and src/emergency/.
-
-import 'dart:convert';
 
 /// Patient Profile represented in the Caregiver Portal
 class PatientProfile {
@@ -359,3 +357,169 @@ class CaregiverActivityItem {
     required this.isCompleted,
   });
 }
+
+/// Family Memory Member model for patient cognitive association games
+class FamilyMemoryMember {
+  final String id;
+  final String patientId;
+  final String name;
+  final String relationship; // e.g. Son, Daughter, Grandchild, Spouse, Friend
+  final String notes;
+  final String avatarEmoji; // e.g. 👨, 👩, 👧, 👦, 👵, 👴
+  final String? photoUrl;
+  final DateTime createdAt;
+
+  const FamilyMemoryMember({
+    required this.id,
+    required this.patientId,
+    required this.name,
+    required this.relationship,
+    required this.notes,
+    required this.avatarEmoji,
+    this.photoUrl,
+    required this.createdAt,
+  });
+
+  FamilyMemoryMember copyWith({
+    String? id,
+    String? patientId,
+    String? name,
+    String? relationship,
+    String? notes,
+    String? avatarEmoji,
+    String? photoUrl,
+    DateTime? createdAt,
+  }) {
+    return FamilyMemoryMember(
+      id: id ?? this.id,
+      patientId: patientId ?? this.patientId,
+      name: name ?? this.name,
+      relationship: relationship ?? this.relationship,
+      notes: notes ?? this.notes,
+      avatarEmoji: avatarEmoji ?? this.avatarEmoji,
+      photoUrl: photoUrl ?? this.photoUrl,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'patientId': patientId,
+      'name': name,
+      'relationship': relationship,
+      'notes': notes,
+      'avatarEmoji': avatarEmoji,
+      'photoUrl': photoUrl,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory FamilyMemoryMember.fromMap(Map<String, dynamic> map) {
+    return FamilyMemoryMember(
+      id: map['id'] ?? '',
+      patientId: map['patientId'] ?? 'MC-2048',
+      name: map['name'] ?? '',
+      relationship: map['relationship'] ?? '',
+      notes: map['notes'] ?? '',
+      avatarEmoji: map['avatarEmoji'] ?? '👤',
+      photoUrl: map['photoUrl'],
+      createdAt: map['createdAt'] != null
+          ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
+          : DateTime.now(),
+    );
+  }
+}
+
+/// Cognitive Risk Level enum & Assessment
+enum RiskLevel { low, moderate, high }
+
+class RiskAssessment {
+  final RiskLevel level;
+  final int overallScore; // 0-100
+  final String label;
+  final String summary;
+  final DateTime lastAssessed;
+  final String disclaimer;
+
+  const RiskAssessment({
+    required this.level,
+    required this.overallScore,
+    required this.label,
+    required this.summary,
+    required this.lastAssessed,
+    this.disclaimer =
+        'This screening indicator is based on cognitive game interactions and is not a clinical or medical diagnosis. Please consult a qualified healthcare professional for medical assessments.',
+  });
+}
+
+/// Detailed Cognitive Game Report for individual game breakdowns
+class CognitiveGameReport {
+  final String gameId;
+  final String title;
+  final String category; // Memory, Orientation, Attention, Executive
+  final int score; // 0-100
+  final double accuracyPercent;
+  final double avgResponseTimeSeconds;
+  final String primaryMetricLabel;
+  final String primaryMetricValue;
+  final String secondaryMetricLabel;
+  final String secondaryMetricValue;
+  final String statusDescription;
+  final bool isStrongPerformance;
+
+  const CognitiveGameReport({
+    required this.gameId,
+    required this.title,
+    required this.category,
+    required this.score,
+    required this.accuracyPercent,
+    required this.avgResponseTimeSeconds,
+    required this.primaryMetricLabel,
+    required this.primaryMetricValue,
+    required this.secondaryMetricLabel,
+    required this.secondaryMetricValue,
+    required this.statusDescription,
+    required this.isStrongPerformance,
+  });
+}
+
+/// SOS Alert Log item
+class SosAlertLog {
+  final String id;
+  final DateTime timestamp;
+  final String triggerType; // 'Patient App', 'Safe Zone Exit', 'Manual SOS'
+  final bool resolved;
+  final String notes;
+
+  const SosAlertLog({
+    required this.id,
+    required this.timestamp,
+    required this.triggerType,
+    required this.resolved,
+    required this.notes,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'timestamp': timestamp.toIso8601String(),
+      'triggerType': triggerType,
+      'resolved': resolved,
+      'notes': notes,
+    };
+  }
+
+  factory SosAlertLog.fromMap(Map<String, dynamic> map) {
+    return SosAlertLog(
+      id: map['id'] ?? '',
+      timestamp: map['timestamp'] != null
+          ? DateTime.tryParse(map['timestamp']) ?? DateTime.now()
+          : DateTime.now(),
+      triggerType: map['triggerType'] ?? 'Patient App',
+      resolved: map['resolved'] ?? false,
+      notes: map['notes'] ?? '',
+    );
+  }
+}
+
