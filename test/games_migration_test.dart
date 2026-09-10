@@ -1,4 +1,4 @@
-﻿// test/games_migration_test.dart
+// test/games_migration_test.dart
 //
 // Comprehensive unit and widget tests for SmritiCare Cognitive Games.
 // Tests:
@@ -20,6 +20,7 @@ void main() {
     test('GameResult serializes to Map and deserializes correctly', () {
       final now = DateTime(2026, 9, 10, 14, 30);
       final result = GameResult(
+        id: 'result-1',
         gameId: 'memory-match',
         gameName: 'Memory Match',
         score: 85,
@@ -146,6 +147,7 @@ void main() {
         MaterialApp(
           home: GameResultScreen(
             result: GameResult(
+              id: 'res-test-1',
               gameId: 'memory-match',
               gameName: 'Memory Match',
               score: 90,

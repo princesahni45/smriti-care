@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/health_snapshot_card.dart
+// lib/features/caregiver/widgets/health_snapshot_card.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
@@ -38,7 +38,7 @@ class HealthSnapshotCard extends StatelessWidget {
           const SizedBox(height: 12),
           _buildRow('Blood group', patient.bloodGroup),
           _buildRow('Primary language', patient.primaryLanguage),
-          _buildRow('Emergency contact', ' ()'),
+          _buildRow('Emergency contact', '${emergencyContact.name} (${emergencyContact.relationship})'),
           _buildRow('Care physician', patient.physician),
         ],
       ),

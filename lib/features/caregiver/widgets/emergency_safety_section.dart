@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/emergency_safety_section.dart
+// lib/features/caregiver/widgets/emergency_safety_section.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
@@ -27,7 +27,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
         ),
         const SizedBox(height: 6),
         const Text(
-          \"Used by the patient's Safe Return compass and SOS emergency button. Stored 100% offline.\",
+          "Used by the patient's Safe Return compass and SOS emergency button. Stored 100% offline.",
           style: TextStyle(fontSize: 13, color: AppColors.muted, height: 1.4),
         ),
         const SizedBox(height: 16),
@@ -68,11 +68,11 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                 ],
               ),
               const SizedBox(height: 10),
-              Text(' ()', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              Text('${contact.name} (${contact.relationship})', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
-              Text('Primary: ', style: const TextStyle(fontSize: 13, color: AppColors.inkSoft)),
+              Text('Primary: ${contact.phone}', style: const TextStyle(fontSize: 13, color: AppColors.inkSoft)),
               if (contact.secondaryPhone.isNotEmpty)
-                Text('Secondary: ', style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+                Text('Secondary: ${contact.secondaryPhone}', style: const TextStyle(fontSize: 13, color: AppColors.muted)),
             ],
           ),
         ),
@@ -116,7 +116,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
               const SizedBox(height: 10),
               Text(home.address, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
-              Text('Coordinates: ° N, ° E',
+              Text('Coordinates: ${home.latitude}° N, ${home.longitude}° E',
                   style: const TextStyle(fontSize: 12, color: AppColors.muted)),
             ],
           ),
@@ -144,11 +144,11 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Emergency Hotline: ',
+                      'Emergency Hotline: ${config.emergencyNumber}',
                       style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.coralDeep),
                     ),
                     Text(
-                      ' ()',
+                      '${config.label} (${config.country})',
                       style: const TextStyle(fontSize: 12, color: AppColors.coralDeep),
                     ),
                   ],

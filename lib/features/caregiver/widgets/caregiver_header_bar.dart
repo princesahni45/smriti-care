@@ -1,7 +1,8 @@
-﻿// lib/features/caregiver/widgets/caregiver_header_bar.dart
+// lib/features/caregiver/widgets/caregiver_header_bar.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../../../shared/widgets/app_logo.dart';
 
 class CaregiverHeaderBar extends StatelessWidget {
@@ -47,30 +48,72 @@ class CaregiverHeaderBar extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppColors.softSection,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Icon(Icons.notifications_outlined, size: 20, color: AppColors.inkSoft),
-                  Positioned(
-                    right: 8,
-                    top: 8,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.coral,
-                        shape: BoxShape.circle,
-                      ),
+            GestureDetector(
+              onTap: () {
+                final alerts = CaregiverService.instance.getAlerts();
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (ctx) => Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Caregiver Notifications',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 12),
+                        ...alerts.take(3).map(
+                          (a) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.circle, size: 8, color: AppColors.coral),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '${a.title} - ${a.message}',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                );
+              },
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.softSection,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Icon(Icons.notifications_outlined, size: 20, color: AppColors.inkSoft),
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.coral,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 8),

@@ -1,28 +1,24 @@
-﻿// lib/features/caregiver/caregiver_dashboard_screen.dart
+// lib/features/caregiver/caregiver_dashboard_screen.dart
 //
-// Full Caregiver Portal Dashboard for SmritiCare.
+// Full Caregiver Portal Dashboard Shell for SmritiCare.
 // Separated strictly from the elderly patient interface.
-// Features:
-// - Overview tab: Patient Banner, Stat Grid, Weekly Chart, Health Snapshot, Insights, Timeline
-// - Cognitive & Games tab: Live performance tracking from GameStorageService
-// - Reminders tab: Full reminder monitoring, category filters, toggle switches, add reminder
-// - Safety & Location tab: Primary Caregiver contact, Safe Home Location, 112 Emergency Hotline
-// - Mobile-first navigation with bottom navigation bar
+// Features 5 Dedicated Tabs:
+// 0. Home / Overview (Greeting, Patient banner, 6 Summary Cards, Shortcuts, Activity)
+// 1. Patient Details & Switcher (Detailed patient profile, multi-patient switcher, link patient)
+// 2. Cognitive Progress & Reports (Charts, Response Speed, Accuracy, 7 Game Reports)
+// 3. Alerts & Reminders (Screening Risk Indicator, Intelligent Alerts, Reminders CRUD)
+// 4. Profile & Safety (Caregiver profile, Family Memories CRUD, SOS log, Location)
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/models/caregiver_models.dart';
 import '../../core/services/caregiver_service.dart';
 import 'widgets/caregiver_header_bar.dart';
-import 'widgets/patient_banner_card.dart';
-import 'widgets/caregiver_stat_grid.dart';
-import 'widgets/weekly_engagement_chart.dart';
-import 'widgets/health_snapshot_card.dart';
-import 'widgets/cognitive_performance_section.dart';
-import 'widgets/reminder_management_section.dart';
-import 'widgets/emergency_safety_section.dart';
-import 'widgets/activity_timeline_section.dart';
+import 'tabs/caregiver_home_tab.dart';
+import 'tabs/caregiver_patient_tab.dart';
+import 'tabs/caregiver_progress_tab.dart';
+import 'tabs/caregiver_alerts_reminders_tab.dart';
+import 'tabs/caregiver_profile_safety_tab.dart';
 
 class CaregiverDashboardScreen extends StatefulWidget {
   final int initialTab;
@@ -68,6 +64,14 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
     }
   }
 
+  void _navigateToTab(int tabIndex) {
+    if (tabIndex >= 0 && tabIndex <= 4) {
+      setState(() {
+        _currentIndex = tabIndex;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -79,45 +83,51 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
       );
     }
 
-    final patient = CaregiverService.instance.getPatientProfile();
     final caregiver = CaregiverService.instance.getCaregiverProfile();
-    final metrics = CaregiverService.instance.getOverviewMetrics();
-    final weeklyData = CaregiverService.instance.getWeeklyEngagement();
-    final contact = CaregiverService.instance.getEmergencyContact();
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          // ── Sticky Header with Caregiver profile & Exit button
+          // ── Sticky Header with Caregiver profile & Patient View button
           CaregiverHeaderBar(
             profile: caregiver,
             onSwitchToPatient: _handleBackToPatient,
           ),
 
-          // ── Tab Body
+          // ── Tab Body (5 Dedicated Tabs)
           Expanded(
             child: IndexedStack(
               index: _currentIndex,
               children: [
-                // Tab 0: Care Overview
-                _buildOverviewTab(patient, metrics, weeklyData, contact),
+                // Tab 0: Home / Overview
+                CaregiverHomeTab(
+                  onSwitchPatientTap: () => _navigateToTab(1),
+                  onNavigateTab: _navigateToTab,
+                ),
 
-                // Tab 1: Cognitive & Games Activity
-                _buildCognitiveTab(),
+                // Tab 1: Patient Details & Switcher
+                CaregiverPatientTab(
+                  onPatientChanged: () => setState(() {}),
+                ),
 
-                // Tab 2: Reminders Monitoring
-                _buildRemindersTab(),
+                // Tab 2: Cognitive Progress & Reports
+                const CaregiverProgressTab(),
 
-                // Tab 3: Safety & Location
-                _buildSafetyTab(),
+                // Tab 3: Alerts & Reminders Management
+                const CaregiverAlertsRemindersTab(),
+
+                // Tab 4: Profile, Family Memories & Safety Hub
+                CaregiverProfileSafetyTab(
+                  onSwitchToPatient: _handleBackToPatient,
+                ),
               ],
             ),
           ),
         ],
       ),
 
-      // ── Caregiver Bottom Navigation
+      // ── Caregiver 5-Item Bottom Navigation Bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -138,87 +148,39 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
           onTap: (idx) => setState(() => _currentIndex = idx),
           selectedItemColor: AppColors.teal,
           unselectedItemColor: AppColors.muted,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800),
+          selectedFontSize: 11,
+          unselectedFontSize: 11,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.2),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard_rounded),
-              label: 'Overview',
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home_rounded),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.psychology_outlined),
-              activeIcon: Icon(Icons.psychology_rounded),
-              label: 'Cognitive',
+              icon: Icon(Icons.person_pin_outlined),
+              activeIcon: Icon(Icons.person_pin_rounded),
+              label: 'Patient',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.alarm_outlined),
-              activeIcon: Icon(Icons.alarm_rounded),
-              label: 'Reminders',
+              icon: Icon(Icons.bar_chart_outlined),
+              activeIcon: Icon(Icons.bar_chart_rounded),
+              label: 'Progress',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications_none_rounded),
+              activeIcon: Icon(Icons.notifications_rounded),
+              label: 'Alerts',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shield_outlined),
               activeIcon: Icon(Icons.shield_rounded),
-              label: 'Safety',
+              label: 'Profile',
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildOverviewTab(
-    PatientProfile patient,
-    Map<String, String> metrics,
-    List<Map<String, dynamic>> weeklyData,
-    EmergencyContact contact,
-  ) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PatientBannerCard(patient: patient),
-          const SizedBox(height: 18),
-          CaregiverStatGrid(metrics: metrics),
-          const SizedBox(height: 18),
-          WeeklyEngagementChart(data: weeklyData),
-          const SizedBox(height: 18),
-          HealthSnapshotCard(patient: patient, emergencyContact: contact),
-          const SizedBox(height: 18),
-          const CareInsightCard(),
-          const SizedBox(height: 18),
-          const ActivityTimelineSection(),
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCognitiveTab() {
-    return const SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: CognitivePerformanceSection(),
-    );
-  }
-
-  Widget _buildRemindersTab() {
-    return const SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: ReminderManagementSection(),
-    );
-  }
-
-  Widget _buildSafetyTab() {
-    return const SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      child: EmergencySafetySection(),
     );
   }
 }
