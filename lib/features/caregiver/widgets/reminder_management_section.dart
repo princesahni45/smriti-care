@@ -1,4 +1,4 @@
-﻿// lib/features/caregiver/widgets/reminder_management_section.dart
+// lib/features/caregiver/widgets/reminder_management_section.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
@@ -165,9 +165,9 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(
+                const Text(
                   ' • ',
-                  style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                  style: TextStyle(fontSize: 12, color: AppColors.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -177,7 +177,7 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
           const SizedBox(width: 8),
           Switch(
             value: r.enabled,
-            activeColor: AppColors.teal,
+            activeThumbColor: AppColors.teal,
             onChanged: (val) async {
               await CaregiverService.instance.toggleReminder(r.id);
               setState(() {});
@@ -224,7 +224,7 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedType,
+                  initialValue: selectedType,
                   decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
                   items: const [
                     DropdownMenuItem(value: 'medication', child: Text('💊 Medication')),

@@ -65,8 +65,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.photo_library_outlined, color: AppColors.violetDeep, size: 20),
                   SizedBox(width: 8),
                   Text(
@@ -107,8 +107,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           const SizedBox(height: 24),
 
           // Emergency & Location Safety Section
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.shield_rounded, color: AppColors.coral, size: 20),
               SizedBox(width: 8),
               Text(
@@ -139,8 +139,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           const SizedBox(height: 20),
 
           // SOS Alert History Log
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.history_toggle_off_rounded, color: AppColors.coral, size: 18),
               SizedBox(width: 6),
               Text(
@@ -220,7 +220,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
         border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -274,9 +274,9 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    const Text(
                       'Linked: ',
-                      style: const TextStyle(fontSize: 11, color: AppColors.muted, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 11, color: AppColors.muted, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -366,7 +366,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
         color: isEmergency ? AppColors.coralPale : AppColors.tealPale,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isEmergency ? AppColors.coral : AppColors.teal.withOpacity(0.4),
+          color: isEmergency ? AppColors.coral : AppColors.teal.withValues(alpha: 0.4),
           width: 1.5,
         ),
       ),
@@ -441,8 +441,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.contact_phone_outlined, color: AppColors.teal, size: 18),
                   SizedBox(width: 8),
                   Text(
@@ -456,7 +456,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Simulated calling primary contact: '),
+                      content: const Text('Simulated calling primary contact: '),
                       backgroundColor: AppColors.tealDark,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -468,14 +468,14 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
+          const Text(
             ' ()',
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.ink),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.ink),
           ),
           const SizedBox(height: 2),
-          Text('Primary: ', style: const TextStyle(fontSize: 12, color: AppColors.inkSoft)),
+          const Text('Primary: ', style: TextStyle(fontSize: 12, color: AppColors.inkSoft)),
           if (contact.secondaryPhone.isNotEmpty)
-            Text('Secondary: ', style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+            const Text('Secondary: ', style: TextStyle(fontSize: 12, color: AppColors.muted)),
         ],
       ),
     );
@@ -495,8 +495,8 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.location_on_rounded, color: AppColors.amberDeep, size: 18),
                   SizedBox(width: 8),
                   Text(
@@ -524,9 +524,9 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
           ),
           const SizedBox(height: 4),
-          Text(
+          const Text(
             'Latitude: ° N • Longitude: ° E (Radius: 500m)',
-            style: const TextStyle(fontSize: 11, color: AppColors.muted),
+            style: TextStyle(fontSize: 11, color: AppColors.muted),
           ),
           const SizedBox(height: 10),
           // Visual safe zone indicator bar
@@ -566,9 +566,9 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   ' • / :',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.ink),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -620,7 +620,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: relationship,
+                  initialValue: relationship,
                   decoration: const InputDecoration(labelText: 'Relationship'),
                   items: const [
                     DropdownMenuItem(value: 'Son', child: Text('Son')),
@@ -637,7 +637,7 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: emoji,
+                  initialValue: emoji,
                   decoration: const InputDecoration(labelText: 'Avatar Icon / Photo Placeholder'),
                   items: const [
                     DropdownMenuItem(value: '👨', child: Text('👨 Adult Male')),
@@ -679,8 +679,10 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
                   createdAt: DateTime.now(),
                 );
                 await CaregiverService.instance.addFamilyMember(newMember);
-                if (mounted) {
+                if (ctx.mounted) {
                   Navigator.pop(ctx);
+                }
+                if (mounted) {
                   setState(() {});
                 }
               },

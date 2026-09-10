@@ -70,7 +70,7 @@ class AppTheme {
   static ThemeData get light {
     final base = ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme(
+      colorScheme: const ColorScheme(
         brightness: Brightness.light,
         primary:          AppColors.teal,
         onPrimary:        Colors.white,
@@ -105,7 +105,7 @@ class AppTheme {
       outlinedButtonTheme: _outlinedButtonTheme(),
       inputDecorationTheme: _inputDecorationTheme(),
       dividerTheme: const DividerThemeData(color: AppColors.borderLight, thickness: 1),
-      navigationBarTheme: NavigationBarThemeData(
+      navigationBarTheme: const NavigationBarThemeData(
         backgroundColor: AppColors.surface,
         indicatorColor: AppColors.tealPale,
         elevation: 0,

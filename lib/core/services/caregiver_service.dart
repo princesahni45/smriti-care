@@ -17,7 +17,9 @@ import '../models/caregiver_models.dart';
 import 'game_storage_service.dart';
 
 class CaregiverService {
-  CaregiverService._();
+  CaregiverService._() {
+    _seedDefaults();
+  }
   static final CaregiverService instance = CaregiverService._();
 
   bool _isInitialized = false;
@@ -753,6 +755,9 @@ class CaregiverService {
     );
     await _persist();
   }
+
+  Future<void> addSosAlertLog({required String triggerType, required String notes}) =>
+      triggerSosAlert(triggerType, notes: notes);
 
   Future<void> resolveSosAlert(String id) async {
     await init();

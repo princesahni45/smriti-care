@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/models/game_result.dart';
 import '../../core/services/game_storage_service.dart';
-import '../../shared/widgets/smriti_button.dart';
 
 class GameCatalogItem {
   final String id;
@@ -68,13 +67,52 @@ const List<GameCatalogItem> kAvailableGames = [
     icon: Icons.auto_awesome_rounded,
     color: 'amber',
     title: 'Find the Different Object',
-    subtitle: 'Category Odd-One-Out',
+    subtitle: 'Category Odd-One-Out (Attention)',
     description:
         'Spot the object that belongs to a different category than all the others. A fun, stress-free recognition exercise.',
     levels: '3 Levels',
     levelDetails: 'Easy (6 items) • Medium (8 items) • Hard (10 items)',
-    badge: 'New',
+    badge: 'Attention',
     route: '/games/different-object',
+  ),
+  GameCatalogItem(
+    id: 'day-time-orientation',
+    icon: Icons.calendar_month_rounded,
+    color: 'blue',
+    title: 'Day & Time Orientation',
+    subtitle: 'Temporal Orientation & Recall',
+    description:
+        'Gentle check-in questions exploring today\'s day of the week, time of day, current month, and year.',
+    levels: 'All Stages',
+    levelDetails: '5 Orientation Questions • Immediate Affirmation',
+    badge: 'Essential',
+    route: '/games/orientation',
+  ),
+  GameCatalogItem(
+    id: 'routine-sequence',
+    icon: Icons.low_priority_rounded,
+    color: 'coral',
+    title: 'Daily Routine Sequence',
+    subtitle: 'Executive Function & Sequencing',
+    description:
+        'Put everyday morning and routine activities into order to practice executive sequencing.',
+    levels: '4 Steps',
+    levelDetails: 'Morning Routine • Medication • Everyday Care',
+    badge: 'Daily Living',
+    route: '/games/routine',
+  ),
+  GameCatalogItem(
+    id: 'family-memories',
+    icon: Icons.family_restroom_rounded,
+    color: 'teal',
+    title: 'Family Memories',
+    subtitle: 'Loved Ones Association',
+    description:
+        'Recognize familiar family photos and names to strengthen social reassurance and recall.',
+    levels: 'Caregiver Linked',
+    levelDetails: 'Connected to Caregiver Family Memories',
+    badge: 'Comforting',
+    route: '/games/family-memories',
   ),
 ];
 
@@ -270,7 +308,7 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         border: Border.all(color: AppColors.borderLight, width: 1.6),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -542,11 +580,11 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.borderLight),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Icon(Icons.lightbulb_outline_rounded, size: 20, color: AppColors.amberDeep),
               SizedBox(width: 8),
               Text(
@@ -559,8 +597,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: 8),
+          Text(
             'Pattern Recognition & Daily Routine Recall are currently in development for mobile play.',
             style: TextStyle(
               fontSize: 13,

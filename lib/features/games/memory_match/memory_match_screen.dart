@@ -433,7 +433,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -447,7 +447,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                       )
                     : Icon(
                         Icons.psychology_rounded,
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         size: cardWidth * 0.42,
                       ),
               ),
@@ -509,29 +509,3 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _ResultMetric extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _ResultMetric({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: AppColors.muted)),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: GoogleFonts.dmSans(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.ink,
-          ),
-        ),
-      ],
-    );
-  }
-}

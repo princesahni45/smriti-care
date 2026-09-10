@@ -25,9 +25,9 @@ class HealthSnapshotCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text(
                 'HEALTH SNAPSHOT',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDark, letterSpacing: 0.8),
@@ -74,8 +74,8 @@ class CareInsightCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.auto_awesome_rounded, size: 18, color: AppColors.violetDeep),
               SizedBox(width: 8),
               Text(

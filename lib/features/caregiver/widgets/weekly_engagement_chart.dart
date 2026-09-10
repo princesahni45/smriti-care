@@ -110,8 +110,8 @@ class WeeklyEngagementChart extends StatelessWidget {
               color: AppColors.tealLight,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
-              children: const [
+            child: const Row(
+              children: [
                 Icon(Icons.trending_up_rounded, size: 18, color: AppColors.tealDeep),
                 SizedBox(width: 8),
                 Expanded(

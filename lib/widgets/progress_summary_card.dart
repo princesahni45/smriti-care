@@ -111,7 +111,7 @@ class ProgressSummaryCard extends StatelessWidget {
                 border: Border.all(color: AppColors.borderLight, width: 1.6),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -143,9 +143,9 @@ class ProgressSummaryCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   const Divider(color: AppColors.borderLight),
                   const SizedBox(height: 8),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
                         'Weekly cognitive summary',
                         style: TextStyle(

@@ -58,16 +58,16 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
           const SizedBox(height: 22),
 
           // Intelligent Care Alerts Section
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.notifications_active_outlined, color: AppColors.coral, size: 20),
-                  const SizedBox(width: 8),
+                  Icon(Icons.notifications_active_outlined, color: AppColors.coral, size: 20),
+                  SizedBox(width: 8),
                   Text(
                     'Intelligent Care Alerts ()',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: AppColors.ink,
@@ -100,8 +100,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.alarm_rounded, color: AppColors.teal, size: 20),
                   SizedBox(width: 8),
                   Text(
@@ -201,7 +201,7 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
         border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -231,9 +231,9 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Score:  / 100',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.ink),
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.ink),
               ),
             ],
           ),
@@ -300,7 +300,7 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
         color: alert.acknowledged ? AppColors.softSection : AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: alert.acknowledged ? AppColors.borderLight : iconColor.withOpacity(0.4),
+          color: alert.acknowledged ? AppColors.borderLight : iconColor.withValues(alpha: 0.4),
           width: alert.acknowledged ? 1 : 1.5,
         ),
       ),
@@ -416,9 +416,9 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                const Text(
                   ' •  • ',
-                  style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                  style: TextStyle(fontSize: 11, color: AppColors.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -427,7 +427,7 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
           ),
           Switch(
             value: reminder.enabled,
-            activeColor: AppColors.teal,
+            activeThumbColor: AppColors.teal,
             onChanged: (val) async {
               await CaregiverService.instance.toggleReminder(reminder.id);
               setState(() {});
@@ -476,7 +476,7 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: type,
+                  initialValue: type,
                   decoration: const InputDecoration(labelText: 'Category'),
                   items: const [
                     DropdownMenuItem(value: 'medication', child: Text('Medicine')),
@@ -494,7 +494,7 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: repeat,
+                  initialValue: repeat,
                   decoration: const InputDecoration(labelText: 'Repeat Interval'),
                   items: const [
                     DropdownMenuItem(value: 'daily', child: Text('Daily')),
@@ -529,8 +529,10 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                   status: 'upcoming',
                 );
                 await CaregiverService.instance.addReminder(newRem);
-                if (mounted) {
+                if (ctx.mounted) {
                   Navigator.pop(ctx);
+                }
+                if (mounted) {
                   setState(() {});
                 }
               },

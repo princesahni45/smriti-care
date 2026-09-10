@@ -76,9 +76,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Linked Patients ()',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: AppColors.ink,
@@ -128,8 +128,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: const [
+                    const Row(
+                      children: [
                         Icon(Icons.notes_rounded, color: AppColors.teal, size: 20),
                         SizedBox(width: 8),
                         Text(
@@ -228,7 +228,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
         border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -291,9 +291,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    const Text(
                       'ID:  •  yrs • Blood Group: ',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.muted,
                         fontWeight: FontWeight.w600,
@@ -385,9 +385,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           patient.fullName,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
-        subtitle: Text(
+        subtitle: const Text(
           ' yrs • ID:  •  Stage',
-          style: const TextStyle(fontSize: 12, color: AppColors.muted),
+          style: TextStyle(fontSize: 12, color: AppColors.muted),
         ),
         trailing: isSelected
             ? const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 24)
@@ -496,8 +496,10 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               );
 
               await CaregiverService.instance.linkPatient(newP);
-              if (mounted) {
+              if (ctx.mounted) {
                 Navigator.pop(ctx);
+              }
+              if (mounted) {
                 setState(() {});
                 widget.onPatientChanged();
               }

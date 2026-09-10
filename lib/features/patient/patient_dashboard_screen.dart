@@ -58,10 +58,20 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
       context.go('/games/word-recall');
     } else if (activityId == 'different-object') {
       context.go('/games/different-object');
+    } else if (activityId == 'music-memories' || activityId == 'family-memories') {
+      context.go('/games/family-memories');
+    } else if (activityId == 'talk-recall' || activityId == 'orientation') {
+      context.go('/games/orientation');
+    } else if (activityId == 'routine') {
+      context.go('/games/routine');
+    } else if (activityId == 'mri') {
+      context.go('/mri-screening');
+    } else if (activityId == 'emergency' || activityId == 'sos') {
+      context.go('/take-me-home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$activityId — coming soon in future updates.'),
+          content: Text('$activityId — ready in games catalog.'),
           backgroundColor: AppColors.teal,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -363,8 +373,8 @@ class _PatientHeader extends StatelessWidget {
         height: 88,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border(bottom: BorderSide(color: AppColors.border, width: 2.5)),
-          boxShadow: [BoxShadow(color: AppColors.teal.withOpacity(0.08), blurRadius: 14, offset: const Offset(0, 2))],
+          border: const Border(bottom: BorderSide(color: AppColors.border, width: 2.5)),
+          boxShadow: [BoxShadow(color: AppColors.teal.withValues(alpha: 0.08), blurRadius: 14, offset: const Offset(0, 2))],
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
@@ -372,10 +382,10 @@ class _PatientHeader extends StatelessWidget {
             const AppLogo(iconSize: 32, fontSize: 20),
             const Spacer(),
             // ── Control buttons (Home / Help / Voice / Lang) — matching pd-controls
-            _CtrlBtn(icon: Icons.home_rounded,        label: 'Home',  onTap: () {}),
-            _CtrlBtn(icon: Icons.phone_rounded,        label: 'Help',  onTap: () {}, color: AppColors.coralDeep),
+            _CtrlBtn(icon: Icons.home_rounded,        label: 'Home',  onTap: () => context.go('/')),
+            _CtrlBtn(icon: Icons.phone_rounded,        label: 'Help',  onTap: () => context.go('/take-me-home'), color: AppColors.coralDeep),
             _CtrlBtn(icon: Icons.mic_rounded,          label: 'Voice', onTap: () {}),
-            _CtrlBtn(icon: Icons.language_rounded,     label: 'Lang',  onTap: () {}),
+            _CtrlBtn(icon: Icons.language_rounded,     label: 'Lang',  onTap: () => context.go('/language-select')),
             const SizedBox(width: 4),
             // ── Logout
             GestureDetector(
@@ -386,10 +396,10 @@ class _PatientHeader extends StatelessWidget {
                   color: AppColors.coralPale,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(Icons.logout_rounded, size: 16, color: AppColors.coralDeep),
-                    const SizedBox(width: 4),
+                    Icon(Icons.logout_rounded, size: 16, color: AppColors.coralDeep),
+                    SizedBox(width: 4),
                     Text('Exit', style: TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.coralDeep,
                     )),
@@ -525,7 +535,7 @@ class _TodayActivityPanel extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -549,7 +559,7 @@ class _TodayActivityPanel extends StatelessWidget {
           Text(
             'A simple memory activity',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.80),
+              color: Colors.white.withValues(alpha: 0.80),
             ),
           ),
           const SizedBox(height: 18),
@@ -577,35 +587,39 @@ class _TodayActivityPanel extends StatelessWidget {
 class _HelpCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.coralPale,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.coral.withOpacity(0.25)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: () => context.go('/take-me-home'),
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.coralPale,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.coral.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44, height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.map_rounded, color: AppColors.coralDeep, size: 24),
             ),
-            child: const Icon(Icons.map_rounded, color: AppColors.coralDeep, size: 24),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Lost or confused?', style: Theme.of(context).textTheme.titleSmall),
-                Text('Take Me Home & SOS',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.coralDeep)),
-              ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Lost or confused?', style: Theme.of(context).textTheme.titleSmall),
+                  Text('Take Me Home & SOS',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.coralDeep)),
+                ],
+              ),
             ),
-          ),
-          const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.coralDeep),
-        ],
+            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.coralDeep),
+          ],
+        ),
       ),
     );
   }

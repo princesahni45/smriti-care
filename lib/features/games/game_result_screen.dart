@@ -116,7 +116,7 @@ class GameResultScreen extends StatelessWidget {
                   color: AppColors.tealPale,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.teal.withOpacity(0.3),
+                    color: AppColors.teal.withValues(alpha: 0.3),
                     width: 2,
                   ),
                 ),
@@ -164,7 +164,7 @@ class GameResultScreen extends StatelessWidget {
                   border: Border.all(color: AppColors.border, width: 1.8),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.teal.withOpacity(0.08),
+                      color: AppColors.teal.withValues(alpha: 0.08),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -244,7 +244,7 @@ class GameResultScreen extends StatelessWidget {
                     color: AppColors.violetPale,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: AppColors.violet.withOpacity(0.35),
+                      color: AppColors.violet.withValues(alpha: 0.35),
                       width: 1.5,
                     ),
                   ),

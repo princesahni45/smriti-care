@@ -8,8 +8,10 @@
 // - Patient profile card with caregiver connection indicator
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
 import '../core/constants/app_constants.dart';
+import '../core/localization/app_localizations.dart';
 
 class DashboardHeader extends StatelessWidget {
   final VoidCallback? onProfileTap;
@@ -49,12 +51,12 @@ class DashboardHeader extends StatelessWidget {
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
         ),
-        border: Border(
+        border: const Border(
           bottom: BorderSide(color: AppColors.borderLight, width: 1.5),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.tealDeep.withOpacity(0.05),
+            color: AppColors.tealDeep.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -79,7 +81,7 @@ class DashboardHeader extends StatelessWidget {
                       color: AppColors.tealLight,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: AppColors.teal.withOpacity(0.25),
+                        color: AppColors.teal.withValues(alpha: 0.25),
                         width: 1.5,
                       ),
                     ),
@@ -117,38 +119,74 @@ class DashboardHeader extends StatelessWidget {
                 ],
               ),
 
-              // Caregiver Connection status pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.tealPale,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.teal.withOpacity(0.25),
+              // Right Action Buttons (Language selector & Caregiver Status)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Language Switcher Pill Button
+                  InkWell(
+                    onTap: () => context.push('/language-select'),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.softSection,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderLight),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.language_rounded, size: 16, color: AppColors.teal),
+                          const SizedBox(width: 4),
+                          Text(
+                            LocalizationService.instance.currentLocale.languageCode.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: AppColors.teal,
-                        shape: BoxShape.circle,
+                  const SizedBox(width: 8),
+
+                  // Caregiver Connection status pill
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.tealPale,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.teal.withValues(alpha: 0.25),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Protected',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.tealDeep,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppColors.teal,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Protected',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.tealDeep,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -189,13 +227,13 @@ class DashboardHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.border, width: 1.2),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   // Patient Avatar
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: AppColors.teal,
-                    child: const Text(
+                    child: Text(
                       'R',
                       style: TextStyle(
                         fontSize: 20,
@@ -204,14 +242,14 @@ class DashboardHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14),
 
                   // Patient info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           AppConstants.patientFullName,
                           style: TextStyle(
                             fontSize: 17,
@@ -219,18 +257,18 @@ class DashboardHeader extends StatelessWidget {
                             color: AppColors.ink,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.verified_user_rounded,
                               size: 14,
                               color: AppColors.teal,
                             ),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4),
                             Text(
                               'Caregiver: ${AppConstants.caregiverName}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.tealDark,
@@ -243,7 +281,7 @@ class DashboardHeader extends StatelessWidget {
                   ),
 
                   // Subtle indicator
-                  const Icon(
+                  Icon(
                     Icons.chevron_right_rounded,
                     color: AppColors.muted,
                     size: 24,

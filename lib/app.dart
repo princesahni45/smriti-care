@@ -4,11 +4,14 @@
 // Launches directly into the SmritiCare Mobile Dashboard with Bottom Navigation.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/localization/app_localizations.dart';
 import 'screens/main_shell_screen.dart';
 import 'screens/placeholder_screen.dart';
+import 'screens/language_select_screen.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/role_selection_screen.dart';
 import 'features/auth/login_screen.dart';
@@ -19,9 +22,15 @@ import 'features/games/games_hub_screen.dart';
 import 'features/games/memory_match/memory_match_screen.dart';
 import 'features/games/word_recall/word_recall_screen.dart';
 import 'features/games/different_object/different_object_screen.dart';
+import 'features/games/orientation/day_time_orientation_screen.dart';
+import 'features/games/routine/routine_sequence_screen.dart';
+import 'features/games/family_memories/family_memories_game_screen.dart';
+import 'features/mri/mri_screening_screen.dart';
+import 'features/emergency/take_me_home_screen.dart';
+import 'features/assessment/cognitive_assessment_screen.dart';
 
-final _router = GoRouter(
-  initialLocation: '/',
+GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
+  initialLocation: initialLocation,
   debugLogDiagnostics: false,
   routes: [
     // ── Primary Entry Point: SmritiCare Mobile Dashboard Shell
@@ -88,7 +97,7 @@ final _router = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
 
-    // ── Patient Dashboard (legacy prototype view)
+    // ── Patient Dashboard (dedicated view)
     GoRoute(
       path: '/patient-dashboard',
       name: 'patientDashboard',
@@ -123,19 +132,103 @@ final _router = GoRouter(
       name: 'differentObject',
       builder: (context, state) => const DifferentObjectScreen(),
     ),
+    GoRoute(
+      path: '/games/orientation',
+      name: 'dayTimeOrientation',
+      builder: (context, state) => const DayTimeOrientationScreen(),
+    ),
+    GoRoute(
+      path: '/games/routine',
+      name: 'routineSequence',
+      builder: (context, state) => const RoutineSequenceScreen(),
+    ),
+    GoRoute(
+      path: '/games/family-memories',
+      name: 'familyMemories',
+      builder: (context, state) => const FamilyMemoriesGameScreen(),
+    ),
+
+    // ── MRI Screening
+    GoRoute(
+      path: '/mri-screening',
+      name: 'mriScreening',
+      builder: (context, state) => const MriScreeningScreen(),
+    ),
+
+    // ── Take Me Home & Emergency SOS
+    GoRoute(
+      path: '/take-me-home',
+      name: 'takeMeHome',
+      builder: (context, state) => const TakeMeHomeScreen(),
+    ),
+    GoRoute(
+      path: '/emergency',
+      name: 'emergency',
+      builder: (context, state) => const TakeMeHomeScreen(),
+    ),
+
+    // ── Cognitive Assessment
+    GoRoute(
+      path: '/assessment',
+      name: 'assessment',
+      builder: (context, state) => const CognitiveAssessmentScreen(),
+    ),
+
+    // ── Language Selection
+    GoRoute(
+      path: '/language-select',
+      name: 'languageSelect',
+      builder: (context, state) => const LanguageSelectScreen(),
+    ),
   ],
 );
 
-class SmritiCareApp extends StatelessWidget {
-  const SmritiCareApp({super.key});
+class SmritiCareApp extends StatefulWidget {
+  final GoRouter? router;
+
+  const SmritiCareApp({super.key, this.router});
+
+  @override
+  State<SmritiCareApp> createState() => _SmritiCareAppState();
+}
+
+class _SmritiCareAppState extends State<SmritiCareApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = widget.router ?? createAppRouter();
+  }
+
+  @override
+  void dispose() {
+    if (widget.router == null) {
+      _router.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Smriti Care',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: _router,
+    return ValueListenableBuilder<Locale>(
+      valueListenable: LocalizationService.instance.currentLocaleNotifier,
+      builder: (context, currentLocale, _) {
+        return MaterialApp.router(
+          title: 'Smriti Care',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          routerConfig: _router,
+          locale: currentLocale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+        );
+      },
     );
   }
 }

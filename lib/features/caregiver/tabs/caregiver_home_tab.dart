@@ -67,7 +67,7 @@ class CaregiverHomeTab extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
+                    const Text(
                       'Monitoring care & cognitive progress',
                       style: TextStyle(
                         fontSize: 13,
@@ -85,11 +85,11 @@ class CaregiverHomeTab extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.tealPale,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.teal.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.swap_horiz_rounded, size: 16, color: AppColors.tealDark),
                       SizedBox(width: 4),
                       Text(
@@ -299,7 +299,7 @@ class CaregiverHomeTab extends StatelessWidget {
             border: Border.all(color: AppColors.borderLight, width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),

@@ -12,8 +12,12 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 import 'dashboard_screen.dart';
 import 'placeholder_screen.dart';
+import 'language_select_screen.dart';
 import '../features/games/games_hub_screen.dart';
 import '../features/caregiver/caregiver_dashboard_screen.dart';
+import '../features/emergency/take_me_home_screen.dart';
+import '../features/mri/mri_screening_screen.dart';
+import '../features/assessment/cognitive_assessment_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
@@ -64,8 +68,48 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
         );
         break;
+      case 'emergency':
+      case 'sos':
+      case 'location':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => TakeMeHomeScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
+      case 'mri':
+      case 'mri-screening':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => MriScreeningScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
+      case 'assessment':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => CognitiveAssessmentScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
+      case 'language':
+      case 'lang':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => LanguageSelectScreen(
+              onBack: () => Navigator.of(ctx).pop(),
+            ),
+          ),
+        );
+        break;
       default:
-        // For Emergency, Location, Caregiver, push the dedicated PlaceholderScreen
+        // For remaining upcoming modules, push the dedicated PlaceholderScreen
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (ctx) => PlaceholderScreen.forModule(
@@ -115,7 +159,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -3),
             ),

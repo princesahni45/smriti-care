@@ -47,7 +47,7 @@ void main() {
     });
 
     test('CaregiverReminder serializes, deserializes, and supports copyWith', () {
-      final reminder = CaregiverReminder(
+      const reminder = CaregiverReminder(
         id: 'rem-test-01',
         patientId: 'MC-2048',
         type: 'medication',
@@ -126,7 +126,7 @@ void main() {
 
       final initialCount = service.getReminders().length;
 
-      final testRem = CaregiverReminder(
+      const testRem = CaregiverReminder(
         id: 'rem-unit-test',
         patientId: 'MC-2048',
         type: 'hydration',

@@ -129,7 +129,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
           decoration: BoxDecoration(
             color: AppColors.coralPale,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.coral.withOpacity(0.35), width: 1.5),
+            border: Border.all(color: AppColors.coral.withValues(alpha: 0.35), width: 1.5),
           ),
           child: Row(
             children: [

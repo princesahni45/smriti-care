@@ -530,7 +530,7 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                 border: Border.all(color: AppColors.teal, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.teal.withOpacity(0.08),
+                    color: AppColors.teal.withValues(alpha: 0.08),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

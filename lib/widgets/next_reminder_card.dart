@@ -57,7 +57,7 @@ class NextReminderCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [
                     AppColors.amberPale,
                     AppColors.surface,
@@ -67,12 +67,12 @@ class NextReminderCard extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
-                  color: AppColors.amber.withOpacity(0.35),
+                  color: AppColors.amber.withValues(alpha: 0.35),
                   width: 1.8,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.amber.withOpacity(0.08),
+                    color: AppColors.amber.withValues(alpha: 0.08),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -85,10 +85,10 @@ class NextReminderCard extends StatelessWidget {
                     width: 54,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: AppColors.amber.withOpacity(0.15),
+                      color: AppColors.amber.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.amber.withOpacity(0.3),
+                        color: AppColors.amber.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),

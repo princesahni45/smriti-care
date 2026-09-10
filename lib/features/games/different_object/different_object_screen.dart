@@ -474,7 +474,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                   border: Border.all(color: borderColor, width: borderWidth),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
