@@ -301,113 +301,115 @@ Caregiver Dashboard
 
 ---
 
-# Project Architecture
+# Mobile Application Architecture
 
-```text id="d3b6os"
-                    +----------------------+
-                    |    React Frontend    |
-                    |                      |
-                    | Patient Interface    |
-                    | Caregiver Interface  |
-                    +----------+-----------+
-                               |
-                               v
-                    +----------+-----------+
-                    |    Node.js Backend   |
-                    |      Express.js      |
-                    +----------+-----------+
-                               |
-              +----------------+----------------+
-              |                |                |
-              v                v                v
-       +-------------+   +-------------+   +-------------+
-       |   MongoDB   |   |  AI Engine  |   |  Reminder   |
-       |  Database   |   |             |   |   System    |
-       +-------------+   +-------------+   +-------------+
+```text
+               +----------------------------------------+
+               |        SmritiCare Mobile App           |
+               |         (Flutter & Dart)               |
+               +----------------------------------------+
+                                   |
+         +-------------------------+-------------------------+
+         |                         |                         |
+         v                         v                         v
++-----------------+       +-----------------+       +-----------------+
+| Patient Module  |       |   Games Hub     |       | Caregiver Hub   |
+| - Quick Actions |       | - Memory Match  |       | - Vitals & Stats|
+| - Daily Routine |       | - Word Recall   |       | - Reminders Log |
+| - Reminders     |       | - Diff Object   |       | - Alert Triggers|
++-----------------+       +-----------------+       +-----------------+
+         |                         |                         |
+         +-------------------------+-------------------------+
+                                   |
+                                   v
+               +----------------------------------------+
+               |   Core Services & Local Persistence    |
+               | - Offline-first (path_provider)        |
+               | - Multi-language i18n dictionaries     |
+               | - GoRouter declarative routing         |
+               +----------------------------------------+
 ```
 
 ---
 
 # Technology Stack
 
-## Frontend
+## Mobile Client (Flutter & Dart)
 
-* React.js
-* Tailwind CSS
-* JavaScript
-* HTML
-* CSS
-
-## Backend
-
-* Node.js
-* Express.js
-
-## Database
-
-* MongoDB
-
-## AI and Machine Learning
-
-* Python
-* Scikit-learn
-* Adaptive performance algorithms
-
-## Offline Technology
-
-* Progressive Web Application (PWA)
-* Service Workers
-* IndexedDB
-* Local Storage
-* Background Synchronization
-
-## Voice Technology
-
-* Speech Recognition
-* Text-to-Speech
+* **Framework:** Flutter SDK (`>=3.0.0 <4.0.0`)
+* **Language:** Dart
+* **Routing:** `go_router`
+* **Typography:** `google_fonts` (DM Sans elderly-friendly legible font)
+* **Design System:** Material Design 3 with custom accessibility high-contrast palette
+* **Storage:** `path_provider` (local file caching and offline stats)
+* **Icons:** `cupertino_icons` & Material Icons
+* **Localization:** 10 Regional languages (`as`, `bn`, `brx`, `en`, `grt`, `hi`, `kha`, `lus`, `mni`, `trp`)
 
 ---
 
 # Project Structure
 
-```text id="s7pdbp"
-MindCare-NER/
-|
-|-- client/
-|   |
-|   |-- src/
-|       |
-|       |-- components/
-|       |   |-- Navbar/
-|       |   |-- Hero/
-|       |   |-- Features/
-|       |   |-- Footer/
-|       |
-|       |-- pages/
-|       |   |-- Home/
-|       |   |-- PatientDashboard/
-|       |   |-- CaregiverDashboard/
-|       |   |-- Games/
-|       |
-|       |-- services/
-|       |
-|       |-- App.jsx
-|       |-- main.jsx
-|
-|-- server/
-|   |
-|   |-- controllers/
-|   |-- models/
-|   |-- routes/
-|   |-- middleware/
-|   |-- server.js
-|
-|-- README.md
+```text
+smriti-care/
+├── android/                    # Android native host config & Gradle
+├── ios/                        # iOS native host config & Xcode workspace
+├── lib/                        # Flutter Dart source code
+│   ├── app.dart                # App widget & GoRouter route configuration
+│   ├── main.dart               # App entrypoint
+│   ├── core/                   # Theme, constants, models, navigation
+│   │   ├── constants/
+│   │   ├── models/
+│   │   └── theme/
+│   ├── features/               # Feature-first modules
+│   │   ├── auth/               # Role selection, login, register
+│   │   ├── caregiver/          # Caregiver overview, vitals, alerts
+│   │   ├── games/              # Cognitive games (Memory, Word, Object)
+│   │   ├── patient/            # Patient dashboard & daily routine
+│   │   └── splash/             # Splash screen & onboarding
+│   └── shared/                 # Reusable UI widgets & buttons
+├── assets/                     # Application assets
+│   ├── i18n/                   # Multilingual translation JSON dictionaries
+│   └── images/                 # App hero banners and illustrations
+├── references/                 # Reference specifications for future modules
+│   ├── emergency/              # Emergency SOS & Take Me Home reference logic
+│   └── reminders/              # Smart medication & dosage guard reference logic
+├── test/                       # Unit & widget integration test suites
+│   ├── caregiver_migration_test.dart
+│   ├── dashboard_test.dart
+│   ├── games_migration_test.dart
+│   └── widget_test.dart
+├── analysis_options.yaml       # Flutter static analysis rules
+├── pubspec.yaml                # Package manifest & asset declarations
+└── README.md
 ```
 
 ---
 
-# Planned Development Phases
+# Getting Started
+
+### Prerequisites
+* Flutter SDK (3.0.0 or later)
+* Android Studio / Xcode (for device emulation)
+* VS Code or Android Studio with Flutter & Dart extensions
+
+### Setup & Run
+```bash
+# Clone the repository
+git clone https://github.com/princesahni45/smriti-care.git
+cd smriti-care
+
+# Fetch Flutter dependencies
+flutter pub get
+
+# Run static analysis
+flutter analyze
+
+# Execute automated tests
+flutter test
+
+# Launch on connected mobile device / emulator
+flutter run
+```
 
 ## Phase 1: Landing Page
 
