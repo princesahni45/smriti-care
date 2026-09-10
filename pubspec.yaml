@@ -28,6 +28,11 @@ dependencies:
 
   # Icons
   cupertino_icons: ^1.0.8
+  firebase_core: ^4.14.0
+  firebase_auth: ^6.6.1
+  cloud_firestore: ^6.9.0
+  geolocator: ^14.0.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

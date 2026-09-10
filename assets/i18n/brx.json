@@ -46,7 +46,11 @@
     "contact": "खौरां ला",
     "patientLogin": "साग्लोबनायनि लगिन",
     "caregiverLogin": "नायदिंफायानि लगिन",
-    "language": "राव"
+    "language": "राव",
+    "games": "गेलेनायफोर",
+    "reminders": "गोसोखांथि",
+    "progress": "जागांनाय",
+    "profile": "प्रफाइल"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,7 +384,30 @@
     "insightText": "रमेशा नख'रनि फोटो नायनानै मोजां गोसोखांथि दिन्थिखांदों।",
     "mood": "गोसोनि थासारि",
     "calmEngaged": "शान्ति आरो बाहागो लानाय",
-    "role": "सानेगिरि"
+    "role": "सानेगिरि",
+    "healthSummary": "सास्थो आरो गोसोनि सुंद' बिबर",
+    "monitoringSubtitle": "साबाव होनाय आरो दावगानाय नायदिं",
+    "switchPatient": "सोलाय",
+    "riskAndRemindersTitle": "गिखांनाय बिजिरनाय आरो गोसोखां होनाय",
+    "riskAndRemindersSubtitle": "समनि गोसोनि रैखाथि बिजिरनाय आरो रोखोम बानायनाय।",
+    "intelligentAlerts": "गोसोम गियान सांग्रांथि",
+    "noAlerts": "जेबो सांग्रांथि गैया।",
+    "manageReminders": "गोसोखां होनायखौ सामलाय",
+    "add": "दाजाब",
+    "allReminders": "गासै गोसोखां होनायफोर",
+    "appointments": "मोगा-मोगि समाव",
+    "noRemindersCategory": "बे बाहागोआव जेबो गोसोखां होनाय गैया।",
+    "deleteReminder": "गोसोखां होनायखौ बोखार",
+    "saveReminder": "गोसोखां होनायखौ दोन",
+    "addFamilyMember": "नख'रनि सोद्रोमा दाजाब",
+    "saveProfile": "प्रफाइल दोन",
+    "noSosRecords": "जेबो SOS रेकर्ड गैया।",
+    "resolve": "मोजां खालाम",
+    "notesSaved": "नेग्राफोरनि लिरनायखौ दोनबाय।",
+    "saveNotes": "लिरनायखौ दोन",
+    "linkPatient": "रोगांखौ फोनांजाब",
+    "editHomeLocation": "रैखाथि न'नि जायगा सोलाय",
+    "caregiverOnlyEmergency": "हाया: खालि नायदिंफोरल' बे नम्बरखौ सोलायनो हायो।"
   },
   "games": {
     "catalogTitle": "गोसोनि गेलेनायफोर",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "गोसोखांथि गोरोबनाय (Memory Match)"
+    "memoryMatch": "गोसोखांथि गोरोबनाय (Memory Match)",
+    "immediateRecall": "थिखा गोसोखांनाय",
+    "delayedRecall": "उनाव गोसोखांनाय"
   },
   "safety": {
     "title": "न'आव लांफिन",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "न'नि जायगा सोलाय",
     "emergencyHelpline": "Emergency Helpline",
     "nationalResponseNumber": "हादरनि emergency नम्बर",
-    "configureNumber": "नम्बर थिक खालाम"
+    "configureNumber": "नम्बर थिक खालाम",
+    "latitude": "अक्षांश:",
+    "longitude": "द्राघिमांश:",
+    "accuracy": "गेबेंथि:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "स्मार्ट गोसोखांहोग्रा",
     "subtitle": "सानेग्रानि सानफ्रोमबोनि हाबाफारिनि गोसोखांहोग्रा सामलाय।",
-    "escalationRules": "हुसियार खालामनाय खान्थि"
+    "escalationRules": "हुसियार खालामनाय खान्थि",
+    "nextReminder": "उनाव गोसोखां होनाय",
+    "morningMedicine": "फुंनि मुलु",
+    "morningMedicineNote": "फुंनि संनाय जाखांनाय उनाव दै गिलासेजों लों"
   },
   "voice": {
     "available": "नोंथांनि रावजों सोरनि हेफाजाब दं।",
     "unavailable": "बे डिभाइसाव बे रावजों सोर गैया।",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "सोमबार",
+    "tuesday": "मोङ्गोलबार",
+    "wednesday": "बुदबार",
+    "thursday": "बृहस्पतिबार",
+    "friday": "सुखुरबार",
+    "saturday": "सोनिबार",
+    "sunday": "रोबिबार",
+    "january": "जानुवारी",
+    "february": "फेब्रुवारी",
+    "march": "मार्स",
+    "april": "एप्रिल",
+    "may": "मे",
+    "june": "जुन",
+    "july": "जुलाइ",
+    "august": "आगस्ट",
+    "september": "सेप्टेम्बर",
+    "october": "अक्टोबर",
+    "november": "नभेम्बर",
+    "december": "डिसेम्बर"
+  },
+  "progress": {
+    "yourProgress": "नोंथांनि दावगानाय",
+    "memory": "गोसोखांनाय",
+    "attention": "गोसो होनाय",
+    "pattern": "नुमुना",
+    "weeklySummary": "सप्ताहानि गोसोनि सुंद' बिबर",
+    "viewDetails": "गुवारै नाय"
   }
 }

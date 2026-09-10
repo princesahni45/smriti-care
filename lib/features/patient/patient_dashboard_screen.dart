@@ -13,10 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/models/user_model.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/smriti_button.dart';
+import '../../widgets/sos_button.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -28,21 +29,27 @@ class PatientDashboardScreen extends StatefulWidget {
 class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
   final _patient = PatientUser.prototype();
 
-  // ── Greeting helpers (from React getTimeGreeting() and getLocalDate())
-  String get _greeting {
+  // ── Greeting helpers with multilingual support
+  String _getGreeting(BuildContext context) {
     final hour = DateTime.now().hour;
-    if (hour >= 5  && hour < 12) return 'Good Morning';
-    if (hour >= 12 && hour < 17) return 'Good Afternoon';
-    if (hour >= 17 && hour < 21) return 'Good Evening';
-    return 'Good Night';
+    if (hour >= 5  && hour < 12) return context.tr('patient.greetingMorning', defaultText: 'Good Morning');
+    if (hour >= 12 && hour < 17) return context.tr('patient.greetingAfternoon', defaultText: 'Good Afternoon');
+    if (hour >= 17 && hour < 21) return context.tr('patient.greetingEvening', defaultText: 'Good Evening');
+    return context.tr('patient.greetingNight', defaultText: 'Good Night');
   }
 
-  String get _localDate {
+  String _getLocalDate(BuildContext context) {
     final now = DateTime.now();
-    const weekdays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-    const months   = ['January','February','March','April','May','June',
-                      'July','August','September','October','November','December'];
-    return '${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}';
+    const weekdayKeys = [
+      'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
+    ];
+    const monthKeys = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
+    ];
+    final weekdayName = context.tr('dates.${weekdayKeys[now.weekday - 1]}');
+    final monthName = context.tr('dates.${monthKeys[now.month - 1]}');
+    return '$weekdayName, $monthName ${now.day}';
   }
 
   // Progress: 1 of 3 activities completed (mock data)
@@ -107,10 +114,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             child: const Icon(Icons.logout_rounded, color: AppColors.coralDeep, size: 28),
           ),
           const SizedBox(height: 16),
-          Text('Are you sure?', style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            context.tr('patient.logoutConfirmTitle', defaultText: 'Are you sure?'),
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 10),
           Text(
-            'Do you want to leave the patient dashboard?',
+            context.tr('patient.logoutConfirmBody', defaultText: 'Do you want to leave the patient dashboard?'),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.muted),
           ),
@@ -120,7 +130,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
               // "Go Back" — default safe action (primary)
               Expanded(
                 child: SmritiButton(
-                  label: 'Go Back',
+                  label: context.tr('patient.goBack', defaultText: 'Go Back'),
                   onPressed: () => Navigator.pop(ctx, false),
                 ),
               ),
@@ -128,7 +138,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
               // "Continue" — subtle secondary
               Expanded(
                 child: SmritiButton.secondary(
-                  label: 'Continue',
+                  label: context.tr('patient.confirmLogout', defaultText: 'Continue'),
                   onPressed: () => Navigator.pop(ctx, true),
                 ),
               ),
@@ -161,11 +171,14 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                 child: const Icon(Icons.shield_rounded, color: AppColors.teal, size: 28),
               ),
               const SizedBox(height: 14),
-              Text('Caregiver Authorization',
-                  style: Theme.of(ctx).textTheme.titleLarge, textAlign: TextAlign.center),
+              Text(
+                context.tr('patient.pinTitle', defaultText: 'Caregiver Authorization'),
+                style: Theme.of(ctx).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 8),
               Text(
-                'Enter caregiver PIN to end this session.',
+                context.tr('patient.enterPinToEnd', defaultText: 'Enter caregiver PIN to end this session.'),
                 style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: AppColors.muted),
                 textAlign: TextAlign.center,
               ),
@@ -215,7 +228,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                 children: [
                   Expanded(
                     child: SmritiButton(
-                      label: 'Submit',
+                      label: context.tr('patient.pinSubmit', defaultText: 'Submit'),
                       onPressed: () {
                         final result = AuthService.validateCaregiverPin(pinController.text);
                         if (result.success) {
@@ -230,7 +243,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: SmritiButton.secondary(
-                      label: 'Cancel',
+                      label: context.tr('patient.pinCancel', defaultText: 'Cancel'),
                       onPressed: () => Navigator.pop(ctx, false),
                     ),
                   ),
@@ -263,12 +276,12 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                 children: [
                   // ── Greeting + date
                   Text(
-                    '$_greeting, ${_patient.displayName}!',
+                    '${_getGreeting(context)}, ${_patient.displayName}!',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: 30),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _localDate,
+                    _getLocalDate(context),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.muted,
                       fontWeight: FontWeight.w600,
@@ -291,11 +304,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Today's Progress",
+                              context.tr('patient.todayProgress', defaultText: "Today's Progress"),
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
                             Text(
-                              '$_completedCount of $_totalTodayActivities completed',
+                              '$_completedCount / $_totalTodayActivities ${context.tr('common.completed', defaultText: 'Completed')}',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.teal,
                                 fontWeight: FontWeight.w700,
@@ -319,10 +332,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                   const SizedBox(height: 24),
 
                   // ── Activity grid title
-                  Text('Activities', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    context.tr('patient.todayActivities', defaultText: 'Activities'),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 12),
 
-                  // ── 2×2 activity grid (from ACTIVITY_CARDS)
+                  // ── 2×2 activity grid (from ACTIVITY_CARDS with localization)
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
@@ -330,20 +346,42 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
                     childAspectRatio: 1.15,
-                    children: AppConstants.activityCards.map((act) {
-                      return _ActivityCard(
-                        title: act['title']!,
-                        subtitle: act['subtitle']!,
-                        colorKey: act['color']!,
-                        onTap: () => _handleActivityTap(act['id']!),
-                      );
-                    }).toList(),
+                    children: [
+                      _ActivityCard(
+                        title: context.tr('patient.brainGamesTitle', defaultText: 'Brain Games'),
+                        subtitle: context.tr('patient.brainGamesSub', defaultText: 'Train your memory'),
+                        colorKey: 'blue',
+                        onTap: () => _handleActivityTap('brain-games'),
+                      ),
+                      _ActivityCard(
+                        title: context.tr('patient.memoryActivityTitle', defaultText: 'Memory Activity'),
+                        subtitle: context.tr('patient.memoryActivitySub', defaultText: 'Practice remembering'),
+                        colorKey: 'teal',
+                        onTap: () => _handleActivityTap('memory-activity'),
+                      ),
+                      _ActivityCard(
+                        title: context.tr('patient.musicMemoriesTitle', defaultText: 'Music & Memories'),
+                        subtitle: context.tr('patient.musicMemoriesSub', defaultText: 'Listen and remember'),
+                        colorKey: 'violet',
+                        onTap: () => _handleActivityTap('music-memories'),
+                      ),
+                      _ActivityCard(
+                        title: context.tr('patient.talkRecallTitle', defaultText: 'Talk & Recall'),
+                        subtitle: context.tr('patient.talkRecallSub', defaultText: 'Talk about familiar things'),
+                        colorKey: 'coral',
+                        onTap: () => _handleActivityTap('talk-recall'),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 24),
 
                   // ── Today's featured activity panel
                   _TodayActivityPanel(onTap: () => _handleActivityTap('memory-match')),
                   const SizedBox(height: 24),
+
+                  // ── Prominent Emergency SOS button
+                  const SosButton(),
+                  const SizedBox(height: 16),
 
                   // ── Help / SOS card
                   _HelpCard(),
@@ -382,10 +420,10 @@ class _PatientHeader extends StatelessWidget {
             const AppLogo(iconSize: 32, fontSize: 20),
             const Spacer(),
             // ── Control buttons (Home / Help / Voice / Lang) — matching pd-controls
-            _CtrlBtn(icon: Icons.home_rounded,        label: 'Home',  onTap: () => context.go('/')),
-            _CtrlBtn(icon: Icons.phone_rounded,        label: 'Help',  onTap: () => context.go('/take-me-home'), color: AppColors.coralDeep),
-            _CtrlBtn(icon: Icons.mic_rounded,          label: 'Voice', onTap: () {}),
-            _CtrlBtn(icon: Icons.language_rounded,     label: 'Lang',  onTap: () => context.go('/language-select')),
+            _CtrlBtn(icon: Icons.home_rounded,        label: context.tr('common.home', defaultText: 'Home'),  onTap: () => context.go('/')),
+            _CtrlBtn(icon: Icons.phone_rounded,        label: context.tr('common.help', defaultText: 'Help'),  onTap: () => context.go('/take-me-home'), color: AppColors.coralDeep),
+            _CtrlBtn(icon: Icons.mic_rounded,          label: context.tr('common.voice', defaultText: 'Voice'), onTap: () {}),
+            _CtrlBtn(icon: Icons.language_rounded,     label: context.tr('common.language', defaultText: 'Lang'),  onTap: () => context.go('/language-select')),
             const SizedBox(width: 4),
             // ── Logout
             GestureDetector(
@@ -396,13 +434,16 @@ class _PatientHeader extends StatelessWidget {
                   color: AppColors.coralPale,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.logout_rounded, size: 16, color: AppColors.coralDeep),
-                    SizedBox(width: 4),
-                    Text('Exit', style: TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.coralDeep,
-                    )),
+                    const Icon(Icons.logout_rounded, size: 16, color: AppColors.coralDeep),
+                    const SizedBox(width: 4),
+                    Text(
+                      context.tr('common.logout', defaultText: 'Exit'),
+                      style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.coralDeep,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -539,7 +580,7 @@ class _TodayActivityPanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  "TODAY'S ACTIVITY",
+                  context.tr('landing.todaysActivity', defaultText: "TODAY'S ACTIVITY").toUpperCase(),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: Colors.white,
                     letterSpacing: 0.09,
@@ -552,12 +593,12 @@ class _TodayActivityPanel extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Memory Match',
+            context.tr('games.memoryMatchTitle', defaultText: 'Memory Match'),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 6),
           Text(
-            'A simple memory activity',
+            context.tr('games.memoryMatchDesc', defaultText: 'A simple memory activity'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.80),
             ),
@@ -566,7 +607,7 @@ class _TodayActivityPanel extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onTap,
             icon: const Icon(Icons.play_arrow_rounded, size: 20),
-            label: const Text('Start Activity'),
+            label: Text(context.tr('patient.startActivity', defaultText: 'Start Activity')),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppColors.tealDark,
@@ -611,9 +652,14 @@ class _HelpCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Lost or confused?', style: Theme.of(context).textTheme.titleSmall),
-                  Text('Take Me Home & SOS',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.coralDeep)),
+                  Text(
+                    context.tr('landing.lostOrConfused', defaultText: 'Lost or confused?'),
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(
+                    context.tr('landing.takeMeHomeSOS', defaultText: 'Take Me Home & SOS'),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.coralDeep),
+                  ),
                 ],
               ),
             ),
@@ -645,9 +691,13 @@ class _PinKeypad extends StatelessWidget {
         ...['1','2','3','4','5','6','7','8','9'].map(
           (n) => _KeyBtn(label: n, onTap: () => onKey(n)),
         ),
-        _KeyBtn(label: 'Clear', onTap: () => onKey('clear'), isUtil: true),
-        _KeyBtn(label: '0',     onTap: () => onKey('0')),
-        _KeyBtn(label: '⌫',    onTap: () => onKey('back'), isUtil: true),
+        _KeyBtn(
+          label: context.tr('common.clear', defaultText: 'Clear'),
+          onTap: () => onKey('clear'),
+          isUtil: true,
+        ),
+        _KeyBtn(label: '0', onTap: () => onKey('0')),
+        _KeyBtn(label: '⌫', onTap: () => onKey('back'), isUtil: true),
       ],
     );
   }

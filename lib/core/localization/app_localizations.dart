@@ -14,8 +14,11 @@
 // 10. Kokborok (trp)
 
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SupportedLanguage {
   final String code;
@@ -121,6 +124,16 @@ class AppLocalizations {
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 
+  // FIX: MaterialLocalizations / localization configuration fix
+  // Provides MaterialLocalizations fallback for regional languages not in Flutter SDK
+  static const LocalizationsDelegate<MaterialLocalizations> fallbackMaterialDelegate =
+      FallbackMaterialLocalizationsDelegate();
+
+  // FIX: MaterialLocalizations / localization configuration fix
+  // Provides CupertinoLocalizations fallback for regional languages not in Flutter SDK
+  static const LocalizationsDelegate<CupertinoLocalizations> fallbackCupertinoDelegate =
+      FallbackCupertinoLocalizationsDelegate();
+
   /// Load translations from assets/i18n/{code}.json
   Future<bool> load() async {
     // 1. Load active locale
@@ -177,6 +190,50 @@ class AppLocalizations {
   }
 }
 
+// FIX: MaterialLocalizations / localization configuration fix
+// Custom MaterialLocalizations delegate that falls back to DefaultMaterialLocalizations
+// for regional languages (mni, kha, lus, grt, brx, trp) not built into the Flutter framework SDK.
+class FallbackMaterialLocalizationsDelegate
+    extends LocalizationsDelegate<MaterialLocalizations> {
+  const FallbackMaterialLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return AppLocalizations.supportedLocales
+        .any((l) => l.languageCode == locale.languageCode);
+  }
+
+  @override
+  Future<MaterialLocalizations> load(Locale locale) {
+    return DefaultMaterialLocalizations.load(locale);
+  }
+
+  @override
+  bool shouldReload(FallbackMaterialLocalizationsDelegate old) => false;
+}
+
+// FIX: MaterialLocalizations / localization configuration fix
+// Custom CupertinoLocalizations delegate that falls back to DefaultCupertinoLocalizations
+// for regional languages not built into the Flutter framework SDK.
+class FallbackCupertinoLocalizationsDelegate
+    extends LocalizationsDelegate<CupertinoLocalizations> {
+  const FallbackCupertinoLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return AppLocalizations.supportedLocales
+        .any((l) => l.languageCode == locale.languageCode);
+  }
+
+  @override
+  Future<CupertinoLocalizations> load(Locale locale) {
+    return DefaultCupertinoLocalizations.load(locale);
+  }
+
+  @override
+  bool shouldReload(FallbackCupertinoLocalizationsDelegate old) => false;
+}
+
 class _AppLocalizationsDelegate
     extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
@@ -203,15 +260,41 @@ class LocalizationService {
   LocalizationService._();
   static final LocalizationService instance = LocalizationService._();
 
+  static const String _storageFileName = 'selected_language_code.txt';
+
   final ValueNotifier<Locale> currentLocaleNotifier =
       ValueNotifier<Locale>(const Locale('en'));
 
   Locale get currentLocale => currentLocaleNotifier.value;
 
-  void setLocale(String languageCode) {
+  /// Load persisted language choice on app launch
+  Future<void> init() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_storageFileName');
+      if (await file.exists()) {
+        final code = (await file.readAsString()).trim();
+        if (AppLocalizations.supportedLocales.any((l) => l.languageCode == code)) {
+          currentLocaleNotifier.value = Locale(code);
+        }
+      }
+    } catch (e) {
+      debugPrint('[LocalizationService] Storage notice: $e');
+    }
+  }
+
+  /// Switch active language and persist choice across restarts
+  Future<void> setLocale(String languageCode) async {
     if (AppLocalizations.supportedLocales
         .any((l) => l.languageCode == languageCode)) {
       currentLocaleNotifier.value = Locale(languageCode);
+      try {
+        final dir = await getApplicationDocumentsDirectory();
+        final file = File('${dir.path}/$_storageFileName');
+        await file.writeAsString(languageCode);
+      } catch (e) {
+        debugPrint('[LocalizationService] Failed to save locale: $e');
+      }
     }
   }
 }

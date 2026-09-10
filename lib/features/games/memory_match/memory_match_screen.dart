@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
 import '../../../shared/widgets/smriti_button.dart';
@@ -265,10 +266,12 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Memory Match',
-                    style: Theme.of(context).textTheme.titleMedium),
                 Text(
-                  'Gentle visual pair matching',
+                  context.tr('games.memoryMatchTitle', defaultText: 'Memory Match'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(
+                  context.tr('games.memoryMatchSubtitle', defaultText: 'Gentle visual pair matching'),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall

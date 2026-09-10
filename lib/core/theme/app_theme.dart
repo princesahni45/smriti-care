@@ -44,6 +44,8 @@ class AppColors {
   static const Color violet        = Color(0xFF7162B5);
   static const Color violetDeep    = Color(0xFF4B3D9E);
   static const Color violetPale    = Color(0xFFEDE9FC);
+  static const Color violetLight   = Color(0xFFF3F0FE);  // soft lavender fill (role switcher bg)
+  static const Color violetBorder  = Color(0xFF9B8FD4);  // mid-violet outline (role switcher border)
 
   // ── Accent: coral
   static const Color coral         = Color(0xFFCE625D);

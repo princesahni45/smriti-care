@@ -15,7 +15,9 @@ import 'screens/language_select_screen.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/role_selection_screen.dart';
 import 'features/auth/login_screen.dart';
+import 'features/auth/caregiver_login_screen.dart';
 import 'features/auth/register_screen.dart';
+import 'core/services/caregiver_auth_service.dart';
 import 'features/patient/patient_dashboard_screen.dart';
 import 'features/caregiver/caregiver_dashboard_screen.dart';
 import 'features/games/games_hub_screen.dart';
@@ -109,6 +111,34 @@ GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
       path: '/caregiver-dashboard',
       name: 'caregiverDashboard',
       builder: (context, state) => const CaregiverDashboardScreen(),
+    ),
+
+    // ── Caregiver Login Screen (role-switch auth gate)
+    GoRoute(
+      path: '/caregiver-login',
+      name: 'caregiverLogin',
+      builder: (context, state) => CaregiverLoginScreen(
+        onSuccess: () => context.go('/caregiver'),
+        onCancel: () => context.go('/dashboard'),
+      ),
+    ),
+
+    // ── Caregiver Dashboard (auth-guarded; redirects to /dashboard if not authenticated)
+    GoRoute(
+      path: '/caregiver',
+      name: 'caregiver',
+      redirect: (context, state) {
+        if (!CaregiverAuthService.instance.isCaregiverAuthenticated) {
+          return '/dashboard';
+        }
+        return null;
+      },
+      builder: (context, state) => CaregiverDashboardScreen(
+        onBackToPatient: () {
+          CaregiverAuthService.instance.exitCaregiverMode();
+          context.go('/dashboard');
+        },
+      ),
     ),
 
     // ── Cognitive Games
@@ -226,6 +256,12 @@ class _SmritiCareAppState extends State<SmritiCareApp> {
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
+            // FIX: MaterialLocalizations / localization configuration fix
+            // Fallback delegates provide MaterialLocalizations and CupertinoLocalizations
+            // for regional languages (mni, kha, lus, grt, brx, trp) so widgets like
+            // BottomNavigationBar, Scaffold, and Dialogs never throw No MaterialLocalizations found.
+            AppLocalizations.fallbackMaterialDelegate,
+            AppLocalizations.fallbackCupertinoDelegate,
           ],
         );
       },

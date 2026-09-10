@@ -46,7 +46,11 @@
     "contact": "Contact",
     "patientLogin": "Patient Login",
     "caregiverLogin": "Caregiver Login",
-    "language": "Language"
+    "language": "Language",
+    "games": "Games",
+    "reminders": "Reminders",
+    "progress": "Progress",
+    "profile": "Profile"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,10 +384,33 @@
     "insightText": "Ramesh showed strong recognition during the family-photo activity and responded well to voice prompts.",
     "mood": "Mood",
     "calmEngaged": "Calm & engaged",
-    "role": "Caregiver"
+    "role": "Caregiver",
+    "healthSummary": "Health & Cognitive Summary",
+    "monitoringSubtitle": "Monitoring care & cognitive progress",
+    "switchPatient": "Switch",
+    "riskAndRemindersTitle": "Risk Screening & Reminders",
+    "riskAndRemindersSubtitle": "Real-time cognitive safety screening and patient routine scheduling.",
+    "intelligentAlerts": "Intelligent Care Alerts",
+    "noAlerts": "No active care alerts.",
+    "manageReminders": "Manage Reminders",
+    "add": "Add",
+    "allReminders": "All Reminders",
+    "appointments": "Appointments",
+    "noRemindersCategory": "No reminders found for this category.",
+    "deleteReminder": "Delete Reminder",
+    "saveReminder": "Save Reminder",
+    "addFamilyMember": "Add Family Member",
+    "saveProfile": "Save Profile",
+    "noSosRecords": "No emergency SOS records found.",
+    "resolve": "Resolve",
+    "notesSaved": "Caregiver notes saved offline successfully.",
+    "saveNotes": "Save Notes",
+    "linkPatient": "Link Patient",
+    "editHomeLocation": "Edit Safe Home Location",
+    "caregiverOnlyEmergency": "Access Denied: Only verified caregivers can edit emergency numbers."
   },
   "games": {
-    "catalogTitle": "Cognitive Games",
+    "catalogTitle": "Cognitive Activities",
     "catalogSubtitle": "Thoughtful activities for memory, focus, and daily engagement",
     "gentleFitness": "Gentle Brain Fitness",
     "fitnessHeading": "Exercise your mind at your own comfortable pace",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "Memory Match"
+    "memoryMatch": "Memory Match",
+    "immediateRecall": "Immediate Recall",
+    "delayedRecall": "Delayed Recall"
   },
   "safety": {
     "title": "Take Me Home",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "Change Home Location",
     "emergencyHelpline": "Emergency Services Helpline",
     "nationalResponseNumber": "National emergency response number",
-    "configureNumber": "Configure Number"
+    "configureNumber": "Configure Number",
+    "latitude": "Latitude:",
+    "longitude": "Longitude:",
+    "accuracy": "Accuracy:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "SMART REMINDERS",
     "subtitle": "Manage helpful reminders for your patient's daily routine.",
-    "escalationRules": "Escalation Rules"
+    "escalationRules": "Escalation Rules",
+    "nextReminder": "Next Reminder",
+    "morningMedicine": "Morning Medicine",
+    "morningMedicineNote": "Take with a glass of water after breakfast"
   },
   "voice": {
     "available": "Voice guidance is available in your language.",
     "unavailable": "Voice is not available for this language on this device.",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "progress": {
+    "yourProgress": "Your Progress",
+    "memory": "Memory",
+    "attention": "Attention",
+    "pattern": "Pattern",
+    "weeklySummary": "Weekly cognitive summary",
+    "viewDetails": "View Details"
   }
 }

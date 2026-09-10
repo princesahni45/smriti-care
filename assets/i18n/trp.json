@@ -46,7 +46,11 @@
     "contact": "Koktisal",
     "patientLogin": "Patient Login",
     "caregiverLogin": "Caregiver Login",
-    "language": "Kok"
+    "language": "Kok",
+    "games": "Khlailaimungrog",
+    "reminders": "Uanasmungrog",
+    "progress": "Khorokgno",
+    "profile": "Profile"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,7 +384,30 @@
     "insightText": "Ramesh nokni photorango kaham uansukma khlaikha.",
     "mood": "Bwkhani thukmo",
     "calmEngaged": "Tongthok tei khoroksa",
-    "role": "Nayok"
+    "role": "Nayok",
+    "healthSummary": "Hamuwi tongma aro uansukma sumari",
+    "monitoringSubtitle": "Naimani aro kwbangmani",
+    "switchPatient": "Slakdi",
+    "riskAndRemindersTitle": "Kiriromani nai-mwng aro uansukmani",
+    "riskAndRemindersSubtitle": "Khumuk uansukmani nai-mwng aro salbrum ruti.",
+    "intelligentAlerts": "Si-yarung nai-kholomani",
+    "noAlerts": "Khorokba hwnmani kwrwi.",
+    "manageReminders": "Uansukmanorog samung ridi",
+    "add": "Yaphar",
+    "allReminders": "Jotoni uansukmanorog",
+    "appointments": "Malaimani somoy",
+    "noRemindersCategory": "A kothani bagwi uansukma kwrwi.",
+    "deleteReminder": "Uansukmano morodi",
+    "saveReminder": "Uansukmano thwndi",
+    "addFamilyMember": "Nokhorni borok yaphar",
+    "saveProfile": "Profile thwndi",
+    "noSosRecords": "Khorokba SOS kothoma kwrwi.",
+    "resolve": "Hamkhe ridi",
+    "notesSaved": "Nai-kholomnai swlai kahamkhe thwngjakha.",
+    "saveNotes": "Swlai thwndi",
+    "linkPatient": "Bwrmwnorogno thwngdi",
+    "editHomeLocation": "Kaham nokni jaigano slakdi",
+    "caregiverOnlyEmergency": "Kwrwi: Khorok nai-kholomnai se abo numberno slak mani."
   },
   "games": {
     "catalogTitle": "Kogosoni Masamung",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "Uansukma Romung (Memory Match)"
+    "memoryMatch": "Uansukma Romung (Memory Match)",
+    "immediateRecall": "Bisi uansukma",
+    "delayedRecall": "Ulo uansukma"
   },
   "safety": {
     "title": "Noko Lama",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "Nogni jaga slaidí",
     "emergencyHelpline": "Emergency Helpline",
     "nationalResponseNumber": "Hachuk emergency number",
-    "configureNumber": "Number thik khlaidi"
+    "configureNumber": "Number thik khlaidi",
+    "latitude": "Latitude:",
+    "longitude": "Longitude:",
+    "accuracy": "Accuracy:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "SMART REMINDER",
     "subtitle": "Beremgwnangni salbrum samung reminder khlaidi.",
-    "escalationRules": "Yapharnai Niam"
+    "escalationRules": "Yapharnai Niam",
+    "nextReminder": "Ulo uansukmani",
+    "morningMedicine": "Phungni sam",
+    "morningMedicineNote": "Phungni chaikhe twi glass sa bai nungdi"
   },
   "voice": {
     "available": "O kokbai khumuk tongo.",
     "unavailable": "O device-o o kokni khumuk kwrwi.",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "Sombar",
+    "tuesday": "Mongolbar",
+    "wednesday": "Budbar",
+    "thursday": "Brihospotibar",
+    "friday": "Sukrobar",
+    "saturday": "Sonibar",
+    "sunday": "Robibar",
+    "january": "Januari",
+    "february": "Februari",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "progress": {
+    "yourProgress": "Nwngni kwbangmani",
+    "memory": "Uansukma",
+    "attention": "Gwnang kwchwk",
+    "pattern": "Riti",
+    "weeklySummary": "Haptani uansukma sumari",
+    "viewDetails": "Kwrwngwi nai"
   }
 }

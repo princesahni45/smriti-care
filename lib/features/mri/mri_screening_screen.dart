@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/models/mri_models.dart';
 import '../../core/services/mri_screening_service.dart';
 
@@ -118,7 +119,7 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(

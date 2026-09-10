@@ -46,7 +46,11 @@
     "contact": "Phone / Contact",
     "patientLogin": "Patient Login",
     "caregiverLogin": "Caregiver Login",
-    "language": "Ktien"
+    "language": "Ktien",
+    "games": "Ki Jingïalehkai",
+    "reminders": "Ki Jingkynmaw",
+    "progress": "Ka Jingïaid",
+    "profile": "Ka Jingtip"
   },
   "landing": {
     "heroEyebrow": "Made with care for North East India",
@@ -380,7 +384,30 @@
     "insightText": "I Ramesh i la sngewthuh bha ia ki dur kiba ha ïing bad shahskhor bha.",
     "mood": "Ka jingsngew",
     "calmEngaged": "Jai jai bad sngewbha",
-    "role": "Nongsumar"
+    "role": "Nongsumar",
+    "healthSummary": "Ka Jingbatai Ka Koit Ka Khiah",
+    "monitoringSubtitle": "Ka jingpeit bniah ia ka jingkoit",
+    "switchPatient": "Pynkylla",
+    "riskAndRemindersTitle": "Jingshynna bad Jingkynmaw",
+    "riskAndRemindersSubtitle": "Ka jingshynna ba shisha ia ka jingkoit jingkhiah.",
+    "intelligentAlerts": "Ki Jingpyntip Bniah",
+    "noAlerts": "Ym don jingpyntip.",
+    "manageReminders": "Pyniaid Jingkynmaw",
+    "add": "Pynlang",
+    "allReminders": "Baroh Jingkynmaw",
+    "appointments": "Jingshem",
+    "noRemindersCategory": "Ym don jingkynmaw.",
+    "deleteReminder": "Pyndam Jingkynmaw",
+    "saveReminder": "Kynshew Jingkynmaw",
+    "addFamilyMember": "Pynlang Dkhot Iing",
+    "saveProfile": "Kynshew Profile",
+    "noSosRecords": "Ym don SOS.",
+    "resolve": "Pynbha",
+    "notesSaved": "La kynshew ia ki jingthoh.",
+    "saveNotes": "Kynshew Jingthoh",
+    "linkPatient": "Pyniasoh Nongpang",
+    "editHomeLocation": "Pynkylla ka jaka iing",
+    "caregiverOnlyEmergency": "Ym shah: Tang ki nongsumar ki lah ban pynkylla."
   },
   "games": {
     "catalogTitle": "Ki Jingialehkai Jingmut",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "Word Recognition & Recall",
     "wordRecallDesc": "Read everyday words, enjoy a gentle distraction activity, and see which words you recall later.",
     "wordRecallInstruction": "A gentle memory recall exercise",
-    "memoryMatch": "Jingpyniasoh Jingkynmaw (Memory Match)"
+    "memoryMatch": "Jingpyniasoh Jingkynmaw (Memory Match)",
+    "immediateRecall": "Jingkynmaw Mar-mar",
+    "delayedRecall": "Jingkynmaw Hadien"
   },
   "safety": {
     "title": "Ialam ia nga sha Ing",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "Pynkylla jaka ïing",
     "emergencyHelpline": "Emergency Helpline",
     "nationalResponseNumber": "Number emergency ka ri",
-    "configureNumber": "Buh number"
+    "configureNumber": "Buh number",
+    "latitude": "Latitude:",
+    "longitude": "Longitude:",
+    "accuracy": "Accuracy:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "Smart Reminders & Routine",
     "kicker": "JINGPYNKYNMAW BA SHANGBHA",
     "subtitle": "Pyniaid ia ki jingpynkynmaw na ka bynta u nongpang.",
-    "escalationRules": "Ki Aiñ Jingmaham"
+    "escalationRules": "Ki Aiñ Jingmaham",
+    "nextReminder": "Ka Jingkynmaw Nangne",
+    "morningMedicine": "Dawai step",
+    "morningMedicineNote": "Bam hadien ba la ja step bad ka um shiklas"
   },
   "voice": {
     "available": "Sur ktien ka don ha kane ka ktien.",
     "unavailable": "Ym don sur ktien ha kane ka phone na ka bynta kane ka ktien.",
     "reading": "Reading aloud..."
+  },
+  "dates": {
+    "monday": "Sngi Ba-ar",
+    "tuesday": "Sngi Ba-lai",
+    "wednesday": "Sngi Ba-saw",
+    "thursday": "Sngi Ba-san",
+    "friday": "Sngi Thohdieng",
+    "saturday": "Sngi Saitjain",
+    "sunday": "Sngi U Blei",
+    "january": "Kyllalyngkot",
+    "february": "Rymphang",
+    "march": "Lber",
+    "april": "Iaiong",
+    "may": "Jymmang",
+    "june": "Jylliew",
+    "july": "Naitung",
+    "august": "Nailar",
+    "september": "Nailur",
+    "october": "Risaw",
+    "november": "Naiwieng",
+    "december": "Nohprah"
+  },
+  "progress": {
+    "yourProgress": "Ka Jingnangshaphrang Jong Me",
+    "memory": "Jingkynmaw",
+    "attention": "Jingpynleit Jingmut",
+    "pattern": "Rukom",
+    "weeklySummary": "Ka jingbatai jong ka taiew",
+    "viewDetails": "Peit Bniah"
   }
 }

@@ -11,6 +11,30 @@ class AppConstants {
   static const String appTagline     = 'AI-powered cognitive care for elderly minds.';
   static const String appVersion     = '1.0.0';
 
+  // ── FIX: Centralized API Base URL
+  // IMPORTANT: When testing on a physical Android phone, localhost / 127.0.0.1
+  // points to the phone itself, NOT your PC. Use your PC's LAN IPv4 address.
+  // Find it with: ipconfig (Windows) | ifconfig (Mac/Linux)
+  // Example: http://192.168.1.5:8000
+  //
+  // For Android Emulator: http://10.0.2.2:8000
+  // For Physical Device : http://<YOUR_PC_LAN_IP>:8000
+  static const String kApiBaseUrlAndroidEmulator = 'http://10.0.2.2:8000';
+  static const String kApiBaseUrlPhysicalDevice  = 'http://192.168.1.100:8000'; // ← UPDATE THIS
+  static const String kApiBaseUrlWeb             = 'http://localhost:8000';
+
+  // Change this to kApiBaseUrlPhysicalDevice when testing on real phone:
+  static const String kApiBaseUrl = kApiBaseUrlAndroidEmulator;
+
+  // ── API Endpoint Paths
+  static const String kEndpointHealth         = '/health';
+  static const String kEndpointMriAnalyze     = '/api/v1/mri/analyze';
+  static const String kEndpointCognitiveBatch = '/api/v1/cognitive/telemetry/batch';
+  static const String kEndpointCognitiveRisk  = '/api/v1/cognitive/risk-analysis';
+  static const String kEndpointCognitivePredict = '/api/cognitive/predict';
+  static const String kEndpointMriPredict     = '/api/mri/predict';
+
+
   // ── Patient Demo Credentials (from authConfig.js PROTOTYPE_PATIENT_ACCOUNT)
   static const String patientEmail    = 'patient@example.com';
   static const String patientPassword = 'Hello@123';

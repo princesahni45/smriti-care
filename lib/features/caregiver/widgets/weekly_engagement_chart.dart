@@ -1,6 +1,7 @@
 // lib/features/caregiver/widgets/weekly_engagement_chart.dart
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class WeeklyEngagementChart extends StatelessWidget {
   final List<Map<String, dynamic>> data;
@@ -26,17 +27,18 @@ class WeeklyEngagementChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'COGNITIVE PROGRESS',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.tealDark,
-                          letterSpacing: 0.8,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    context.tr('caregiver.cognitiveProgress', defaultText: 'COGNITIVE PROGRESS'),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.teal,
+                      letterSpacing: 1.1,
+                    ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
-                    'Weekly engagement',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  Text(
+                    context.tr('caregiver.weeklyEngagement', defaultText: 'Weekly engagement'),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
                   ),
                 ],
               ),
@@ -46,11 +48,14 @@ class WeeklyEngagementChart extends StatelessWidget {
                   border: Border.all(color: AppColors.borderLight),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Text('This week', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                    SizedBox(width: 4),
-                    Icon(Icons.keyboard_arrow_down_rounded, size: 16),
+                    Text(
+                      context.tr('caregiver.thisWeek', defaultText: 'This week'),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.keyboard_arrow_down_rounded, size: 16),
                   ],
                 ),
               ),

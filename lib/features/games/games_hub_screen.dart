@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/models/game_result.dart';
 import '../../core/services/game_storage_service.dart';
 
@@ -171,9 +172,9 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
           },
           tooltip: widget.backLabel,
         ),
-        title: const Text(
-          'Cognitive Activities',
-          style: TextStyle(
+        title: Text(
+          context.tr('games.catalogTitle', defaultText: 'Cognitive Activities'),
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: AppColors.ink,
@@ -210,7 +211,7 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
                           size: 18, color: AppColors.teal),
                       const SizedBox(width: 8),
                       Text(
-                        'Gentle Brain Fitness',
+                        context.tr('games.gentleFitness', defaultText: 'Gentle Brain Fitness'),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: AppColors.tealDark,
                               fontWeight: FontWeight.w700,
@@ -220,9 +221,10 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Exercise your mind at your own comfortable pace',
-                    style: TextStyle(
+                  Text(
+                    context.tr('games.fitnessHeading',
+                        defaultText: 'Exercise your mind at your own comfortable pace'),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: AppColors.ink,
@@ -230,9 +232,11 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'These activities are designed for comfort, clarity, and fun. Take all the time you need — there is zero rush or pressure.',
-                    style: TextStyle(
+                  Text(
+                    context.tr('games.fitnessDesc',
+                        defaultText:
+                            'These activities are designed for comfort, clarity, and fun. Take all the time you need — there is zero rush or pressure.'),
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.inkSoft,
                       height: 1.45,

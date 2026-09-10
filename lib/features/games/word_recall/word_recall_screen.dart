@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
 import '../../../shared/widgets/smriti_button.dart';
@@ -273,10 +274,12 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Word Recall',
-                    style: Theme.of(context).textTheme.titleMedium),
                 Text(
-                  'Gentle word memory & delayed recall',
+                  context.tr('games.wordRecallTitle', defaultText: 'Word Recall'),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(
+                  context.tr('games.wordRecallSubtitle', defaultText: 'Gentle word memory & delayed recall'),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -890,9 +893,11 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Immediate Recall',
-                          style: TextStyle(
-                              fontSize: 11, color: AppColors.muted)),
+                      Text(
+                        context.tr('games.immediateRecall', defaultText: 'Immediate Recall'),
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.muted),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         '$immCorrect / $totalTargets',
@@ -927,9 +932,11 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Delayed Recall',
-                          style: TextStyle(
-                              fontSize: 11, color: AppColors.muted)),
+                      Text(
+                        context.tr('games.delayedRecall', defaultText: 'Delayed Recall'),
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.muted),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         '$delCorrect / $totalTargets',

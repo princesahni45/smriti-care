@@ -12,32 +12,41 @@ import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
 import '../core/constants/app_constants.dart';
 import '../core/localization/app_localizations.dart';
+import 'dashboard_role_switcher.dart';
 
 class DashboardHeader extends StatelessWidget {
   final VoidCallback? onProfileTap;
 
   const DashboardHeader({super.key, this.onProfileTap});
 
-  /// Dynamic time-of-day greeting
-  String get _greeting {
+  /// Dynamic time-of-day greeting with multilingual support
+  String _getGreeting(BuildContext context) {
     final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) return 'Good Morning 👋';
-    if (hour >= 12 && hour < 17) return 'Good Afternoon ☀️';
-    if (hour >= 17 && hour < 21) return 'Good Evening 🌇';
-    return 'Good Night 🌙';
+    if (hour >= 5 && hour < 12) {
+      return '${context.tr('patient.greetingMorning', defaultText: 'Good Morning')} 👋';
+    }
+    if (hour >= 12 && hour < 17) {
+      return '${context.tr('patient.greetingAfternoon', defaultText: 'Good Afternoon')} ☀️';
+    }
+    if (hour >= 17 && hour < 21) {
+      return '${context.tr('patient.greetingEvening', defaultText: 'Good Evening')} 🌇';
+    }
+    return '${context.tr('patient.greetingNight', defaultText: 'Good Night')} 🌙';
   }
 
-  /// Formatted date matching SmritiCare design
-  String get _formattedDate {
+  /// Formatted date matching SmritiCare design with localization
+  String _formattedDate(BuildContext context) {
     final now = DateTime.now();
-    const weekdays = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    const weekdayKeys = [
+      'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
     ];
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+    const monthKeys = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
     ];
-    return '${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}';
+    final weekdayName = context.tr('dates.${weekdayKeys[now.weekday - 1]}');
+    final monthName = context.tr('dates.${monthKeys[now.month - 1]}');
+    return '$weekdayName, $monthName ${now.day}';
   }
 
   @override
@@ -95,11 +104,11 @@ class DashboardHeader extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'SmritiCare',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -111,10 +120,10 @@ class DashboardHeader extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Cognitive Companion',
+                            context.tr('landing.footerTagline', defaultText: 'Cognitive Companion'),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AppColors.tealDark,
@@ -128,11 +137,15 @@ class DashboardHeader extends StatelessWidget {
               ),
               const SizedBox(width: 8),
 
-              // Right Action Buttons (Language selector & Caregiver Status)
+              // Right Action Buttons (Role Switcher & Language selector)
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Language Switcher Pill Button
+                  // Role Switcher Pill [ 👤 Patient ▼ ] / [ 👥 Caregiver ▼ ]
+                  const DashboardRoleSwitcher(),
+                  const SizedBox(width: 6),
+
+                  // Language Switcher Pill Button [ 🌐 EN ]
                   InkWell(
                     onTap: () => context.push('/language-select'),
                     borderRadius: BorderRadius.circular(16),
@@ -148,51 +161,22 @@ class DashboardHeader extends StatelessWidget {
                         children: [
                           const Icon(Icons.language_rounded, size: 16, color: AppColors.teal),
                           const SizedBox(width: 4),
-                          Text(
-                            LocalizationService.instance.currentLocale.languageCode.toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
-                            ),
+                          ValueListenableBuilder<Locale>(
+                            valueListenable:
+                                LocalizationService.instance.currentLocaleNotifier,
+                            builder: (context, loc, _) {
+                              return Text(
+                                loc.languageCode.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.ink,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Caregiver Connection status pill
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: AppColors.tealPale,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.teal.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.teal,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const Text(
-                          'Protected',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.tealDeep,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ],
@@ -204,7 +188,7 @@ class DashboardHeader extends StatelessWidget {
 
           // ── Friendly Greeting & Date ────────────────────────────────
           Text(
-            _greeting,
+            _getGreeting(context),
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -215,7 +199,7 @@ class DashboardHeader extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            _formattedDate,
+            _formattedDate(context),
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w500,
@@ -236,10 +220,10 @@ class DashboardHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.border, width: 1.2),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   // Patient Avatar
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 22,
                     backgroundColor: AppColors.teal,
                     child: Text(
@@ -251,14 +235,14 @@ class DashboardHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 14),
+                  const SizedBox(width: 14),
 
                   // Patient info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           AppConstants.patientFullName,
                           style: TextStyle(
                             fontSize: 17,
@@ -266,18 +250,18 @@ class DashboardHeader extends StatelessWidget {
                             color: AppColors.ink,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.verified_user_rounded,
                               size: 14,
                               color: AppColors.teal,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
-                              'Caregiver: ${AppConstants.caregiverName}',
-                              style: TextStyle(
+                              '${context.tr('caregiver.role', defaultText: 'Caregiver')}: ${AppConstants.caregiverName}',
+                              style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.tealDark,
@@ -290,7 +274,7 @@ class DashboardHeader extends StatelessWidget {
                   ),
 
                   // Subtle indicator
-                  Icon(
+                  const Icon(
                     Icons.chevron_right_rounded,
                     color: AppColors.muted,
                     size: 24,

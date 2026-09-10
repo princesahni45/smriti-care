@@ -19,6 +19,7 @@ import '../widgets/today_activity_section.dart';
 import '../widgets/next_reminder_card.dart';
 import '../widgets/quick_action_card.dart';
 import '../widgets/progress_summary_card.dart';
+import '../widgets/sos_button.dart';
 
 class DashboardScreen extends StatelessWidget {
   final void Function(String moduleId)? onNavigateModule;
@@ -32,6 +33,8 @@ class DashboardScreen extends StatelessWidget {
       context.push('/games');
     } else if (moduleId.toLowerCase() == 'caregiver') {
       context.push('/caregiver-dashboard');
+    } else if (moduleId.toLowerCase() == 'emergency' || moduleId.toLowerCase() == 'sos') {
+      context.push('/take-me-home');
     } else {
       context.push('/placeholder/$moduleId');
     }
@@ -62,11 +65,14 @@ class DashboardScreen extends StatelessWidget {
                   children: [
                     // Next Reminder (High Priority for elderly patients)
                     NextReminderCard(
-                      title: 'Morning Medicine',
                       time: '10:00 AM',
-                      note: 'Take with a glass of water after breakfast',
                       onTap: () => _handleNavigate(context, 'reminders'),
                     ),
+
+                    const SizedBox(height: 18),
+
+                    // ── Prominent Emergency SOS Button for elderly patients ──
+                    const SosButton(),
 
                     const SizedBox(height: 22),
 

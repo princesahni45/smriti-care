@@ -11,19 +11,24 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/mri_models.dart';
+// FIX: Use centralized API base URL from AppConstants (no more hardcoded IP)
+import '../constants/app_constants.dart';
 
 class MriScreeningService {
   MriScreeningService._();
   static final MriScreeningService instance = MriScreeningService._();
 
-  String _apiBaseUrl = defaultApiUrl;
+  // FIX: Default URL comes from AppConstants, not hardcoded here.
+  // Update AppConstants.kApiBaseUrl (or kApiBaseUrlPhysicalDevice) for physical device testing.
+  String _apiBaseUrl = AppConstants.kApiBaseUrl;
 
+  // Legacy helper kept for backward compatibility (still picks the right default)
   static String get defaultApiUrl {
-    if (kIsWeb) return 'http://localhost:8000';
+    if (kIsWeb) return AppConstants.kApiBaseUrlWeb;
     try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:8000';
+      if (Platform.isAndroid) return AppConstants.kApiBaseUrl;
     } catch (_) {}
-    return 'http://localhost:8000';
+    return AppConstants.kApiBaseUrlWeb;
   }
 
   String get apiBaseUrl => _apiBaseUrl;

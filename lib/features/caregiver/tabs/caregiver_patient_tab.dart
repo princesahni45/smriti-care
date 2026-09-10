@@ -8,6 +8,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
 
@@ -187,7 +188,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       setState(() => _isNotesSaved = true);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text('Caregiver notes saved offline successfully.'),
+                          content: Text(
+                            context.tr('caregiver.notesSaved', defaultText: 'Caregiver notes saved offline successfully.'),
+                          ),
                           backgroundColor: AppColors.tealDark,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -199,9 +202,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text(
-                      'Save Notes',
-                      style: TextStyle(
+                    child: Text(
+                      context.tr('caregiver.saveNotes', defaultText: 'Save Notes'),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -476,7 +479,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -505,7 +508,10 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
-            child: const Text('Link Patient', style: TextStyle(color: Colors.white)),
+            child: Text(
+              context.tr('caregiver.linkPatient', defaultText: 'Link Patient'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

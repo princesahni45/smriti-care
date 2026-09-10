@@ -46,7 +46,11 @@
     "contact": "संपर्क",
     "patientLogin": "मरीज लॉगिन",
     "caregiverLogin": "देखभालकर्ता लॉगिन",
-    "language": "भाषा"
+    "language": "भाषा",
+    "games": "खेल",
+    "reminders": "रिमाइंडर",
+    "progress": "प्रगति",
+    "profile": "प्रोफ़ाइल"
   },
   "landing": {
     "heroEyebrow": "पूर्वोत्तर भारत के लिए सप्रेम निर्मित",
@@ -380,7 +384,30 @@
     "insightText": "पारिवारिक फ़ोटो गतिविधि के दौरान रमेश जी ने उत्कृष्ट पहचान दिखाई और आवाज़ के निर्देशों पर अच्छी प्रतिक्रिया दी।",
     "mood": "मनोदशा",
     "calmEngaged": "शांत और सक्रिय",
-    "role": "देखभालकर्ता"
+    "role": "देखभालकर्ता",
+    "healthSummary": "स्वास्थ्य और संज्ञानात्मक सारांश",
+    "monitoringSubtitle": "देखभाल और संज्ञानात्मक प्रगति की निगरानी",
+    "switchPatient": "बदलें",
+    "riskAndRemindersTitle": "जोखिम स्क्रीनिंग और स्मरणपत्र",
+    "riskAndRemindersSubtitle": "वास्तविक समय संज्ञानात्मक सुरक्षा स्क्रीनिंग और दिनचर्या निर्धारण।",
+    "intelligentAlerts": "स्मार्ट देखभाल अलर्ट",
+    "noAlerts": "कोई सक्रिय अलर्ट नहीं है।",
+    "manageReminders": "स्मरणपत्र प्रबंधित करें",
+    "add": "जोड़ें",
+    "allReminders": "सभी स्मरणपत्र",
+    "appointments": "अपॉइंटमेंट",
+    "noRemindersCategory": "इस श्रेणी के लिए कोई स्मरणपत्र नहीं मिला।",
+    "deleteReminder": "स्मरणपत्र हटाएं",
+    "saveReminder": "स्मरणपत्र सहेजें",
+    "addFamilyMember": "परिवार का सदस्य जोड़ें",
+    "saveProfile": "प्रोफ़ाइल सहेजें",
+    "noSosRecords": "कोई आपातकालीन एसओएस रिकॉर्ड नहीं मिला।",
+    "resolve": "हल करें",
+    "notesSaved": "देखभालकर्ता नोट्स ऑफ़लाइन सफलतापूर्वक सहेजे गए।",
+    "saveNotes": "नोट्स सहेजें",
+    "linkPatient": "मरीज को जोड़ें",
+    "editHomeLocation": "सुरक्षित घर का स्थान बदलें",
+    "caregiverOnlyEmergency": "पहुंच अस्वीकृत: केवल सत्यापित देखभालकर्ता ही आपातकालीन नंबर संपादित कर सकते हैं।"
   },
   "games": {
     "catalogTitle": "संज्ञानात्मक खेल",
@@ -422,7 +449,9 @@
     "wordRecallSubtitle": "शब्द पहचान और याददाश्त",
     "wordRecallDesc": "रोजमर्रा के शब्दों को पढ़ें, हल्का विराम लें, और देखें कि आपको कौन से शब्द याद रहते हैं।",
     "wordRecallInstruction": "एक सरल और सुखद स्मृति अभ्यास",
-    "memoryMatch": "स्मृति मिलान (Memory Match)"
+    "memoryMatch": "स्मृति मिलान (Memory Match)",
+    "immediateRecall": "तत्काल स्मरण",
+    "delayedRecall": "विलंबित स्मरण"
   },
   "safety": {
     "title": "मुझे घर ले चलें",
@@ -452,7 +481,10 @@
     "changeHomeLocation": "घर का स्थान बदलें",
     "emergencyHelpline": "आपातकालीन सेवा हेल्पलाइन",
     "nationalResponseNumber": "राष्ट्रीय आपातकालीन सहायता नंबर",
-    "configureNumber": "नंबर कॉन्फ़िगर करें"
+    "configureNumber": "नंबर कॉन्फ़िगर करें",
+    "latitude": "अक्षांश:",
+    "longitude": "देशांतर:",
+    "accuracy": "सटीकता:"
   },
   "sos": {
     "sosButton": "🆘 SOS",
@@ -483,11 +515,43 @@
     "smartRemindersSection": "स्मार्ट अनुस्मारक और दिनचर्या",
     "kicker": "स्मार्ट अनुस्मारक (Smart Reminders)",
     "subtitle": "मरीज़ की दैनिक दिनचर्या के लिए उपयोगी अनुस्मारक प्रबंधित करें।",
-    "escalationRules": "अलर्ट नियम"
+    "escalationRules": "अलर्ट नियम",
+    "nextReminder": "अगला स्मरणपत्र",
+    "morningMedicine": "सुबह की दवा",
+    "morningMedicineNote": "नाश्ते के बाद एक गिलास पानी के साथ लें"
   },
   "voice": {
     "available": "आपकी भाषा में आवाज़ मार्गदर्शन उपलब्ध है।",
     "unavailable": "इस उपकरण पर इस भाषा के लिए आवाज़ उपलब्ध नहीं है।",
     "reading": "बोलकर सुनाया जा रहा है..."
+  },
+  "dates": {
+    "monday": "सोमवार",
+    "tuesday": "मंगलवार",
+    "wednesday": "बुधवार",
+    "thursday": "गुरुवार",
+    "friday": "शुक्रवार",
+    "saturday": "शनिवार",
+    "sunday": "रविवार",
+    "january": "जनवरी",
+    "february": "फरवरी",
+    "march": "मार्च",
+    "april": "अप्रैल",
+    "may": "मई",
+    "june": "जून",
+    "july": "जुलाई",
+    "august": "अगस्त",
+    "september": "सितंबर",
+    "october": "अक्टूबर",
+    "november": "नवंबर",
+    "december": "दिसंबर"
+  },
+  "progress": {
+    "yourProgress": "आपकी प्रगति",
+    "memory": "स्मृति",
+    "attention": "एकाग्रता",
+    "pattern": "पैटर्न",
+    "weeklySummary": "साप्ताहिक संज्ञानात्मक सारांश",
+    "viewDetails": "विवरण देखें"
   }
 }
