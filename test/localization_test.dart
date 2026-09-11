@@ -42,7 +42,9 @@ void main() {
       expect(AppLocalizations.supportedLanguages.length, 10);
     });
 
-    test('All 10 translation JSON files exist, parse cleanly, and have core keys', () {
+    test(
+        'All 10 translation JSON files exist, parse cleanly, and have core keys',
+        () {
       for (final code in expectedLanguageCodes) {
         final file = File('assets/i18n/$code.json');
         expect(file.existsSync(), isTrue,
@@ -77,7 +79,8 @@ void main() {
       }
     });
 
-    test('LocalizationService switches active locale and notifies listeners', () {
+    test('LocalizationService switches active locale and notifies listeners',
+        () {
       final service = LocalizationService.instance;
       service.setLocale('hi');
       expect(service.currentLocale.languageCode, 'hi');
@@ -120,7 +123,8 @@ void main() {
 
     // FIX: MaterialLocalizations / localization configuration fix
     // Verify BottomNavigationBar and Material widgets find MaterialLocalizations across all 10 locales
-    testWidgets('BottomNavigationBar renders without error across all 10 supported locales',
+    testWidgets(
+        'BottomNavigationBar renders without error across all 10 supported locales',
         (WidgetTester tester) async {
       for (final code in expectedLanguageCodes) {
         await tester.pumpWidget(
@@ -139,8 +143,10 @@ void main() {
               body: const Text('SmritiCare Test'),
               bottomNavigationBar: BottomNavigationBar(
                 items: const [
-                  BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                  BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.home), label: 'Home'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.person), label: 'Profile'),
                 ],
               ),
             ),

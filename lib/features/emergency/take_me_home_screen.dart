@@ -135,8 +135,6 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final emergencySettings = EmergencyService.instance.settings;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -268,48 +266,100 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
 
               const SizedBox(height: 20),
 
-              // ── TWO-NUMBER EMERGENCY CONTACTS (Primary & Secondary) ─────────
-              Text(
-                context.tr('safety.emergencySettings',
-                    defaultText: 'Emergency Contacts'),
-                style: GoogleFonts.dmSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                ),
-              ),
-              const SizedBox(height: 10),
+              // FIX: Use shared SOS contacts for caregiver and patient
+              ValueListenableBuilder<EmergencySettingsData>(
+                valueListenable: EmergencyService.instance.settingsNotifier,
+                builder: (context, settings, _) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            context.tr('safety.emergencySettings',
+                                defaultText: 'Emergency Contacts'),
+                            style: GoogleFonts.dmSans(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: settings.isCloudSynced
+                                  ? AppColors.tealPale
+                                  : AppColors.amberPale,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  settings.isCloudSynced
+                                      ? Icons.cloud_done_rounded
+                                      : Icons.offline_pin_rounded,
+                                  size: 13,
+                                  color: settings.isCloudSynced
+                                      ? AppColors.tealDark
+                                      : AppColors.amberDeep,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  settings.isCloudSynced
+                                      ? 'Cloud Synced'
+                                      : 'Offline Stored',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: settings.isCloudSynced
+                                        ? AppColors.tealDark
+                                        : AppColors.amberDeep,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
 
-              // 1. Primary Contact Card
-              _buildContactActionCard(
-                context: context,
-                badgeLabel: context.tr('safety.primaryCaregiver',
-                    defaultText: 'Primary Emergency Contact'),
-                name: emergencySettings.primaryName,
-                relationship: emergencySettings.primaryRelationship,
-                phone: emergencySettings.primaryNumber,
-                badgeColor: AppColors.teal,
-                onCall: () => _callNumber(emergencySettings.primaryNumber,
-                    emergencySettings.primaryName),
-                onSms: () => _smsNumber(emergencySettings.primaryNumber,
-                    emergencySettings.primaryName),
-              ),
+                      // 1. Primary Contact Card
+                      _buildContactActionCard(
+                        context: context,
+                        badgeLabel: context.tr('safety.primaryCaregiver',
+                            defaultText: 'Primary Emergency Contact'),
+                        name: settings.primaryName,
+                        relationship: settings.primaryRelationship,
+                        phone: settings.primaryPhone,
+                        badgeColor: AppColors.teal,
+                        onCall: () => _callNumber(
+                            settings.primaryPhone, settings.primaryName),
+                        onSms: () => _smsNumber(
+                            settings.primaryPhone, settings.primaryName),
+                      ),
 
-              const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-              // 2. Secondary Contact Card
-              _buildContactActionCard(
-                context: context,
-                badgeLabel: context.tr('safety.addEmergencyContact',
-                    defaultText: 'Secondary Emergency Contact'),
-                name: emergencySettings.secondaryName,
-                relationship: emergencySettings.secondaryRelationship,
-                phone: emergencySettings.secondaryNumber,
-                badgeColor: AppColors.violet,
-                onCall: () => _callNumber(emergencySettings.secondaryNumber,
-                    emergencySettings.secondaryName),
-                onSms: () => _smsNumber(emergencySettings.secondaryNumber,
-                    emergencySettings.secondaryName),
+                      // 2. Secondary Contact Card
+                      _buildContactActionCard(
+                        context: context,
+                        badgeLabel: context.tr('safety.addEmergencyContact',
+                            defaultText: 'Secondary Emergency Contact'),
+                        name: settings.secondaryName,
+                        relationship: settings.secondaryRelationship,
+                        phone: settings.secondaryPhone,
+                        badgeColor: AppColors.violet,
+                        onCall: () => _callNumber(
+                            settings.secondaryPhone, settings.secondaryName),
+                        onSms: () => _smsNumber(
+                            settings.secondaryPhone, settings.secondaryName),
+                      ),
+                    ],
+                  );
+                },
               ),
 
               const SizedBox(height: 22),

@@ -18,10 +18,12 @@
 class ApiConfig {
   ApiConfig._();
 
-  // ── FIX: Default to 127.0.0.1:8000 for ADB reverse over USB cable, with Wi-Fi fallback ──
-  // FIX: Configured MRI backend for physical Android device via USB ADB reverse (127.0.0.1) or Wi-Fi LAN
-  static const String baseUrl = 'http://127.0.0.1:8000';
-  static const String wifiLanUrl = 'http://192.168.9.221:8000';
+  // FIX: Centralized backend URL for physical-device connection
+  // FIX: Use laptop LAN IP for same-WiFi physical Android connection
+  static const String laptopWifiIp = '10.109.253.252';
+  static const String baseUrl = 'http://$laptopWifiIp:8000';
+  static const String wifiLanUrl = 'http://$laptopWifiIp:8000';
+  static const String usbReverseUrl = 'http://127.0.0.1:8000';
   static const String emulatorUrl = 'http://10.0.2.2:8000';
 
   // Endpoint paths — from the REAL backend main.py

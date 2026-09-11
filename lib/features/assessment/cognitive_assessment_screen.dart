@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/models/game_result.dart';
 import '../../core/services/game_storage_service.dart';
+import '../../core/services/caregiver_service.dart';
 
 class CognitiveAssessmentScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -44,12 +45,15 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
     final totalScore =
         ((_orientationScore + _memoryScore + _attentionScore) / 30 * 100)
             .round();
+    // FIX: Save cognitive game result for caregiver dashboard
+    final patientId = CaregiverService.instance.selectedPatientId;
     final result = GameResult(
       id: 'assess_${DateTime.now().millisecondsSinceEpoch}',
-      patientId: 'MC-2048',
+      patientId: patientId,
       gameId: 'cognitive-assessment',
       gameName: 'Cognitive Assessment',
       score: totalScore,
+      maxScore: 100,
       accuracy: totalScore,
       attempts: 3,
       correctAnswers: (_orientationScore ~/ 10) +

@@ -1,4 +1,4 @@
-﻿// test/emergency_test.dart
+// test/emergency_test.dart
 //
 // Unit tests for SmritiCare Emergency SOS & Contacts System:
 // - Primary & Secondary emergency number configuration
@@ -17,7 +17,8 @@ void main() {
 
   setUp(() async {
     await EmergencyService.instance.init();
-    await CaregiverAuthService.instance.exitCaregiverMode(); // default to patient mode
+    await CaregiverAuthService.instance
+        .exitCaregiverMode(); // default to patient mode
   });
 
   tearDown(() async {
@@ -25,7 +26,8 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
-  test('TEST 1: Unauthenticated Patient cannot edit emergency numbers', () async {
+  test('TEST 1: Unauthenticated Patient cannot edit emergency numbers',
+      () async {
     expect(CaregiverAuthService.instance.isCaregiverAuthenticated, isFalse);
 
     final result = await EmergencyService.instance.updateEmergencyNumbers(
@@ -33,12 +35,14 @@ void main() {
       secondaryNumber: '+91 88888 22222',
     );
 
-    expect(result.isSuccess, isFalse, reason: 'Patient mode must be denied permission to edit numbers.');
+    expect(result.isSuccess, isFalse,
+        reason: 'Patient mode must be denied permission to edit numbers.');
     expect(result.statusMessage, contains('Permission denied'));
   });
 
   // ---------------------------------------------------------------------------
-  test('TEST 2: Authenticated Caregiver can edit primary and secondary numbers', () async {
+  test('TEST 2: Authenticated Caregiver can edit primary and secondary numbers',
+      () async {
     CaregiverAuthService.instance.enableTestMode();
     final login = await CaregiverAuthService.instance.loginCaregiver(
       email: 'caregiver@smriti.care',
@@ -54,8 +58,10 @@ void main() {
       secondaryName: 'Dr. Ananya Bora',
     );
 
-    expect(result.isSuccess, isTrue, reason: 'Caregiver must be permitted to save emergency numbers.');
-    expect(result.isLocalSaved, isTrue, reason: 'Must be saved locally on device.');
+    expect(result.isSuccess, isTrue,
+        reason: 'Caregiver must be permitted to save emergency numbers.');
+    expect(result.isLocalSaved, isTrue,
+        reason: 'Must be saved locally on device.');
     expect(EmergencyService.instance.primaryNumber, '+91 98765 43210');
     expect(EmergencyService.instance.secondaryNumber, '+91 91234 56780');
   });
@@ -76,7 +82,8 @@ void main() {
   // ---------------------------------------------------------------------------
   test('TEST 4: Duplicate numbers are correctly detected', () {
     expect(
-      EmergencyService.areNumbersDuplicate('+91 98765 43210', '+91 98765 43210'),
+      EmergencyService.areNumbersDuplicate(
+          '+91 98765 43210', '+91 98765 43210'),
       isTrue,
       reason: 'Identical numbers must be flagged as duplicate.',
     );
@@ -86,14 +93,16 @@ void main() {
       reason: 'Normalized digits must match.',
     );
     expect(
-      EmergencyService.areNumbersDuplicate('+91 98765 43210', '+91 91234 56780'),
+      EmergencyService.areNumbersDuplicate(
+          '+91 98765 43210', '+91 91234 56780'),
       isFalse,
       reason: 'Different numbers must not be flagged.',
     );
   });
 
   // ---------------------------------------------------------------------------
-  test('TEST 5: SOS emergency message builder formats coordinates and map link', () {
+  test('TEST 5: SOS emergency message builder formats coordinates and map link',
+      () {
     final loc = SosLocation(
       latitude: 26.1856,
       longitude: 91.7539,
@@ -116,7 +125,8 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
-  test('TEST 6: SOS emergency message labels Last Known Location correctly', () {
+  test('TEST 6: SOS emergency message labels Last Known Location correctly',
+      () {
     final loc = SosLocation(
       latitude: 28.6139,
       longitude: 77.2090,

@@ -627,144 +627,148 @@ class _CaregiverProfileSafetyTabState extends State<CaregiverProfileSafetyTab> {
     );
   }
 
+  // FIX: Use shared SOS contacts for caregiver and patient
   Widget _buildEmergencyContactCard(EmergencyContact contact) {
-    final em = EmergencyService.instance.settings;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderLight, width: 1.2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return ValueListenableBuilder<EmergencySettingsData>(
+      valueListenable: EmergencyService.instance.settingsNotifier,
+      builder: (context, em, _) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderLight, width: 1.2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.contact_phone_rounded,
-                      color: AppColors.teal, size: 18),
-                  SizedBox(width: 8),
-                  Text(
-                    'Emergency Mobile Numbers',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.ink),
+                  const Row(
+                    children: [
+                      Icon(Icons.contact_phone_rounded,
+                          color: AppColors.teal, size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        'Emergency Mobile Numbers',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit_note_rounded,
+                        color: AppColors.teal, size: 22),
+                    onPressed: () {
+                      EmergencySettingsScreen.show(
+                        context,
+                        onSaved: () {
+                          setState(() {});
+                        },
+                      );
+                    },
+                    tooltip: 'Edit Emergency Numbers',
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(Icons.edit_note_rounded,
-                    color: AppColors.teal, size: 22),
-                onPressed: () {
-                  EmergencySettingsScreen.show(
-                    context,
-                    onSaved: () {
-                      setState(() {});
-                    },
-                  );
-                },
-                tooltip: 'Edit Emergency Numbers',
+              const SizedBox(height: 10),
+
+              // Primary Number
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.tealPale.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.phone_in_talk_rounded,
+                        color: AppColors.teal, size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Primary: ${em.primaryName} (${em.primaryRelationship})',
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.tealDeep),
+                          ),
+                          Text(
+                            em.primaryNumber,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.ink),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.phone_rounded,
+                          color: AppColors.teal, size: 18),
+                      onPressed: () => EmergencyService.instance
+                          .launchCall(em.primaryNumber),
+                      tooltip: 'Call Primary',
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Secondary Number
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.violetLight.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.phone_forwarded_rounded,
+                        color: AppColors.violet, size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Secondary: ${em.secondaryName} (${em.secondaryRelationship})',
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.violetDeep),
+                          ),
+                          Text(
+                            em.secondaryNumber,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.ink),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.phone_rounded,
+                          color: AppColors.violet, size: 18),
+                      onPressed: () => EmergencyService.instance
+                          .launchCall(em.secondaryNumber),
+                      tooltip: 'Call Secondary',
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-
-          // Primary Number
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.tealPale.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.phone_in_talk_rounded,
-                    color: AppColors.teal, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Primary: ${em.primaryName} (${em.primaryRelationship})',
-                        style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.tealDeep),
-                      ),
-                      Text(
-                        em.primaryNumber,
-                        style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.ink),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.phone_rounded,
-                      color: AppColors.teal, size: 18),
-                  onPressed: () =>
-                      EmergencyService.instance.launchCall(em.primaryNumber),
-                  tooltip: 'Call Primary',
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Secondary Number
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.violetLight.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.phone_forwarded_rounded,
-                    color: AppColors.violet, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Secondary: ${em.secondaryName} (${em.secondaryRelationship})',
-                        style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.violetDeep),
-                      ),
-                      Text(
-                        em.secondaryNumber,
-                        style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.ink),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.phone_rounded,
-                      color: AppColors.violet, size: 18),
-                  onPressed: () =>
-                      EmergencyService.instance.launchCall(em.secondaryNumber),
-                  tooltip: 'Call Secondary',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

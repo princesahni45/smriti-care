@@ -13,6 +13,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../../../shared/widgets/smriti_button.dart';
 import '../game_result_screen.dart';
 import 'word_data.dart';
@@ -210,12 +211,15 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
         .getAdaptiveRecommendation(
             'word-recall', combinedAccuracy, _currentLevel);
 
-    // Save game result to local storage (Step 11 & 14)
+    // FIX: Save cognitive game result for caregiver dashboard
+    final patientId = CaregiverService.instance.selectedPatientId;
     final gameResult = GameResult(
       id: 'wr_${DateTime.now().millisecondsSinceEpoch}',
+      patientId: patientId,
       gameId: 'word-recall',
       gameName: 'Word Recall',
       score: combinedAccuracy,
+      maxScore: 100,
       accuracy: combinedAccuracy,
       attempts: _targetWordsPlain.length * 2,
       correctAnswers:

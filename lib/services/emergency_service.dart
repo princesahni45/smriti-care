@@ -20,6 +20,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/services/caregiver_auth_service.dart';
 import 'location_service.dart';
 
+// FIX: Use shared SOS contacts for caregiver and patient
 class EmergencySettingsData {
   final String primaryNumber;
   final String secondaryNumber;
@@ -29,6 +30,10 @@ class EmergencySettingsData {
   final String secondaryRelationship;
   final DateTime updatedAt;
   final bool isCloudSynced;
+
+  // Aliases for compatibility with emergencyContacts/config
+  String get primaryPhone => primaryNumber;
+  String get secondaryPhone => secondaryNumber;
 
   const EmergencySettingsData({
     required this.primaryNumber,
@@ -67,6 +72,8 @@ class EmergencySettingsData {
   Map<String, dynamic> toMap() => {
         'primaryNumber': primaryNumber,
         'secondaryNumber': secondaryNumber,
+        'primaryPhone': primaryNumber,
+        'secondaryPhone': secondaryNumber,
         'primaryName': primaryName,
         'secondaryName': secondaryName,
         'primaryRelationship': primaryRelationship,
@@ -77,16 +84,22 @@ class EmergencySettingsData {
 
   factory EmergencySettingsData.fromMap(Map<String, dynamic> map) =>
       EmergencySettingsData(
-        primaryNumber: (map['primaryNumber'] as String?) ?? '+91 98765 43210',
-        secondaryNumber:
-            (map['secondaryNumber'] as String?) ?? '+91 91234 56780',
+        primaryNumber: (map['primaryPhone'] as String?) ??
+            (map['primaryNumber'] as String?) ??
+            '+91 98765 43210',
+        secondaryNumber: (map['secondaryPhone'] as String?) ??
+            (map['secondaryNumber'] as String?) ??
+            '+91 91234 56780',
         primaryName: (map['primaryName'] as String?) ?? 'Rahul Das',
         secondaryName: (map['secondaryName'] as String?) ?? 'Dr. Ananya Bora',
         primaryRelationship: (map['primaryRelationship'] as String?) ?? 'Son',
         secondaryRelationship:
             (map['secondaryRelationship'] as String?) ?? 'Family Doctor',
         updatedAt: map['updatedAt'] != null
-            ? DateTime.tryParse(map['updatedAt'] as String) ?? DateTime.now()
+            ? (map['updatedAt'] is Timestamp
+                ? (map['updatedAt'] as Timestamp).toDate()
+                : DateTime.tryParse(map['updatedAt'].toString()) ??
+                    DateTime.now())
             : DateTime.now(),
         isCloudSynced: (map['isCloudSynced'] as bool?) ?? false,
       );
@@ -124,11 +137,26 @@ class EmergencyService extends ChangeNotifier {
 
   bool _isInitialized = false;
 
+  final ValueNotifier<EmergencySettingsData> settingsNotifier =
+      ValueNotifier<EmergencySettingsData>(EmergencySettingsData(
+    primaryNumber: '+91 98765 43210',
+    secondaryNumber: '+91 91234 56780',
+    primaryName: 'Rahul Das',
+    secondaryName: 'Dr. Ananya Bora',
+    primaryRelationship: 'Son',
+    secondaryRelationship: 'Family Doctor',
+    updatedAt: DateTime.now(),
+    isCloudSynced: false,
+  ));
+
   EmergencySettingsData get settings => _settings;
   String get primaryNumber => _settings.primaryNumber;
   String get secondaryNumber => _settings.secondaryNumber;
+  String get primaryPhone => _settings.primaryNumber;
+  String get secondaryPhone => _settings.secondaryNumber;
 
   /// Load cached emergency numbers on startup
+  // FIX: Use shared SOS contacts for caregiver and patient
   Future<void> init() async {
     if (_isInitialized) return;
     try {
@@ -138,7 +166,20 @@ class EmergencyService extends ChangeNotifier {
         if (content.isNotEmpty) {
           final decoded = jsonDecode(content) as Map<String, dynamic>;
           _settings = EmergencySettingsData.fromMap(decoded);
+          settingsNotifier.value = _settings;
           notifyListeners();
+        }
+      } else {
+        // Check alternate file
+        final altFile = await _getAltStorageFile();
+        if (await altFile.exists()) {
+          final content = await altFile.readAsString();
+          if (content.isNotEmpty) {
+            final decoded = jsonDecode(content) as Map<String, dynamic>;
+            _settings = EmergencySettingsData.fromMap(decoded);
+            settingsNotifier.value = _settings;
+            notifyListeners();
+          }
         }
       }
     } catch (e) {
@@ -155,6 +196,16 @@ class EmergencyService extends ChangeNotifier {
     } catch (_) {
       dir = Directory.systemTemp;
     }
+    return File('${dir.path}/smriti_care_emergency_contacts.json');
+  }
+
+  Future<File> _getAltStorageFile() async {
+    Directory dir;
+    try {
+      dir = await getApplicationDocumentsDirectory();
+    } catch (_) {
+      dir = Directory.systemTemp;
+    }
     return File('${dir.path}/smriti_care_emergency_settings.json');
   }
 
@@ -162,6 +213,8 @@ class EmergencyService extends ChangeNotifier {
     try {
       final file = await _getStorageFile();
       await file.writeAsString(jsonEncode(_settings.toMap()));
+      final altFile = await _getAltStorageFile();
+      await altFile.writeAsString(jsonEncode(_settings.toMap()));
     } catch (e) {
       debugPrint('[EmergencyService] Local persist error: $e');
     }
@@ -270,27 +323,44 @@ class EmergencyService extends ChangeNotifier {
     );
 
     // 1. Save locally immediately (guaranteed offline access)
+    settingsNotifier.value = _settings;
     await _persistLocally();
     notifyListeners();
 
     // 2. Attempt Firestore sync
+    // FIX: Use shared SOS contacts for caregiver and patient
+    // FIX: Use caregiver-controlled SOS contacts
     bool cloudSynced = false;
     try {
       if (Firebase.apps.isNotEmpty) {
-        await FirebaseFirestore.instance
-            .collection('patients')
-            .doc(patientId)
-            .collection('emergency_settings')
-            .doc('main')
-            .set({
+        final payload = {
+          'primaryPhone': p1,
           'primaryNumber': p1,
+          'secondaryPhone': p2,
           'secondaryNumber': p2,
           'primaryName': _settings.primaryName,
           'secondaryName': _settings.secondaryName,
           'primaryRelationship': _settings.primaryRelationship,
           'secondaryRelationship': _settings.secondaryRelationship,
           'updatedAt': Timestamp.fromDate(now),
-        }, SetOptions(merge: true));
+        };
+
+        // Primary location specified by architecture: patients/{patientId}/emergencyContacts/config
+        await FirebaseFirestore.instance
+            .collection('patients')
+            .doc(patientId)
+            .collection('emergencyContacts')
+            .doc('config')
+            .set(payload, SetOptions(merge: true));
+
+        // Also update legacy/mirror path for maximum backwards compatibility
+        await FirebaseFirestore.instance
+            .collection('patients')
+            .doc(patientId)
+            .collection('emergency_settings')
+            .doc('main')
+            .set(payload, SetOptions(merge: true));
+
         cloudSynced = true;
       }
     } catch (firestoreError) {
@@ -299,6 +369,7 @@ class EmergencyService extends ChangeNotifier {
     }
 
     _settings = _settings.copyWith(isCloudSynced: cloudSynced);
+    settingsNotifier.value = _settings;
     await _persistLocally();
     notifyListeners();
 

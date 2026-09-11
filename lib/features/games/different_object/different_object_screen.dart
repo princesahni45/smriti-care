@@ -12,6 +12,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../game_result_screen.dart';
 import '../../../shared/widgets/smriti_button.dart';
 import 'categories_data.dart';
@@ -194,12 +195,15 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     final recommendation = GameStorageService.instance
         .getAdaptiveRecommendation('different-object', accuracy, _currentLevel);
 
-    // Save game result to local storage (Step 11 & 14)
+    // FIX: Save cognitive game result for caregiver dashboard
+    final patientId = CaregiverService.instance.selectedPatientId;
     final gameResult = GameResult(
       id: 'do_${DateTime.now().millisecondsSinceEpoch}',
+      patientId: patientId,
       gameId: 'different-object',
       gameName: 'Find the Different Object',
       score: accuracy,
+      maxScore: 100,
       accuracy: accuracy,
       attempts: totalAttempts,
       correctAnswers: _score,

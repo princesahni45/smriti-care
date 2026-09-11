@@ -142,12 +142,15 @@ class _FamilyMemoriesGameScreenState extends State<FamilyMemoriesGameScreen> {
     final avgResponse =
         total > 0 ? (timeSeconds / total).toStringAsFixed(1) : '0';
 
+    // FIX: Save cognitive game result for caregiver dashboard
+    final patientId = CaregiverService.instance.selectedPatientId;
     final result = GameResult(
       id: 'family_${DateTime.now().millisecondsSinceEpoch}',
-      patientId: 'MC-2048',
+      patientId: patientId,
       gameId: 'family-memories',
       gameName: 'Family Memories',
       score: score,
+      maxScore: 100,
       accuracy: accuracy,
       attempts: total,
       correctAnswers: _correctAnswers,

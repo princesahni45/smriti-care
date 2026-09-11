@@ -11,10 +11,12 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/caregiver_models.dart';
 import 'game_storage_service.dart';
+import 'notification_service.dart';
 
 class CaregiverService {
   CaregiverService._() {
@@ -28,6 +30,8 @@ class CaregiverService {
   String _selectedPatientId = 'MC-2048';
   late CaregiverProfile _caregiver;
   final List<CaregiverReminder> _reminders = [];
+  // FIX: Sync caregiver reminder changes to linked patient - reactive notifier
+  final ValueNotifier<int> remindersNotifier = ValueNotifier<int>(0);
   final List<FamilyMemoryMember> _familyMembers = [];
   late EmergencyContact _emergencyContact;
   late HomeLocation _homeLocation;
@@ -125,8 +129,19 @@ class CaregiverService {
           }
         }
       }
+
+      // FIX: Sync caregiver reminder changes to linked patient - initialize notifications
+      try {
+        await NotificationService.instance.init();
+        final activeReminders = _reminders
+            .where((r) => r.patientId == _selectedPatientId && r.enabled)
+            .toList();
+        await NotificationService.instance.rescheduleAll(activeReminders);
+      } catch (e) {
+        debugPrint('Notification init inside CaregiverService: $e');
+      }
     } catch (e) {
-      debugPrint('CaregiverService init note: ');
+      debugPrint('CaregiverService init note: $e');
     } finally {
       _isInitialized = true;
     }
@@ -192,6 +207,7 @@ class CaregiverService {
     );
 
     if (_reminders.isEmpty) {
+      final now = DateTime.now();
       _reminders.addAll([
         CaregiverReminder(
           id: 'rem-001',
@@ -203,7 +219,8 @@ class CaregiverService {
           repeat: 'daily',
           enabled: true,
           status: 'acknowledged',
-          acknowledgedAt: DateTime.now().subtract(const Duration(hours: 2)),
+          updatedAt: now.subtract(const Duration(hours: 2)),
+          acknowledgedAt: now.subtract(const Duration(hours: 2)),
         ),
         CaregiverReminder(
           id: 'rem-002',
@@ -215,9 +232,10 @@ class CaregiverService {
           repeat: 'daily',
           enabled: true,
           status: 'acknowledged',
-          acknowledgedAt: DateTime.now().subtract(const Duration(hours: 1)),
+          updatedAt: now.subtract(const Duration(hours: 1)),
+          acknowledgedAt: now.subtract(const Duration(hours: 1)),
         ),
-        const CaregiverReminder(
+        CaregiverReminder(
           id: 'rem-003',
           patientId: 'MC-2048',
           type: 'cognitive_activity',
@@ -227,8 +245,9 @@ class CaregiverService {
           repeat: 'daily',
           enabled: true,
           status: 'upcoming',
+          updatedAt: now,
         ),
-        const CaregiverReminder(
+        CaregiverReminder(
           id: 'rem-004',
           patientId: 'MC-2048',
           type: 'appointment',
@@ -238,8 +257,9 @@ class CaregiverService {
           repeat: 'once',
           enabled: true,
           status: 'upcoming',
+          updatedAt: now,
         ),
-        const CaregiverReminder(
+        CaregiverReminder(
           id: 'rem-005',
           patientId: 'MC-2048',
           type: 'daily_routine',
@@ -249,8 +269,9 @@ class CaregiverService {
           repeat: 'daily',
           enabled: true,
           status: 'upcoming',
+          updatedAt: now,
         ),
-        const CaregiverReminder(
+        CaregiverReminder(
           id: 'rem-006',
           patientId: 'MC-2048',
           type: 'medication',
@@ -260,6 +281,7 @@ class CaregiverService {
           repeat: 'daily',
           enabled: true,
           status: 'upcoming',
+          updatedAt: now,
         ),
       ]);
     }
@@ -426,6 +448,11 @@ class CaregiverService {
     if (_patients.any((p) => p.id == patientId)) {
       _selectedPatientId = patientId;
       await _persist();
+      final active = _reminders
+          .where((r) => r.patientId == patientId && r.enabled)
+          .toList();
+      await NotificationService.instance.rescheduleAll(active);
+      remindersNotifier.value++;
     }
   }
 
@@ -670,9 +697,12 @@ class CaregiverService {
   }
 
   // ── Reminders Operations ────────────────────────────────────────
+  // FIX: Sync caregiver reminder changes to linked patient
 
-  List<CaregiverReminder> getReminders({String? status, String? type}) {
-    var list = List<CaregiverReminder>.from(_reminders);
+  List<CaregiverReminder> getReminders(
+      {String? patientId, String? status, String? type}) {
+    final pid = patientId ?? _selectedPatientId;
+    var list = _reminders.where((r) => r.patientId == pid).toList();
     if (status != null && status.isNotEmpty) {
       list = list.where((r) => r.status == status).toList();
     }
@@ -682,35 +712,159 @@ class CaregiverService {
     return list;
   }
 
+  // FIX: Sync caregiver reminder changes to linked patient
+  // FIX: Sync caregiver reminder to linked patient
   Future<void> addReminder(CaregiverReminder reminder) async {
     await init();
+    _reminders.removeWhere((r) => r.id == reminder.id);
     _reminders.add(reminder);
     await _persist();
+    remindersNotifier.value++;
+
+    // Schedule real local notification on device
+    await NotificationService.instance.scheduleReminder(reminder);
+
+    // Sync to Firestore
+    _syncReminderToCloud(reminder);
   }
 
+  // FIX: Sync caregiver reminder changes to linked patient
+  // FIX: Reschedule patient notification after reminder update
   Future<void> updateReminder(CaregiverReminder updated) async {
     await init();
     final idx = _reminders.indexWhere((r) => r.id == updated.id);
     if (idx != -1) {
       _reminders[idx] = updated;
       await _persist();
+      remindersNotifier.value++;
+
+      // Reschedule notification (cancel old, schedule new)
+      await NotificationService.instance.cancelReminder(updated.id);
+      if (updated.enabled) {
+        await NotificationService.instance.scheduleReminder(updated);
+      }
+
+      // Sync to Firestore
+      _syncReminderToCloud(updated);
     }
   }
 
+  // FIX: Sync caregiver reminder changes to linked patient
   Future<void> toggleReminder(String id) async {
     await init();
     final idx = _reminders.indexWhere((r) => r.id == id);
     if (idx != -1) {
       final cur = _reminders[idx];
-      _reminders[idx] = cur.copyWith(enabled: !cur.enabled);
+      final toggled =
+          cur.copyWith(enabled: !cur.enabled, updatedAt: DateTime.now());
+      _reminders[idx] = toggled;
       await _persist();
+      remindersNotifier.value++;
+
+      if (toggled.enabled) {
+        await NotificationService.instance.scheduleReminder(toggled);
+      } else {
+        await NotificationService.instance.cancelReminder(id);
+      }
+
+      // Sync to Firestore
+      _syncReminderToCloud(toggled);
     }
   }
 
+  // FIX: Sync caregiver reminder changes to linked patient
   Future<void> deleteReminder(String id) async {
     await init();
+    final reminder = _reminders.firstWhere((r) => r.id == id,
+        orElse: () => _reminders.first);
+    final patientId = reminder.patientId;
     _reminders.removeWhere((r) => r.id == id);
     await _persist();
+    remindersNotifier.value++;
+
+    // Cancel notification
+    await NotificationService.instance.cancelReminder(id);
+
+    // Delete from Firestore
+    _deleteReminderFromCloud(patientId, id);
+  }
+
+  // FIX: Sync caregiver reminder changes to linked patient - patient can acknowledge
+  Future<void> acknowledgeReminder(String id) async {
+    await init();
+    final idx = _reminders.indexWhere((r) => r.id == id);
+    if (idx != -1) {
+      final cur = _reminders[idx];
+      final updated = cur.copyWith(
+        status: 'acknowledged',
+        acknowledgedAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      _reminders[idx] = updated;
+      await _persist();
+      remindersNotifier.value++;
+      _syncReminderToCloud(updated);
+    }
+  }
+
+  Future<void> _syncReminderToCloud(CaregiverReminder reminder) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(reminder.patientId)
+          .collection('reminders')
+          .doc(reminder.id)
+          .set(reminder.toMap(), SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('[CaregiverService] Cloud reminder sync note: $e');
+    }
+  }
+
+  Future<void> _deleteReminderFromCloud(
+      String patientId, String reminderId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(patientId)
+          .collection('reminders')
+          .doc(reminderId)
+          .delete();
+    } catch (e) {
+      debugPrint('[CaregiverService] Cloud reminder delete note: $e');
+    }
+  }
+
+  Future<void> syncPatientReminders(String patientId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(patientId)
+          .collection('reminders')
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        await init();
+        for (final doc in snapshot.docs) {
+          final remote = CaregiverReminder.fromMap(doc.data());
+          final idx = _reminders.indexWhere((r) => r.id == remote.id);
+          if (idx != -1) {
+            if (remote.updatedAt.isAfter(_reminders[idx].updatedAt)) {
+              _reminders[idx] = remote;
+            }
+          } else {
+            _reminders.add(remote);
+          }
+        }
+        await _persist();
+        final active = _reminders
+            .where((r) => r.patientId == patientId && r.enabled)
+            .toList();
+        await NotificationService.instance.rescheduleAll(active);
+        remindersNotifier.value++;
+      }
+    } catch (e) {
+      debugPrint('[CaregiverService] syncPatientReminders note: $e');
+    }
   }
 
   // ── Family Memories Operations ──────────────────────────────────

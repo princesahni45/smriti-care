@@ -36,40 +36,46 @@ void main() {
   });
 
   group('1. Doctor Authentication & Role Isolation', () {
-    test('TEST 1.1: Valid doctor credentials authenticate successfully', () async {
+    test('TEST 1.1: Valid doctor credentials authenticate successfully',
+        () async {
       final result = await CaregiverAuthService.instance.loginDoctor(
         email: 'doctor@smriti.care',
         password: 'password123',
       );
 
       expect(result.isSuccess, isTrue,
-          reason: 'doctor@smriti.care / password123 must authenticate in test mode.');
+          reason:
+              'doctor@smriti.care / password123 must authenticate in test mode.');
       expect(CaregiverAuthService.instance.isDoctorAuthenticated, isTrue);
       expect(CaregiverAuthService.instance.currentMode, DashboardMode.doctor);
       expect(CaregiverAuthService.instance.doctorUid, 'test_doctor_uid_01');
       expect(CaregiverAuthService.instance.doctorName, 'Dr. Ananya Bora');
     });
 
-    test('TEST 1.2: Caregiver account is strictly rejected from Doctor Login', () async {
+    test('TEST 1.2: Caregiver account is strictly rejected from Doctor Login',
+        () async {
       final result = await CaregiverAuthService.instance.loginDoctor(
         email: 'caregiver@smriti.care',
         password: 'password123',
       );
 
       expect(result.isSuccess, isFalse,
-          reason: 'Caregiver account must not be able to log in to Doctor Portal.');
+          reason:
+              'Caregiver account must not be able to log in to Doctor Portal.');
       expect(result.errorMessage, contains('does not have doctor access'));
       expect(CaregiverAuthService.instance.isDoctorAuthenticated, isFalse);
     });
 
-    test('TEST 1.3: Patient account is strictly rejected from Doctor Login', () async {
+    test('TEST 1.3: Patient account is strictly rejected from Doctor Login',
+        () async {
       final result = await CaregiverAuthService.instance.loginDoctor(
         email: 'patient@smriti.care',
         password: 'password123',
       );
 
       expect(result.isSuccess, isFalse,
-          reason: 'Patient account must not be able to log in to Doctor Portal.');
+          reason:
+              'Patient account must not be able to log in to Doctor Portal.');
       expect(result.errorMessage, contains('does not have doctor access'));
       expect(CaregiverAuthService.instance.isDoctorAuthenticated, isFalse);
     });
@@ -100,14 +106,17 @@ void main() {
   });
 
   group('2. Secure Patient Linking & Permission Flow', () {
-    test('TEST 2.1: Caregiver generates link code and Doctor requests link', () async {
+    test('TEST 2.1: Caregiver generates link code and Doctor requests link',
+        () async {
       await CaregiverAuthService.instance.loginDoctor(
         email: 'doctor@smriti.care',
         password: 'password123',
       );
 
-      final uniquePatientId = 'MC-TEMP-${DateTime.now().microsecondsSinceEpoch}';
-      final code = DoctorService.instance.generateOrGetLinkCode(uniquePatientId);
+      final uniquePatientId =
+          'MC-TEMP-${DateTime.now().microsecondsSinceEpoch}';
+      final code =
+          DoctorService.instance.generateOrGetLinkCode(uniquePatientId);
       expect(code, isNotEmpty);
 
       // Submit link request
@@ -115,17 +124,23 @@ void main() {
       expect(result.success, isTrue, reason: result.message);
 
       // Verify pending request exists for patient
-      final pendingLinks = DoctorService.instance.getPendingRequestsForPatient(uniquePatientId);
-      expect(pendingLinks.any((l) => l.doctorId == DoctorService.instance.currentDoctorId), isTrue);
+      final pendingLinks =
+          DoctorService.instance.getPendingRequestsForPatient(uniquePatientId);
+      expect(
+          pendingLinks
+              .any((l) => l.doctorId == DoctorService.instance.currentDoctorId),
+          isTrue);
     });
 
-    test('TEST 2.2: Caregiver approves link -> Doctor gets patient access', () async {
+    test('TEST 2.2: Caregiver approves link -> Doctor gets patient access',
+        () async {
       await CaregiverAuthService.instance.loginDoctor(
         email: 'doctor@smriti.care',
         password: 'password123',
       );
 
-      final pendingLinks = DoctorService.instance.getPendingRequestsForPatient('MC-2048');
+      final pendingLinks =
+          DoctorService.instance.getPendingRequestsForPatient('MC-2048');
       if (pendingLinks.isNotEmpty) {
         final link = pendingLinks.first;
         await DoctorService.instance.approvePatientLink(link.linkId);
@@ -143,7 +158,8 @@ void main() {
         password: 'password123',
       );
 
-      final approvedLinks = DoctorService.instance.getApprovedLinksForPatient('MC-3109');
+      final approvedLinks =
+          DoctorService.instance.getApprovedLinksForPatient('MC-3109');
       if (approvedLinks.isNotEmpty) {
         final link = approvedLinks.first;
         expect(DoctorService.instance.isPatientAuthorized('MC-3109'), isTrue);
@@ -154,13 +170,15 @@ void main() {
       }
     });
 
-    test('TEST 2.4: Invalid link code returns failure and does not link', () async {
+    test('TEST 2.4: Invalid link code returns failure and does not link',
+        () async {
       await CaregiverAuthService.instance.loginDoctor(
         email: 'doctor@smriti.care',
         password: 'password123',
       );
 
-      final result = await DoctorService.instance.requestPatientLink('INVALID_CODE_123');
+      final result =
+          await DoctorService.instance.requestPatientLink('INVALID_CODE_123');
       expect(result.success, isFalse);
     });
   });
@@ -178,7 +196,8 @@ void main() {
       }
     });
 
-    test('TEST 3.2: Clinical notes are strictly isolated per patient', () async {
+    test('TEST 3.2: Clinical notes are strictly isolated per patient',
+        () async {
       await CaregiverAuthService.instance.loginDoctor(
         email: 'doctor@smriti.care',
         password: 'password123',
@@ -192,13 +211,20 @@ void main() {
       final p1Notes = DoctorService.instance.getDoctorNotes('MC-2048');
       final p2Notes = DoctorService.instance.getDoctorNotes('MC-3109');
 
-      expect(p1Notes.any((n) => n.text == 'Patient 2048 specific neurological note.'), isTrue);
-      expect(p2Notes.any((n) => n.text == 'Patient 2048 specific neurological note.'), isFalse);
+      expect(
+          p1Notes
+              .any((n) => n.text == 'Patient 2048 specific neurological note.'),
+          isTrue);
+      expect(
+          p2Notes
+              .any((n) => n.text == 'Patient 2048 specific neurological note.'),
+          isFalse);
     });
   });
 
   group('4. Doctor Notes CRUD & Author Permissions', () {
-    test('TEST 4.1: Doctor can add, edit, and delete their own notes', () async {
+    test('TEST 4.1: Doctor can add, edit, and delete their own notes',
+        () async {
       await CaregiverAuthService.instance.loginDoctor(
         email: 'doctor@smriti.care',
         password: 'password123',
@@ -210,7 +236,8 @@ void main() {
       );
 
       final notes = DoctorService.instance.getDoctorNotes('MC-2048');
-      final note = notes.firstWhere((n) => n.text == 'Initial Consultation Note');
+      final note =
+          notes.firstWhere((n) => n.text == 'Initial Consultation Note');
       expect(note.noteId, isNotEmpty);
 
       // Edit note
@@ -220,7 +247,8 @@ void main() {
       );
       expect(updated, isTrue);
 
-      final retrieved = DoctorService.instance.getDoctorNotes('MC-2048')
+      final retrieved = DoctorService.instance
+          .getDoctorNotes('MC-2048')
           .firstWhere((n) => n.noteId == note.noteId);
       expect(retrieved.text, 'Updated Consultation Note with Recommendations');
 
@@ -230,7 +258,8 @@ void main() {
       );
       expect(deleted, isTrue);
 
-      final remaining = DoctorService.instance.getDoctorNotes('MC-2048')
+      final remaining = DoctorService.instance
+          .getDoctorNotes('MC-2048')
           .where((n) => n.noteId == note.noteId);
       expect(remaining.isEmpty, isTrue);
     });
@@ -340,7 +369,8 @@ void main() {
       expect(mriStatus.level, PatientAttentionLevel.reviewSuggested);
 
       // Insufficient Data: 0 or 1 session
-      final insufficientStatus = DoctorService.instance.calculateAttentionStatus(
+      final insufficientStatus =
+          DoctorService.instance.calculateAttentionStatus(
         'MC-2048',
         [],
         [],

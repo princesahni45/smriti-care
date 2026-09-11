@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../game_result_screen.dart';
 
 class _OrientationQuestion {
@@ -211,12 +212,15 @@ class _DayTimeOrientationScreenState extends State<DayTimeOrientationScreen> {
     final avgResponse =
         total > 0 ? (timeSeconds / total).toStringAsFixed(1) : '0';
 
+    // FIX: Save cognitive game result for caregiver dashboard
+    final patientId = CaregiverService.instance.selectedPatientId;
     final result = GameResult(
       id: 'orient_${DateTime.now().millisecondsSinceEpoch}',
-      patientId: 'MC-2048',
+      patientId: patientId,
       gameId: 'day-time-orientation',
       gameName: 'Day & Time Orientation',
       score: score,
+      maxScore: 100,
       accuracy: accuracy,
       attempts: total,
       correctAnswers: _correctCount,

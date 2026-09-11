@@ -3,6 +3,8 @@
 // Prototype demo credentials and static data ported from React authConfig.js
 // TODO: Replace with secure backend authentication before production.
 
+import '../../config/api_config.dart';
+
 class AppConstants {
   AppConstants._();
 
@@ -12,22 +14,14 @@ class AppConstants {
       'AI-powered cognitive care for elderly minds.';
   static const String appVersion = '1.0.0';
 
-  // ── FIX: Centralized API Base URL
-  // IMPORTANT: When testing on a physical Android phone, localhost / 127.0.0.1
-  // points to the phone itself, NOT your PC. Use your PC's LAN IPv4 address.
-  // Find it with: ipconfig (Windows) | ifconfig (Mac/Linux)
-  // Example: http://192.168.1.5:8000
-  //
-  // For Android Emulator: http://10.0.2.2:8000
-  // For Physical Device : http://192.168.9.221:8000 (Wi-Fi) or http://127.0.0.1:8000 (USB adb reverse)
-  // FIX: Updated physical device LAN IP and USB ADB reverse URL
-  static const String kApiBaseUrlAndroidEmulator = 'http://10.0.2.2:8000';
-  static const String kApiBaseUrlPhysicalDevice = 'http://192.168.9.221:8000';
-  static const String kApiBaseUrlUsbReverse = 'http://127.0.0.1:8000';
+  // ── FIX: Centralized API Base URL pointing to ApiConfig.baseUrl
+  // FIX: Use laptop LAN IP for same-WiFi physical Android connection
+  static const String kApiBaseUrlAndroidEmulator = ApiConfig.emulatorUrl;
+  static const String kApiBaseUrlPhysicalDevice = ApiConfig.baseUrl;
+  static const String kApiBaseUrlUsbReverse = ApiConfig.usbReverseUrl;
   static const String kApiBaseUrlWeb = 'http://localhost:8000';
 
-  // Change this to kApiBaseUrlUsbReverse or kApiBaseUrlPhysicalDevice when testing on real phone:
-  static const String kApiBaseUrl = kApiBaseUrlUsbReverse;
+  static const String kApiBaseUrl = ApiConfig.baseUrl;
 
   // ── API Endpoint Paths
   static const String kEndpointHealth = '/health';

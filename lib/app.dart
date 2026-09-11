@@ -34,6 +34,7 @@ import 'features/assessment/cognitive_assessment_screen.dart';
 import 'features/auth/doctor_login_screen.dart';
 import 'features/doctor/doctor_dashboard_screen.dart';
 import 'features/doctor/screens/patient_clinical_overview_screen.dart';
+import 'features/reminders/patient_reminders_screen.dart';
 
 GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
       initialLocation: initialLocation,
@@ -240,6 +241,14 @@ GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
             return null;
           },
           builder: (context, state) => const MriScreeningScreen(),
+        ),
+
+        // ── Reminders
+        // FIX: Sync caregiver reminder changes to linked patient
+        GoRoute(
+          path: '/reminders',
+          name: 'reminders',
+          builder: (context, state) => const PatientRemindersScreen(),
         ),
 
         // ── Take Me Home & Emergency SOS

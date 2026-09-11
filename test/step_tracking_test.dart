@@ -8,7 +8,9 @@ import 'package:smriti_care/core/services/step_storage_service.dart';
 
 void main() {
   group('DailyStepRecord Model Tests', () {
-    test('Calculates progress percentage, remaining steps, and goal completion correctly', () {
+    test(
+        'Calculates progress percentage, remaining steps, and goal completion correctly',
+        () {
       final record = DailyStepRecord(
         patientId: 'MC-2048',
         date: '2026-09-11',
@@ -24,7 +26,8 @@ void main() {
       expect(record.isGoalCompleted, isFalse);
     });
 
-    test('Caps progress percentage at 1.0 when steps exceed goal of 10,000', () {
+    test('Caps progress percentage at 1.0 when steps exceed goal of 10,000',
+        () {
       final completedRecord = DailyStepRecord(
         patientId: 'MC-2048',
         date: '2026-09-11',
@@ -66,7 +69,8 @@ void main() {
   });
 
   group('StepStorageService Logic Tests', () {
-    test('Calculates today steps monotonically and rebases on sensor reboot', () async {
+    test('Calculates today steps monotonically and rebases on sensor reboot',
+        () async {
       StepStorageService.instance.clearForTesting();
 
       // Step count starts with sensor reading 5000

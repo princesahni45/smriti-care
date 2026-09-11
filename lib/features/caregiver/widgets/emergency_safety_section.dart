@@ -78,9 +78,10 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                   ),
                 ],
               ),
-              Builder(
-                builder: (context) {
-                  final em = EmergencyService.instance.settings;
+              // FIX: Use shared SOS contacts for caregiver and patient
+              ValueListenableBuilder<EmergencySettingsData>(
+                valueListenable: EmergencyService.instance.settingsNotifier,
+                builder: (context, em, _) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -93,7 +94,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                           const Icon(Icons.phone_rounded,
                               size: 14, color: AppColors.teal),
                           const SizedBox(width: 6),
-                          Text('Primary: ${em.primaryNumber}',
+                          Text('Primary: ${em.primaryPhone}',
                               style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -107,7 +108,7 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                               size: 14, color: AppColors.violet),
                           const SizedBox(width: 6),
                           Text(
-                              'Secondary: ${em.secondaryNumber} (${em.secondaryName})',
+                              'Secondary: ${em.secondaryPhone} (${em.secondaryName})',
                               style: const TextStyle(
                                   fontSize: 13, color: AppColors.muted)),
                         ],

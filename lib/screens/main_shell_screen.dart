@@ -20,6 +20,7 @@ import '../features/games/games_hub_screen.dart';
 import '../features/emergency/take_me_home_screen.dart';
 import '../features/mri/mri_screening_screen.dart';
 import '../features/assessment/cognitive_assessment_screen.dart';
+import '../features/reminders/patient_reminders_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
@@ -143,8 +144,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
       GamesHubScreen(
         onBack: () => _onTabTapped(0),
       ),
-      PlaceholderScreen.forModule(
-        'reminders',
+      // FIX: Sync caregiver reminder changes to linked patient
+      PatientRemindersScreen(
         onBack: () => _onTabTapped(0),
       ),
       PlaceholderScreen.forModule(

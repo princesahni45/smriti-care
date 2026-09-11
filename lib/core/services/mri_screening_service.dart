@@ -37,18 +37,42 @@ class MriScreeningService {
 
   // ── Health Check ──────────────────────────────────────────────────────────
 
-  // FIX: Resilient backend health check with automatic fallback URL discovery
-  Future<bool> checkBackendHealth() async {
+  BackendHealthStatus _currentHealthStatus = const BackendHealthStatus(
+    state: BackendStatusState.connecting,
+    message: 'Connecting to MRI backend...',
+    url: ApiConfig.baseUrl,
+  );
+
+  BackendHealthStatus get currentHealthStatus => _currentHealthStatus;
+
+  DateTime? _lastHealthCheckTime;
+  static const Duration _healthCheckCooldown = Duration(seconds: 2);
+
+  // FIX: Resilient backend health check with detailed states and debug logs
+  Future<BackendHealthStatus> checkBackendHealthDetailed(
+      {bool force = false}) async {
+    final now = DateTime.now();
+    if (!force &&
+        _lastHealthCheckTime != null &&
+        now.difference(_lastHealthCheckTime!) < _healthCheckCooldown &&
+        _currentHealthStatus.state != BackendStatusState.connecting) {
+      return _currentHealthStatus;
+    }
+    _lastHealthCheckTime = now;
+
+    final targetUrl = _apiBaseUrl.isNotEmpty ? _apiBaseUrl : ApiConfig.baseUrl;
+    debugPrint('[MRI Backend] Base URL: $targetUrl');
+
     final candidateUrls = <String>[
-      _apiBaseUrl,
+      targetUrl,
       ApiConfig.baseUrl,
       ApiConfig.wifiLanUrl,
-      'http://127.0.0.1:8000',
+      ApiConfig.usbReverseUrl,
       ApiConfig.emulatorUrl,
-      'http://localhost:8000',
     ];
 
     final tested = <String>{};
+    BackendHealthStatus? failureStatus;
 
     for (final candidate in candidateUrls) {
       var clean = candidate.trim();
@@ -58,19 +82,103 @@ class MriScreeningService {
       if (clean.isEmpty || tested.contains(clean)) continue;
       tested.add(clean);
 
+      final uri = Uri.parse('$clean${ApiConfig.healthEndpoint}');
+      debugPrint('[MRI Backend] Health request: $uri');
+
       try {
-        final uri = Uri.parse('$clean${ApiConfig.healthEndpoint}');
-        final response =
-            await http.get(uri).timeout(const Duration(seconds: 2));
+        final response = await http.get(uri).timeout(
+              const Duration(seconds: ApiConfig.healthTimeoutSeconds),
+            );
+        debugPrint(
+            '[MRI Backend] Health response status: ${response.statusCode} from $clean');
+
         if (response.statusCode == 200) {
+          final data = jsonDecode(response.body) as Map<String, dynamic>;
+          final modelLoaded = data['model_loaded'] == true;
+          final activeModel = data['active_model'] as String?;
+          final statusStr = (data['status'] ?? '').toString().toLowerCase();
+
+          debugPrint(
+              '[MRI Backend] Model ready: $modelLoaded, active: $activeModel');
+
           _apiBaseUrl = clean;
-          return true;
+
+          final BackendStatusState state;
+          final String msg;
+          if (modelLoaded) {
+            state = BackendStatusState.modelReady;
+            msg = activeModel != null
+                ? 'Model Ready ($activeModel)'
+                : 'Model Ready';
+          } else if (statusStr == 'online' || statusStr == 'loading') {
+            state = BackendStatusState.modelLoading;
+            msg = 'Model Loading';
+          } else {
+            state = BackendStatusState.online;
+            msg = 'Online';
+          }
+
+          _currentHealthStatus = BackendHealthStatus(
+            state: state,
+            message: msg,
+            modelLoaded: modelLoaded,
+            activeModel: activeModel,
+            url: clean,
+          );
+          return _currentHealthStatus;
+        } else {
+          debugPrint(
+              '[MRI Backend] Unexpected HTTP error: ${response.statusCode} from $clean');
+          failureStatus ??= BackendHealthStatus(
+            state: BackendStatusState.error,
+            message: 'Error (HTTP ${response.statusCode})',
+            url: clean,
+          );
         }
-      } catch (_) {
-        // Try next fallback URL
+      } on SocketException catch (se) {
+        debugPrint(
+            '[MRI Backend] Health check timeout / socket error: ${se.message}');
+        failureStatus ??= BackendHealthStatus(
+          state: BackendStatusState.offline,
+          message: 'Offline ($clean)',
+          url: clean,
+          errorDetails: se.message,
+        );
+      } on http.ClientException catch (ce) {
+        debugPrint('[MRI Backend] HTTP client exception from $clean: ${ce.message}');
+        failureStatus ??= BackendHealthStatus(
+          state: BackendStatusState.offline,
+          message: 'Offline ($clean)',
+          url: clean,
+          errorDetails: ce.message,
+        );
+      } catch (e) {
+        debugPrint(
+            '[MRI Backend] Health check timeout / socket error: $e');
+        failureStatus ??= BackendHealthStatus(
+          state: BackendStatusState.offline,
+          message: 'Offline ($clean)',
+          url: clean,
+          errorDetails: e.toString(),
+        );
       }
     }
-    return false;
+
+    _currentHealthStatus = failureStatus ??
+        BackendHealthStatus(
+          state: BackendStatusState.offline,
+          message: 'Offline ($targetUrl)',
+          url: targetUrl,
+        );
+    return _currentHealthStatus;
+  }
+
+  // FIX: Resilient backend health check returning boolean for callers
+  Future<bool> checkBackendHealth({bool force = false}) async {
+    final status = await checkBackendHealthDetailed(force: force);
+    return status.state == BackendStatusState.modelReady ||
+        status.state == BackendStatusState.online ||
+        status.state == BackendStatusState.modelLoading;
   }
 
   // FIX: Health details fetcher using currently resolved API base URL

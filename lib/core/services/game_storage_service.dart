@@ -7,6 +7,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/game_result.dart';
@@ -18,6 +19,10 @@ class GameStorageService {
   final List<GameResult> _history = [];
   final Map<String, int> _adaptiveLevels = {};
   bool _isInitialized = false;
+  bool _isSyncing = false;
+
+  // FIX: Save cognitive game result for caregiver dashboard - notify UI on changes
+  final ValueNotifier<int> changeNotifier = ValueNotifier<int>(0);
 
   /// Ensure storage file is loaded on startup
   Future<void> init() async {
@@ -76,9 +81,13 @@ class GameStorageService {
     }
   }
 
-  /// Save a completed game result
+  /// Save a completed game result (offline-first with automatic cloud sync)
+  // FIX: Save cognitive game result for caregiver dashboard
+  // FIX: Save cognitive result after game completion
   Future<void> saveResult(GameResult result) async {
     await init();
+    // Avoid duplicate scoreId insertions
+    _history.removeWhere((r) => r.id == result.id);
     _history.insert(0, result); // newest first
 
     // Calculate adaptive difficulty transition
@@ -87,41 +96,161 @@ class GameStorageService {
     _adaptiveLevels[result.gameId] = recommendedLevel;
 
     await _persist();
+    changeNotifier.value++;
+
+    // Trigger deferred cloud sync without blocking
+    syncPendingScores();
   }
 
-  /// Retrieve full game history (newest first)
-  List<GameResult> getHistory() {
+  /// Sync all pending cognitive scores to Firestore
+  // FIX: Save cognitive game result for caregiver dashboard
+  Future<void> syncPendingScores() async {
+    if (_isSyncing) return;
+    _isSyncing = true;
+    try {
+      final pending = _history.where((r) => r.syncStatus == 'pending').toList();
+      if (pending.isEmpty) return;
+
+      final firestore = FirebaseFirestore.instance;
+      bool hasChanges = false;
+
+      for (final record in pending) {
+        try {
+          await firestore
+              .collection('patients')
+              .doc(record.patientId)
+              .collection('cognitiveScores')
+              .doc(record.scoreId)
+              .set(record.toMap(), SetOptions(merge: true));
+
+          final idx = _history.indexWhere((r) => r.id == record.id);
+          if (idx != -1) {
+            _history[idx] = _history[idx].copyWith(syncStatus: 'synced');
+            hasChanges = true;
+          }
+        } catch (e) {
+          // Keep as pending if Firestore is offline or fails
+          debugPrint('Score sync error for ${record.id}: $e');
+        }
+      }
+
+      if (hasChanges) {
+        await _persist();
+        changeNotifier.value++;
+      }
+    } catch (e) {
+      debugPrint('GameStorageService syncPendingScores note: $e');
+    } finally {
+      _isSyncing = false;
+    }
+  }
+
+  /// Pull remote scores for Caregiver viewing when online
+  // FIX: Save cognitive game result for caregiver dashboard
+  Future<void> fetchPatientScoresFromCloud(String patientId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(patientId)
+          .collection('cognitiveScores')
+          .orderBy('timestamp', descending: true)
+          .limit(20)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        await init();
+        bool updated = false;
+        for (final doc in snapshot.docs) {
+          final remote = GameResult.fromMap(doc.data());
+          if (!_history.any((r) => r.id == remote.id)) {
+            _history.add(remote);
+            updated = true;
+          }
+        }
+        if (updated) {
+          _history.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          await _persist();
+          changeNotifier.value++;
+        }
+      }
+    } catch (e) {
+      debugPrint('GameStorageService fetchPatientScoresFromCloud note: $e');
+    }
+  }
+
+  /// Retrieve full game history (newest first, optional patient filtering)
+  List<GameResult> getHistory({String? patientId}) {
+    if (patientId != null && patientId.isNotEmpty) {
+      return List.unmodifiable(_history.where((r) => r.patientId == patientId));
+    }
     return List.unmodifiable(_history);
   }
 
-  /// Retrieve limited recent results
-  List<GameResult> getRecentResults({int limit = 10}) {
-    return _history.take(limit).toList();
+  /// Retrieve limited recent results (filtered by patientId if supplied)
+  List<GameResult> getRecentResults({int limit = 10, String? patientId}) {
+    final list = (patientId != null && patientId.isNotEmpty)
+        ? _history.where((r) => r.patientId == patientId)
+        : _history;
+    return list.take(limit).toList();
+  }
+
+  /// Retrieve newest single game result for patient
+  GameResult? getLatestGameResult({String? patientId}) {
+    final list = (patientId != null && patientId.isNotEmpty)
+        ? _history.where((r) => r.patientId == patientId)
+        : _history;
+    return list.firstOrNull;
   }
 
   /// Total games completed across all activities
-  int getTotalGamesCompleted() {
+  int getTotalGamesCompleted({String? patientId}) {
+    if (patientId != null && patientId.isNotEmpty) {
+      return _history.where((r) => r.patientId == patientId).length;
+    }
     return _history.length;
   }
 
   /// Today's aggregated score
-  int getTodayScore() {
+  int getTodayScore({String? patientId}) {
     final now = DateTime.now();
-    final todayResults = _history.where((r) =>
+    final list = (patientId != null && patientId.isNotEmpty)
+        ? _history.where((r) => r.patientId == patientId)
+        : _history;
+
+    final todayResults = list.where((r) =>
         r.timestamp.year == now.year &&
         r.timestamp.month == now.month &&
         r.timestamp.day == now.day);
     if (todayResults.isEmpty) return 0;
-    final total = todayResults.fold<int>(0, (sum, r) => sum + r.score);
+    final total = todayResults.fold<int>(0, (acc, r) => acc + r.score);
     return (total / todayResults.length).round();
   }
 
+  /// 7-day average score across real sessions
+  double get7DayAverageScore({String? patientId}) {
+    final now = DateTime.now();
+    final cutoff = now.subtract(const Duration(days: 7));
+    final list = (patientId != null && patientId.isNotEmpty)
+        ? _history.where((r) => r.patientId == patientId)
+        : _history;
+
+    final recent = list.where((r) => r.timestamp.isAfter(cutoff)).toList();
+    if (recent.isEmpty) return 0.0;
+    final totalPercentage =
+        recent.fold<double>(0.0, (acc, r) => acc + r.percentage);
+    return totalPercentage / recent.length;
+  }
+
   /// Current active streak in days
-  int getCurrentStreakDays() {
-    if (_history.isEmpty) return 0;
+  int getCurrentStreakDays({String? patientId}) {
+    final list = (patientId != null && patientId.isNotEmpty)
+        ? _history.where((r) => r.patientId == patientId).toList()
+        : _history;
+
+    if (list.isEmpty) return 0;
 
     final uniqueDays = <String>{};
-    for (final r in _history) {
+    for (final r in list) {
       final key = '${r.timestamp.year}-${r.timestamp.month}-${r.timestamp.day}';
       uniqueDays.add(key);
     }

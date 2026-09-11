@@ -23,6 +23,7 @@ import '../widgets/sos_button.dart';
 // FIX: Import offline-first step counter service and daily steps widget
 import '../core/services/step_counter_service.dart';
 import '../features/patient/widgets/daily_steps_card.dart';
+import '../core/services/caregiver_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   final void Function(String moduleId)? onNavigateModule;
@@ -79,10 +80,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Next Reminder (High Priority for elderly patients)
-                    NextReminderCard(
-                      time: '10:00 AM',
-                      onTap: () => _handleNavigate(context, 'reminders'),
+                    // FIX: Sync caregiver reminder changes to linked patient - Next Reminder Card
+                    ValueListenableBuilder<int>(
+                      valueListenable:
+                          CaregiverService.instance.remindersNotifier,
+                      builder: (context, _, __) {
+                        final reminders =
+                            CaregiverService.instance.getReminders();
+                        final upcoming = reminders
+                            .where((r) => r.isEnabled && !r.isCompleted)
+                            .toList();
+                        final next =
+                            upcoming.isNotEmpty ? upcoming.first : null;
+                        return NextReminderCard(
+                          title: next?.title,
+                          time: next?.time ?? 'No upcoming',
+                          note: next?.description.isNotEmpty == true
+                              ? next!.description
+                              : (next != null
+                                  ? 'Caregiver scheduled reminder'
+                                  : 'All reminders completed for today'),
+                          onTap: () => _handleNavigate(context, 'reminders'),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 18),

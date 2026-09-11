@@ -14,6 +14,7 @@ import '../../core/models/mri_models.dart';
 import '../../core/services/mri_screening_service.dart';
 import '../../core/services/mri_file_storage_service.dart';
 import '../../core/constants/app_constants.dart';
+import '../../config/api_config.dart';
 
 class MriScreeningScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -25,8 +26,13 @@ class MriScreeningScreen extends StatefulWidget {
 
 class _MriScreeningScreenState extends State<MriScreeningScreen> {
   // ── State ──────────────────────────────────────────────────────────────────
-  bool _isServerHealthy = false;
-  bool _checkingServer = true;
+  BackendHealthStatus _healthStatus = const BackendHealthStatus(
+    state: BackendStatusState.connecting,
+    message: 'Connecting...',
+    url: ApiConfig.baseUrl,
+  );
+  bool get _checkingServer =>
+      _healthStatus.state == BackendStatusState.connecting;
   bool _isSaving = false;
   bool _isAnalyzing = false;
 
@@ -45,13 +51,20 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
     _loadHistory();
   }
 
-  Future<void> _checkServer() async {
-    setState(() => _checkingServer = true);
-    final healthy = await MriScreeningService.instance.checkBackendHealth();
+  // FIX: Use laptop LAN IP for same-WiFi physical Android connection with 6 distinct health states
+  Future<void> _checkServer({bool force = true}) async {
+    setState(() {
+      _healthStatus = BackendHealthStatus(
+        state: BackendStatusState.connecting,
+        message: 'Connecting...',
+        url: MriScreeningService.instance.apiBaseUrl,
+      );
+    });
+    final status = await MriScreeningService.instance
+        .checkBackendHealthDetailed(force: force);
     if (mounted) {
       setState(() {
-        _isServerHealthy = healthy;
-        _checkingServer = false;
+        _healthStatus = status;
       });
     }
   }
@@ -302,15 +315,15 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                   ActionChip(
                     avatar: const Icon(Icons.wifi_rounded,
                         size: 16, color: AppColors.teal),
-                    label: const Text('Wi-Fi (192.168.9.221:8000)',
+                    label: const Text('Wi-Fi (${ApiConfig.laptopWifiIp}:8000)',
                         style: TextStyle(fontSize: 11)),
                     backgroundColor:
-                        controller.text == 'http://192.168.9.221:8000'
+                        controller.text == ApiConfig.wifiLanUrl
                             ? AppColors.tealPale
                             : null,
                     onPressed: () {
                       setDialogState(() {
-                        controller.text = 'http://192.168.9.221:8000';
+                        controller.text = ApiConfig.wifiLanUrl;
                       });
                     },
                   ),
@@ -451,63 +464,106 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
   // ── Server Status Banner ───────────────────────────────────────────────────
 
   Widget _buildServerStatusBanner() {
-    final url = MriScreeningService.instance.apiBaseUrl;
+    final url = _healthStatus.url;
+    final Color bgColor;
+    final Color borderColor;
+    final Color textColor;
+    final IconData iconData;
+    final Color iconColor;
+    final String statusText;
+
+    switch (_healthStatus.state) {
+      case BackendStatusState.connecting:
+        bgColor = AppColors.softSection;
+        borderColor = AppColors.borderLight;
+        textColor = AppColors.ink;
+        iconData = Icons.sync_rounded;
+        iconColor = AppColors.teal;
+        statusText = 'Connecting to backend ($url)...';
+      case BackendStatusState.modelReady:
+        bgColor = const Color(0xFFE8F5E9);
+        borderColor = Colors.green.shade400;
+        textColor = Colors.green.shade900;
+        iconData = Icons.check_circle_rounded;
+        iconColor = Colors.green.shade700;
+        statusText = _healthStatus.activeModel != null
+            ? 'Model Ready (${_healthStatus.activeModel})'
+            : 'Model Ready ($url)';
+      case BackendStatusState.online:
+        bgColor = const Color(0xFFE8F5E9);
+        borderColor = Colors.green.shade400;
+        textColor = Colors.green.shade900;
+        iconData = Icons.cloud_done_rounded;
+        iconColor = Colors.green.shade700;
+        statusText = 'Online ($url)';
+      case BackendStatusState.modelLoading:
+        bgColor = const Color(0xFFFFF8E1);
+        borderColor = Colors.amber.shade400;
+        textColor = Colors.amber.shade900;
+        iconData = Icons.hourglass_top_rounded;
+        iconColor = Colors.amber.shade800;
+        statusText = 'Model Loading... ($url)';
+      case BackendStatusState.offline:
+        bgColor = AppColors.amberPale;
+        borderColor = AppColors.amber;
+        textColor = AppColors.amberDeep;
+        iconData = Icons.cloud_off_rounded;
+        iconColor = AppColors.amberDeep;
+        statusText = 'Offline ($url)';
+      case BackendStatusState.error:
+        bgColor = const Color(0xFFFFEBEE);
+        borderColor = Colors.red.shade300;
+        textColor = Colors.red.shade900;
+        iconData = Icons.error_outline_rounded;
+        iconColor = Colors.red.shade700;
+        statusText = 'Error: ${_healthStatus.message}';
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: _checkingServer
-            ? AppColors.softSection
-            : (_isServerHealthy
-                ? const Color(0xFFE8F5E9)
-                : AppColors.amberPale),
+        color: bgColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: _checkingServer
-              ? AppColors.borderLight
-              : (_isServerHealthy ? Colors.green.shade400 : AppColors.amber),
-        ),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
-          _checkingServer
+          _healthStatus.state == BackendStatusState.connecting
               ? const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
                       strokeWidth: 2.5, color: AppColors.teal))
-              : Icon(
-                  _isServerHealthy
-                      ? Icons.check_circle_rounded
-                      : Icons.info_outline_rounded,
-                  color: _isServerHealthy
-                      ? Colors.green.shade700
-                      : AppColors.amberDeep,
-                  size: 20),
+              : Icon(iconData, color: iconColor, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              _checkingServer
-                  ? 'Checking backend...'
-                  : _isServerHealthy
-                      ? 'AI Backend Connected ($url)'
-                      : 'Backend Offline ($url)',
+              statusText,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: _isServerHealthy
-                    ? Colors.green.shade900
-                    : AppColors.amberDeep,
+                color: textColor,
               ),
             ),
           ),
-          // FIX: Added one-tap refresh/retry button to test connection immediately
+          // FIX: One-tap Retry button with text and icon
           InkWell(
-            onTap: _checkingServer ? null : _checkServer,
+            onTap: _checkingServer ? null : () => _checkServer(force: true),
             borderRadius: BorderRadius.circular(16),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              child: Icon(Icons.refresh_rounded,
-                  size: 16, color: AppColors.tealDark),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.refresh_rounded, size: 16, color: iconColor),
+                  const SizedBox(width: 2),
+                  Text('Retry',
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: iconColor)),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 4),

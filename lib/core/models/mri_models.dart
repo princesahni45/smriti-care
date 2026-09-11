@@ -408,3 +408,40 @@ class MriScanResult {
   factory MriScanResult.fromJson(String source) =>
       MriScanResult.fromMap(jsonDecode(source) as Map<String, dynamic>);
 }
+
+// ── FIX: Backend Health Status States for MRI Screen ─────────────────────────
+enum BackendStatusState {
+  connecting,
+  online,
+  offline,
+  modelLoading,
+  modelReady,
+  error,
+}
+
+class BackendHealthStatus {
+  final BackendStatusState state;
+  final String message;
+  final bool modelLoaded;
+  final String? activeModel;
+  final String url;
+  final String? errorDetails;
+
+  const BackendHealthStatus({
+    required this.state,
+    required this.message,
+    this.modelLoaded = false,
+    this.activeModel,
+    required this.url,
+    this.errorDetails,
+  });
+
+  String get label => switch (state) {
+        BackendStatusState.connecting => 'Connecting...',
+        BackendStatusState.online => 'Online',
+        BackendStatusState.offline => 'Offline',
+        BackendStatusState.modelLoading => 'Model Loading',
+        BackendStatusState.modelReady => 'Model Ready',
+        BackendStatusState.error => 'Error',
+      };
+}

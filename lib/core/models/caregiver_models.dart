@@ -111,9 +111,11 @@ class CaregiverReminder {
   final String repeat; // daily, weekdays, weekends, once
   final bool enabled;
   final String status; // acknowledged, upcoming, not_acknowledged
+  final String createdBy;
+  final DateTime updatedAt;
   final DateTime? acknowledgedAt;
 
-  const CaregiverReminder({
+  CaregiverReminder({
     required this.id,
     required this.patientId,
     required this.type,
@@ -123,8 +125,36 @@ class CaregiverReminder {
     required this.repeat,
     required this.enabled,
     required this.status,
+    this.createdBy = 'Caregiver',
+    DateTime? updatedAt,
+    this.acknowledgedAt,
+  }) : updatedAt = updatedAt ?? DateTime.now();
+
+  const CaregiverReminder.constant({
+    required this.id,
+    required this.patientId,
+    required this.type,
+    required this.title,
+    required this.message,
+    required this.scheduledTime,
+    required this.repeat,
+    required this.enabled,
+    required this.status,
+    this.createdBy = 'Caregiver',
+    required this.updatedAt,
     this.acknowledgedAt,
   });
+
+  // FIX: Sync caregiver reminder changes to linked patient - required aliases
+  String get reminderId => id;
+  String get description => message;
+  String get repeatRule => repeat;
+  String get time => scheduledTime;
+  bool get isEnabled => enabled;
+  bool get isCompleted =>
+      status == 'completed' ||
+      status == 'acknowledged' ||
+      acknowledgedAt != null;
 
   CaregiverReminder copyWith({
     String? id,
@@ -136,6 +166,8 @@ class CaregiverReminder {
     String? repeat,
     bool? enabled,
     String? status,
+    String? createdBy,
+    DateTime? updatedAt,
     DateTime? acknowledgedAt,
   }) {
     return CaregiverReminder(
@@ -148,6 +180,8 @@ class CaregiverReminder {
       repeat: repeat ?? this.repeat,
       enabled: enabled ?? this.enabled,
       status: status ?? this.status,
+      createdBy: createdBy ?? this.createdBy,
+      updatedAt: updatedAt ?? this.updatedAt,
       acknowledgedAt: acknowledgedAt ?? this.acknowledgedAt,
     );
   }
@@ -155,31 +189,40 @@ class CaregiverReminder {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'reminderId': id,
       'patientId': patientId,
       'type': type,
       'title': title,
       'message': message,
+      'description': message,
       'scheduledTime': scheduledTime,
       'repeat': repeat,
+      'repeatRule': repeat,
       'enabled': enabled,
       'status': status,
+      'createdBy': createdBy,
+      'updatedAt': updatedAt.toIso8601String(),
       'acknowledgedAt': acknowledgedAt?.toIso8601String(),
     };
   }
 
   factory CaregiverReminder.fromMap(Map<String, dynamic> map) {
     return CaregiverReminder(
-      id: map['id'] ?? 'rem_',
-      patientId: map['patientId'] ?? 'MC-2048',
-      type: map['type'] ?? 'daily_routine',
-      title: map['title'] ?? 'Scheduled Reminder',
-      message: map['message'] ?? '',
-      scheduledTime: map['scheduledTime'] ?? '09:00 AM',
-      repeat: map['repeat'] ?? 'daily',
-      enabled: map['enabled'] ?? true,
-      status: map['status'] ?? 'upcoming',
+      id: (map['id'] ?? map['reminderId']) as String? ?? 'rem_',
+      patientId: (map['patientId'] as String?) ?? 'MC-2048',
+      type: (map['type'] as String?) ?? 'daily_routine',
+      title: (map['title'] as String?) ?? 'Scheduled Reminder',
+      message: (map['message'] ?? map['description']) as String? ?? '',
+      scheduledTime: (map['scheduledTime'] as String?) ?? '09:00 AM',
+      repeat: (map['repeat'] ?? map['repeatRule']) as String? ?? 'daily',
+      enabled: (map['enabled'] as bool?) ?? true,
+      status: (map['status'] as String?) ?? 'upcoming',
+      createdBy: (map['createdBy'] as String?) ?? 'Caregiver',
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.tryParse(map['updatedAt'] as String) ?? DateTime.now()
+          : DateTime.now(),
       acknowledgedAt: map['acknowledgedAt'] != null
-          ? DateTime.tryParse(map['acknowledgedAt'])
+          ? DateTime.tryParse(map['acknowledgedAt'] as String)
           : null,
     );
   }

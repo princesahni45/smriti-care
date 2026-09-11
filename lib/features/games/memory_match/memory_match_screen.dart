@@ -13,6 +13,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../../../shared/widgets/smriti_button.dart';
 import '../game_result_screen.dart';
 
@@ -219,12 +220,15 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
     final recommendation = GameStorageService.instance
         .getAdaptiveRecommendation('memory-match', accuracy, _currentLevel);
 
-    // Persist game result locally (Step 11 & 14)
+    // FIX: Save cognitive game result for caregiver dashboard
+    final patientId = CaregiverService.instance.selectedPatientId;
     final gameResult = GameResult(
       id: 'mm_${DateTime.now().millisecondsSinceEpoch}',
+      patientId: patientId,
       gameId: 'memory-match',
       gameName: 'Memory Match',
       score: score,
+      maxScore: 100,
       accuracy: accuracy,
       attempts: _moves,
       correctAnswers: totalPairs,

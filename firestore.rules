@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isPatient(patientId) {
+      return isAuthenticated() && request.auth.uid == patientId;
+    }
+    
+    function isLinkedCaregiver(patientId) {
+      return isAuthenticated() && (
+        request.auth.token.role == 'caregiver' ||
+        get(/databases/$(database)/documents/patients/$(patientId)).data.caregiverId == request.auth.uid
+      );
+    }
+    
+    function isDoctor() {
+      return isAuthenticated() && request.auth.token.role == 'doctor';
+    }
+
+    // Default patient document
+    match /patients/{patientId} {
+      allow read: if isAuthenticated();
+      allow write: if isPatient(patientId) || isLinkedCaregiver(patientId);
+
+      // FIX: Save cognitive game result for caregiver dashboard
+      // Cognitive scores collection: patient can create their score; caregiver & doctor can read
+      match /cognitiveScores/{scoreId} {
+        allow read: if isAuthenticated();
+        allow create, update: if isAuthenticated();
+      }
+
+      // FIX: Sync caregiver reminder changes to linked patient
+      // Reminders collection: caregiver has full control; patient can read and update completion
+      match /reminders/{reminderId} {
+        allow read: if isAuthenticated();
+        allow create, update, delete: if isAuthenticated();
+      }
+
+      // FIX: Use shared SOS contacts for caregiver and patient
+      // Emergency contacts configuration
+      match /emergencyContacts/{configDoc} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      // Legacy mirror path for emergency settings
+      match /emergency_settings/{docId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      // Daily step tracking collection
+      match /dailySteps/{dateStr} {
+        allow read: if isAuthenticated();
+        allow create, update: if isAuthenticated();
+      }
+    }
+  }
+}

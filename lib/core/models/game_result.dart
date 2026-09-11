@@ -10,7 +10,8 @@ class GameResult {
   final String patientId;
   final String gameId;
   final String gameName;
-  final int score; // 0 - 100
+  final int score; // 0 - 100 or raw score
+  final int maxScore; // default 100
   final int accuracy; // 0 - 100
   final int attempts;
   final int correctAnswers;
@@ -28,6 +29,7 @@ class GameResult {
     required this.gameId,
     required this.gameName,
     required this.score,
+    this.maxScore = 100,
     required this.accuracy,
     required this.attempts,
     required this.correctAnswers,
@@ -39,6 +41,14 @@ class GameResult {
     required this.recommendation,
     this.syncStatus = 'pending',
   });
+
+  // FIX: Save cognitive game result for caregiver dashboard - required getters
+  String get scoreId => id;
+  String get gameType => gameId;
+  DateTime get completedAt => timestamp;
+  double get percentage => maxScore > 0
+      ? ((score / maxScore) * 100).clamp(0.0, 100.0)
+      : accuracy.toDouble();
 
   /// Helpful aliases satisfying Step 7 cognitive game telemetry specs
   int get mistakes => wrongAnswers;
@@ -57,10 +67,14 @@ class GameResult {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'scoreId': id,
       'patientId': patientId,
       'gameId': gameId,
+      'gameType': gameId,
       'gameName': gameName,
       'score': score,
+      'maxScore': maxScore,
+      'percentage': percentage,
       'accuracy': accuracy,
       'attempts': attempts,
       'correctAnswers': correctAnswers,
@@ -72,6 +86,7 @@ class GameResult {
       'responseTime': responseTime,
       'avgResponseTimeSeconds': avgResponseTimeSeconds,
       'timestamp': timestamp.toIso8601String(),
+      'completedAt': timestamp.toIso8601String(),
       'completionTime': timestamp.toIso8601String(),
       'recommendation': recommendation,
       'syncStatus': syncStatus,
@@ -79,13 +94,17 @@ class GameResult {
   }
 
   factory GameResult.fromMap(Map<String, dynamic> map) {
+    final rawScore = (map['score'] as num?)?.toInt() ?? 0;
+    final rawMax = (map['maxScore'] as num?)?.toInt() ?? 100;
     return GameResult(
-      id: map['id'] as String? ?? '',
+      id: (map['id'] ?? map['scoreId']) as String? ?? '',
       patientId: map['patientId'] as String? ?? 'MC-2048',
-      gameId: map['gameId'] as String? ?? 'unknown',
+      gameId: (map['gameId'] ?? map['gameType']) as String? ?? 'unknown',
       gameName: map['gameName'] as String? ?? 'Activity',
-      score: (map['score'] as num?)?.toInt() ?? 0,
-      accuracy: (map['accuracy'] as num?)?.toInt() ?? 0,
+      score: rawScore,
+      maxScore: rawMax > 0 ? rawMax : 100,
+      accuracy: (map['accuracy'] as num?)?.toInt() ??
+          (rawMax > 0 ? ((rawScore / rawMax) * 100).round() : 0),
       attempts: (map['attempts'] as num?)?.toInt() ?? 0,
       correctAnswers: (map['correctAnswers'] as num?)?.toInt() ?? 0,
       wrongAnswers:
@@ -99,10 +118,13 @@ class GameResult {
               0.0,
       timestamp: map['timestamp'] != null
           ? DateTime.tryParse(map['timestamp'] as String) ?? DateTime.now()
-          : (map['completionTime'] != null
-              ? DateTime.tryParse(map['completionTime'] as String) ??
+          : (map['completedAt'] != null
+              ? DateTime.tryParse(map['completedAt'] as String) ??
                   DateTime.now()
-              : DateTime.now()),
+              : (map['completionTime'] != null
+                  ? DateTime.tryParse(map['completionTime'] as String) ??
+                      DateTime.now()
+                  : DateTime.now())),
       recommendation: map['recommendation'] as String? ?? '',
       syncStatus: map['syncStatus'] as String? ?? 'pending',
     );
@@ -114,6 +136,7 @@ class GameResult {
     String? gameId,
     String? gameName,
     int? score,
+    int? maxScore,
     int? accuracy,
     int? attempts,
     int? correctAnswers,
@@ -131,6 +154,7 @@ class GameResult {
       gameId: gameId ?? this.gameId,
       gameName: gameName ?? this.gameName,
       score: score ?? this.score,
+      maxScore: maxScore ?? this.maxScore,
       accuracy: accuracy ?? this.accuracy,
       attempts: attempts ?? this.attempts,
       correctAnswers: correctAnswers ?? this.correctAnswers,

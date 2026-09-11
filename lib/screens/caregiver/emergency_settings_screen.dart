@@ -15,6 +15,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../services/emergency_service.dart';
 import '../../core/services/caregiver_auth_service.dart';
+import '../../core/services/caregiver_service.dart';
 
 class EmergencySettingsScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -124,6 +125,7 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
       _isSaving = true;
     });
 
+    // FIX: Use shared SOS contacts for caregiver and patient
     final result = await EmergencyService.instance.updateEmergencyNumbers(
       primaryNumber: _primaryCtrl.text.trim(),
       secondaryNumber: _secondaryCtrl.text.trim(),
@@ -131,6 +133,7 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
       secondaryName: _secondaryNameCtrl.text.trim(),
       primaryRelationship: _primaryRelCtrl.text.trim(),
       secondaryRelationship: _secondaryRelCtrl.text.trim(),
+      patientId: CaregiverService.instance.selectedPatientId,
     );
 
     if (!mounted) return;
