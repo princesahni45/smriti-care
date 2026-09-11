@@ -77,10 +77,15 @@ class MriUploadedFile {
   factory MriUploadedFile.fromMap(Map<String, dynamic> map) {
     MriFileCategory cat = MriFileCategory.other;
     final catStr = (map['category'] ?? '').toString().toLowerCase();
-    if (catStr == 'mri') cat = MriFileCategory.mri;
-    else if (catStr == 'images') cat = MriFileCategory.images;
-    else if (catStr == 'pdf') cat = MriFileCategory.pdf;
-    else if (catStr == 'presentations') cat = MriFileCategory.presentations;
+    if (catStr == 'mri') {
+      cat = MriFileCategory.mri;
+    } else if (catStr == 'images') {
+      cat = MriFileCategory.images;
+    } else if (catStr == 'pdf') {
+      cat = MriFileCategory.pdf;
+    } else if (catStr == 'presentations') {
+      cat = MriFileCategory.presentations;
+    }
 
     return MriUploadedFile(
       id: map['id'] ?? '',
@@ -153,6 +158,11 @@ class MriScanResult {
   final String? imageName;
   final String? localFilePath;
   final Map<String, dynamic>? modelInfo; // architecture, checkpoint, device
+  // FIX: Added doctor review fields for Doctor Dashboard MRI screening
+  final String? reviewedByDoctorId;
+  final DateTime? reviewedAt;
+
+  bool get isReviewed => reviewedByDoctorId != null;
 
   const MriScanResult({
     required this.scanId,
@@ -173,6 +183,8 @@ class MriScanResult {
     this.imageName,
     this.localFilePath,
     this.modelInfo,
+    this.reviewedByDoctorId,
+    this.reviewedAt,
   });
 
   /// Parse directly from the backend /predict JSON response.
@@ -269,6 +281,34 @@ class MriScanResult {
     );
   }
 
+  // FIX: Added copyWith for updating MRI review status
+  MriScanResult copyWith({
+    String? reviewedByDoctorId,
+    DateTime? reviewedAt,
+    String? status,
+  }) => MriScanResult(
+    scanId: scanId,
+    patientId: patientId,
+    prediction: prediction,
+    predictionClass: predictionClass,
+    classId: classId,
+    confidenceScore: confidenceScore,
+    probabilities: probabilities,
+    displayProbabilities: displayProbabilities,
+    isLowConfidence: isLowConfidence,
+    clinicalNote: clinicalNote,
+    recommendation: recommendation,
+    disclaimer: disclaimer,
+    status: status ?? this.status,
+    timestamp: timestamp,
+    serverUrl: serverUrl,
+    imageName: imageName,
+    localFilePath: localFilePath,
+    modelInfo: modelInfo,
+    reviewedByDoctorId: reviewedByDoctorId ?? this.reviewedByDoctorId,
+    reviewedAt: reviewedAt ?? this.reviewedAt,
+  );
+
   Map<String, dynamic> toMap() => {
     'scanId': scanId,
     'patientId': patientId,
@@ -288,14 +328,20 @@ class MriScanResult {
     'imageName': imageName,
     'localFilePath': localFilePath,
     'modelInfo': modelInfo,
+    'reviewedByDoctorId': reviewedByDoctorId,
+    'reviewedAt': reviewedAt?.toIso8601String(),
   };
 
   factory MriScanResult.fromMap(Map<String, dynamic> map) {
     MriPredictionClass pClass = MriPredictionClass.inconclusive;
     final clsStr = (map['predictionClass'] ?? '').toString().toLowerCase();
-    if (clsStr == 'normal') pClass = MriPredictionClass.normal;
-    else if (clsStr == 'verymild' || clsStr == 'very_mild') pClass = MriPredictionClass.veryMild;
-    else if (clsStr == 'dementia') pClass = MriPredictionClass.dementia;
+    if (clsStr == 'normal') {
+      pClass = MriPredictionClass.normal;
+    } else if (clsStr == 'verymild' || clsStr == 'very_mild') {
+      pClass = MriPredictionClass.veryMild;
+    } else if (clsStr == 'dementia') {
+      pClass = MriPredictionClass.dementia;
+    }
 
     Map<String, double>? probs;
     if (map['probabilities'] is Map) {
@@ -329,6 +375,10 @@ class MriScanResult {
       imageName: map['imageName'],
       localFilePath: map['localFilePath'],
       modelInfo: map['modelInfo'] is Map ? Map<String, dynamic>.from(map['modelInfo'] as Map) : null,
+      reviewedByDoctorId: map['reviewedByDoctorId'] as String?,
+      reviewedAt: map['reviewedAt'] != null
+          ? DateTime.tryParse(map['reviewedAt'].toString())
+          : null,
     );
   }
 

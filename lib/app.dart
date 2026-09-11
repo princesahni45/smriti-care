@@ -30,6 +30,10 @@ import 'features/games/family_memories/family_memories_game_screen.dart';
 import 'features/mri/mri_screening_screen.dart';
 import 'features/emergency/take_me_home_screen.dart';
 import 'features/assessment/cognitive_assessment_screen.dart';
+// FIX: Added doctor role support - imports
+import 'features/auth/doctor_login_screen.dart';
+import 'features/doctor/doctor_dashboard_screen.dart';
+import 'features/doctor/screens/patient_clinical_overview_screen.dart';
 
 GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
   initialLocation: initialLocation,
@@ -139,6 +143,52 @@ GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
           context.go('/dashboard');
         },
       ),
+    ),
+
+    // ── Doctor Login Screen (role-switch auth gate)
+    // FIX: Added doctor role support - doctor login route
+    GoRoute(
+      path: '/doctor-login',
+      name: 'doctorLogin',
+      builder: (context, state) => DoctorLoginScreen(
+        onSuccess: () => context.go('/doctor'),
+        onCancel: () => context.go('/dashboard'),
+      ),
+    ),
+
+    // ── Doctor Dashboard (auth-guarded; redirects to /doctor-login if not authenticated)
+    // FIX: Added multi-patient doctor dashboard - doctor dashboard route
+    GoRoute(
+      path: '/doctor',
+      name: 'doctor',
+      redirect: (context, state) {
+        if (!CaregiverAuthService.instance.isDoctorAuthenticated) {
+          return '/doctor-login';
+        }
+        return null;
+      },
+      builder: (context, state) => DoctorDashboardScreen(
+        onBackToPatient: () {
+          CaregiverAuthService.instance.exitDoctorMode();
+          context.go('/dashboard');
+        },
+      ),
+    ),
+
+    // ── Doctor Patient Clinical Overview
+    GoRoute(
+      path: '/doctor/patient/:id',
+      name: 'doctorPatientOverview',
+      redirect: (context, state) {
+        if (!CaregiverAuthService.instance.isDoctorAuthenticated) {
+          return '/doctor-login';
+        }
+        return null;
+      },
+      builder: (context, state) {
+        final patientId = state.pathParameters['id'] ?? '';
+        return PatientClinicalOverviewScreen(patientId: patientId);
+      },
     ),
 
     // ── Cognitive Games

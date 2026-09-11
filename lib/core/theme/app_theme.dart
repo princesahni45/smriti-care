@@ -34,6 +34,8 @@ class AppColors {
   // ── Border
   static const Color border        = Color(0xFFB0D4CF);
   static const Color borderLight   = Color(0xFFE0ECEB);
+  // FIX: Added cardBorder alias for UI cards
+  static const Color cardBorder    = Color(0xFFE0ECEB);
 
   // ── Accent: blue
   static const Color blue          = Color(0xFF287BA7);

@@ -71,6 +71,15 @@ class _MainShellScreenState extends State<MainShellScreen> {
           context.push('/caregiver-login');
         }
         break;
+      // FIX: Added doctor role support - handle doctor navigation
+      case 'doctor':
+        final authService = CaregiverAuthService.instance;
+        if (authService.switchToDoctorModeIfAuthenticated()) {
+          context.go('/doctor');
+        } else {
+          context.push('/doctor-login');
+        }
+        break;
       case 'emergency':
       case 'sos':
       case 'location':

@@ -96,6 +96,20 @@ class RoleSelectionScreen extends StatelessWidget {
                 accentColor: AppColors.blueDeep,
                 onTap: () => context.go('/login/caregiver'),
               ),
+              const SizedBox(height: 16),
+              // FIX: Added doctor role support - doctor card in role selection
+              _RoleCard(
+                icon: Icons.medical_services_rounded,
+                iconBg: const Color(0xFFE0F2F1),
+                iconColor: const Color(0xFF00796B),
+                title: 'Doctor',
+                subtitle: 'Clinical portal • Multi-patient cognitive & MRI monitoring.',
+                badge: 'Medical Portal',
+                badgeBg: const Color(0xFFE0F2F1),
+                badgeColor: const Color(0xFF004D40),
+                accentColor: const Color(0xFF00796B),
+                onTap: () => context.go('/doctor-login'),
+              ),
               const SizedBox(height: 32),
               // ── Register link
               Row(

@@ -51,6 +51,11 @@ class CaregiverHeaderBar extends StatelessWidget {
               ),
             ),
             const Spacer(),
+            // FIX: Ensure role switcher is prominently positioned and not clipped on mobile screens
+            DashboardRoleSwitcher(
+              onSwitchToPatient: onSwitchToPatient,
+            ),
+            const SizedBox(width: 8),
             GestureDetector(
               onTap: () {
                 final alerts = CaregiverService.instance.getAlerts();
@@ -120,24 +125,6 @@ class CaregiverHeaderBar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppColors.teal,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                profile.initials,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13),
-              ),
-            ),
-            const SizedBox(width: 8),
-            DashboardRoleSwitcher(
-              onSwitchToPatient: onSwitchToPatient,
-            ),
-            const SizedBox(width: 6),
             InkWell(
               onTap: () => context.push('/language-select'),
               borderRadius: BorderRadius.circular(16),

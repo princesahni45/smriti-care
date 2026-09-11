@@ -269,8 +269,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('MRI Screening'), findsOneWidget);
-      // File selection button should be visible
-      expect(find.text('Select File'), findsOneWidget);
+      // FIX: File selection button shows Select MRI File
+      expect(find.text('Select MRI File'), findsOneWidget);
       // Analyze MRI button should be disabled until file is selected
       expect(find.text('Analyze MRI'), findsOneWidget);
     });
