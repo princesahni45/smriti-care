@@ -98,7 +98,8 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
           tooltip: 'Back to Patient Dashboard',
         ),
         title: Text(
-          context.tr('caregiver.portalTitle', defaultText: 'Caregiver Verification'),
+          context.tr('caregiver.portalTitle',
+              defaultText: 'Caregiver Verification'),
           style: const TextStyle(
             color: AppColors.ink,
             fontWeight: FontWeight.w800,
@@ -141,7 +142,8 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
 
                 // ── Title & Subtitle ─────────────────────────────────────────
                 Text(
-                  context.tr('auth.caregiverLoginTitle', defaultText: 'Caregiver Access Only'),
+                  context.tr('auth.caregiverLoginTitle',
+                      defaultText: 'Caregiver Access Only'),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.dmSans(
                     fontSize: 24,
@@ -213,21 +215,26 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
                   autocorrect: false,
                   decoration: InputDecoration(
                     hintText: 'e.g. caregiver@smriti.care',
-                    prefixIcon: const Icon(Icons.email_outlined, color: AppColors.muted),
+                    prefixIcon: const Icon(Icons.email_outlined,
+                        color: AppColors.muted),
                     filled: true,
                     fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.borderLight),
+                      borderSide:
+                          const BorderSide(color: AppColors.borderLight),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.borderLight),
+                      borderSide:
+                          const BorderSide(color: AppColors.borderLight),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.teal, width: 2),
+                      borderSide:
+                          const BorderSide(color: AppColors.teal, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -257,10 +264,13 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.muted),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded,
+                        color: AppColors.muted),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         color: AppColors.muted,
                       ),
                       onPressed: () {
@@ -271,18 +281,22 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
                     ),
                     filled: true,
                     fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.borderLight),
+                      borderSide:
+                          const BorderSide(color: AppColors.borderLight),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.borderLight),
+                      borderSide:
+                          const BorderSide(color: AppColors.borderLight),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.teal, width: 2),
+                      borderSide:
+                          const BorderSide(color: AppColors.teal, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -318,7 +332,8 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
                           )
                         : Text(
                             context.tr('auth.signInBtn',
-                                defaultText: 'Verify & Access Caregiver Portal'),
+                                defaultText:
+                                    'Verify & Access Caregiver Portal'),
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
@@ -356,7 +371,8 @@ class _CaregiverLoginScreenState extends State<CaregiverLoginScreen> {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.info_outline_rounded, size: 18, color: AppColors.tealDark),
+                      Icon(Icons.info_outline_rounded,
+                          size: 18, color: AppColors.tealDark),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(

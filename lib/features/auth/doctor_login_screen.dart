@@ -171,7 +171,8 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                         children: [
                           const Row(
                             children: [
-                              Icon(Icons.vpn_key_rounded, size: 16, color: AppColors.tealDark),
+                              Icon(Icons.vpn_key_rounded,
+                                  size: 16, color: AppColors.tealDark),
                               SizedBox(width: 6),
                               Text(
                                 'Test Mode Credentials',
@@ -203,7 +204,8 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                       const SizedBox(height: 4),
                       const Text(
                         'Email: doctor@smriti.care\nPassword: password123\nPhysician: Dr. Ananya Bora (Neurologist)',
-                        style: TextStyle(fontSize: 12, color: AppColors.ink, height: 1.3),
+                        style: TextStyle(
+                            fontSize: 12, color: AppColors.ink, height: 1.3),
                       ),
                     ],
                   ),
@@ -213,7 +215,10 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                 // ── Email Field
                 const Text(
                   'Medical Email Address',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(
@@ -222,8 +227,10 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                   autocorrect: false,
                   decoration: InputDecoration(
                     hintText: 'doctor@hospital.org',
-                    hintStyle: const TextStyle(fontSize: 13, color: AppColors.muted),
-                    prefixIcon: const Icon(Icons.email_outlined, size: 18, color: AppColors.muted),
+                    hintStyle:
+                        const TextStyle(fontSize: 13, color: AppColors.muted),
+                    prefixIcon: const Icon(Icons.email_outlined,
+                        size: 18, color: AppColors.muted),
                     filled: true,
                     fillColor: AppColors.surface,
                     border: OutlineInputBorder(
@@ -250,7 +257,10 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                 // ── Password Field
                 const Text(
                   'Password',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(
@@ -258,15 +268,20 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
-                    hintStyle: const TextStyle(fontSize: 13, color: AppColors.muted),
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, size: 18, color: AppColors.muted),
+                    hintStyle:
+                        const TextStyle(fontSize: 13, color: AppColors.muted),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded,
+                        size: 18, color: AppColors.muted),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         size: 18,
                         color: AppColors.muted,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
                     filled: true,
                     fillColor: AppColors.surface,
@@ -300,7 +315,8 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline_rounded, color: Color(0xFFC62828), size: 18),
+                        const Icon(Icons.error_outline_rounded,
+                            color: Color(0xFFC62828), size: 18),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -337,11 +353,13 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
                           )
                         : const Text(
                             'Access Doctor Portal',
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w800),
                           ),
                   ),
                 ),
@@ -355,7 +373,10 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                     onPressed: _handleCancel,
                     child: const Text(
                       'Cancel & Return to Patient View',
-                      style: TextStyle(fontSize: 13, color: AppColors.muted, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),

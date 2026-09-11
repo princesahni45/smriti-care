@@ -56,7 +56,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
   @override
   void initState() {
     super.initState();
-    _currentLevel = GameStorageService.instance.getRecommendedLevel('different-object');
+    _currentLevel =
+        GameStorageService.instance.getRecommendedLevel('different-object');
     _initLevel(_currentLevel);
   }
 
@@ -73,7 +74,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     String? lastCategory;
 
     for (int i = 0; i < config.questionsCount; i++) {
-      final q = generateDifferentObjectQuestion(config.totalItems, lastCategory);
+      final q =
+          generateDifferentObjectQuestion(config.totalItems, lastCategory);
       generated.add(q);
       lastCategory = q.commonCategory;
     }
@@ -186,9 +188,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
 
   void _showResultsDialog() {
     final totalAttempts = _score + _totalWrongAttempts;
-    final accuracy = totalAttempts > 0
-        ? ((_score / totalAttempts) * 100).round()
-        : 100;
+    final accuracy =
+        totalAttempts > 0 ? ((_score / totalAttempts) * 100).round() : 100;
     final config = kDifferentObjectLevels[_currentLevel]!;
     final recommendation = GameStorageService.instance
         .getAdaptiveRecommendation('different-object', accuracy, _currentLevel);
@@ -216,7 +217,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
           result: gameResult,
           onPlayAgain: () {
             Navigator.of(context).pop();
-            _initLevel(GameStorageService.instance.getRecommendedLevel('different-object'));
+            _initLevel(GameStorageService.instance
+                .getRecommendedLevel('different-object'));
           },
           onBackToGames: () => context.go('/games'),
         ),
@@ -249,11 +251,13 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  context.tr('games.findDifferentTitle', defaultText: 'Find the Different Object'),
+                  context.tr('games.findDifferentTitle',
+                      defaultText: 'Find the Different Object'),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  context.tr('games.findDifferentSubtitle', defaultText: 'Gentle category recognition'),
+                  context.tr('games.findDifferentSubtitle',
+                      defaultText: 'Gentle category recognition'),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -299,11 +303,15 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                             ),
                           ),
                           child: Text(
-                            kDifferentObjectLevels[lvl]!.label.split('—')[0].trim(),
+                            kDifferentObjectLevels[lvl]!
+                                .label
+                                .split('—')[0]
+                                .trim(),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: selected ? Colors.white : AppColors.inkSoft,
+                              color:
+                                  selected ? Colors.white : AppColors.inkSoft,
                             ),
                           ),
                         ),
@@ -339,8 +347,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                     label: 'Question',
                     value: '${_currentIndex + 1} / ${config.questionsCount}',
                   ),
-                  Container(
-                      width: 1, height: 32, color: AppColors.borderLight),
+                  Container(width: 1, height: 32, color: AppColors.borderLight),
                   _StatItem(
                     icon: Icons.check_circle_outline_rounded,
                     color: AppColors.tealDark,
@@ -348,8 +355,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                     label: 'Correct',
                     value: '$_score',
                   ),
-                  Container(
-                      width: 1, height: 32, color: AppColors.borderLight),
+                  Container(width: 1, height: 32, color: AppColors.borderLight),
                   _StatItem(
                     icon: Icons.timer_outlined,
                     color: AppColors.amberDeep,
@@ -374,7 +380,9 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      context.tr('games.findDifferentInstruction', defaultText: 'Find the object that is different from the others.'),
+                      context.tr('games.findDifferentInstruction',
+                          defaultText:
+                              'Find the object that is different from the others.'),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.ink,
@@ -384,12 +392,15 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                   IconButton(
                     icon: const Icon(Icons.volume_up_rounded,
                         color: AppColors.teal),
-                    tooltip: context.tr('games.readAloud', defaultText: 'Read Aloud'),
+                    tooltip: context.tr('games.readAloud',
+                        defaultText: 'Read Aloud'),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            context.tr('games.findDifferentInstruction', defaultText: 'Find the object that is different from the others.'),
+                            context.tr('games.findDifferentInstruction',
+                                defaultText:
+                                    'Find the object that is different from the others.'),
                           ),
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
@@ -418,7 +429,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
               SmritiButton(
                 label: _currentIndex + 1 < _questions.length
                     ? context.tr('games.next', defaultText: 'Next Question')
-                    : context.tr('progress.viewDetails', defaultText: 'View Results'),
+                    : context.tr('progress.viewDetails',
+                        defaultText: 'View Results'),
                 width: double.infinity,
                 icon: const Icon(Icons.arrow_forward_rounded, size: 20),
                 onPressed: _handleNextQuestion,

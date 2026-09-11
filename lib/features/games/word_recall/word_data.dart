@@ -21,7 +21,14 @@ const List<WordItem> kWordBankL1 = [
 ];
 
 const List<String> kDistractorBankL1 = [
-  'Cat', 'Apple', 'Train', 'Table', 'Shoe', 'Bird', 'Clock', 'Ball'
+  'Cat',
+  'Apple',
+  'Train',
+  'Table',
+  'Shoe',
+  'Bird',
+  'Clock',
+  'Ball'
 ];
 
 class WordRecallLevelConfig {
@@ -94,7 +101,12 @@ const Map<int, WordRecallLevelConfig> kWordRecallLevels = {
       WordItem(word: 'Bicycle', emoji: '🚲'),
     ],
     fixedDistractors: [
-      'Table', 'Mirror', 'Basket', 'Ladder', 'Bench', 'Cupboard'
+      'Table',
+      'Mirror',
+      'Basket',
+      'Ladder',
+      'Bench',
+      'Cupboard'
     ],
   ),
 };

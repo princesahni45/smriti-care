@@ -101,10 +101,12 @@ class TodayActivitySection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              const Icon(Icons.calendar_today_rounded, size: 20, color: AppColors.teal),
+              const Icon(Icons.calendar_today_rounded,
+                  size: 20, color: AppColors.teal),
               const SizedBox(width: 8),
               Text(
-                context.tr('landing.todaysActivity', defaultText: "Today's Activity"),
+                context.tr('landing.todaysActivity',
+                    defaultText: "Today's Activity"),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -119,7 +121,8 @@ class TodayActivitySection extends StatelessWidget {
         Row(
           children: [
             _buildStatCard(
-              label: context.tr('patient.progressCompleted', defaultText: 'Games Completed'),
+              label: context.tr('patient.progressCompleted',
+                  defaultText: 'Games Completed'),
               value: '$gamesCompleted',
               icon: Icons.videogame_asset_rounded,
               iconColor: AppColors.teal,
@@ -127,7 +130,8 @@ class TodayActivitySection extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             _buildStatCard(
-              label: context.tr('caregiver.statActivity', defaultText: 'Current Streak'),
+              label: context.tr('caregiver.statActivity',
+                  defaultText: 'Current Streak'),
               value: '$streakDays days',
               icon: Icons.local_fire_department_rounded,
               iconColor: AppColors.coral,

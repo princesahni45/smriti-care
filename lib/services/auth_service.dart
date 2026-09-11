@@ -156,7 +156,8 @@ class AuthService {
       return AuthResult.failure(_mapFirebaseError(e));
     } catch (e) {
       debugPrint("[AuthService] Unexpected login error: $e");
-      return AuthResult.failure("An unexpected error occurred. Please try again.");
+      return AuthResult.failure(
+          "An unexpected error occurred. Please try again.");
     }
   }
 
@@ -220,7 +221,8 @@ class AuthService {
       return AuthResult.failure(_mapFirebaseError(e));
     } catch (e) {
       debugPrint("[AuthService] Unexpected doctor login error: $e");
-      return AuthResult.failure("An unexpected error occurred. Please try again.");
+      return AuthResult.failure(
+          "An unexpected error occurred. Please try again.");
     }
   }
 
@@ -262,7 +264,8 @@ class AuthService {
       case "email-already-in-use":
         return "This email is already registered.";
       default:
-        debugPrint("[AuthService] Unhandled Firebase error code: ${e.code} — ${e.message}");
+        debugPrint(
+            "[AuthService] Unhandled Firebase error code: ${e.code} — ${e.message}");
         return e.message ?? "Authentication failed. Please try again.";
     }
   }

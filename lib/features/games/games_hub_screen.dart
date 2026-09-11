@@ -160,7 +160,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 28, color: AppColors.ink),
+          icon: const Icon(Icons.arrow_back_rounded,
+              size: 28, color: AppColors.ink),
           onPressed: () {
             if (widget.onBack != null) {
               widget.onBack!();
@@ -211,7 +212,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
                           size: 18, color: AppColors.teal),
                       const SizedBox(width: 8),
                       Text(
-                        context.tr('games.gentleFitness', defaultText: 'Gentle Brain Fitness'),
+                        context.tr('games.gentleFitness',
+                            defaultText: 'Gentle Brain Fitness'),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: AppColors.tealDark,
                               fontWeight: FontWeight.w700,
@@ -223,7 +225,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
                   const SizedBox(height: 10),
                   Text(
                     context.tr('games.fitnessHeading',
-                        defaultText: 'Exercise your mind at your own comfortable pace'),
+                        defaultText:
+                            'Exercise your mind at your own comfortable pace'),
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
@@ -251,7 +254,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
             // ── Games List Header
             const Row(
               children: [
-                Icon(Icons.sports_esports_rounded, size: 22, color: AppColors.teal),
+                Icon(Icons.sports_esports_rounded,
+                    size: 22, color: AppColors.teal),
                 SizedBox(width: 8),
                 Text(
                   'Available Activities',
@@ -301,7 +305,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
       iconFg = AppColors.amberDeep;
     }
 
-    final recommendedLevel = GameStorageService.instance.getRecommendedLevel(game.id);
+    final recommendedLevel =
+        GameStorageService.instance.getRecommendedLevel(game.id);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
@@ -422,7 +427,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.speed_rounded, size: 14, color: AppColors.tealDeep),
+                const Icon(Icons.speed_rounded,
+                    size: 14, color: AppColors.tealDeep),
                 const SizedBox(width: 6),
                 Text(
                   'Recommended: Level $recommendedLevel',
@@ -500,7 +506,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
             ),
             child: const Row(
               children: [
-                Icon(Icons.info_outline_rounded, color: AppColors.muted, size: 22),
+                Icon(Icons.info_outline_rounded,
+                    color: AppColors.muted, size: 22),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -589,7 +596,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb_outline_rounded, size: 20, color: AppColors.amberDeep),
+              Icon(Icons.lightbulb_outline_rounded,
+                  size: 20, color: AppColors.amberDeep),
               SizedBox(width: 8),
               Text(
                 'Coming in Future Updates',

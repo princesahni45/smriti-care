@@ -27,7 +27,8 @@ class WeeklyEngagementChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    context.tr('caregiver.cognitiveProgress', defaultText: 'COGNITIVE PROGRESS'),
+                    context.tr('caregiver.cognitiveProgress',
+                        defaultText: 'COGNITIVE PROGRESS'),
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
@@ -37,13 +38,18 @@ class WeeklyEngagementChart extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    context.tr('caregiver.weeklyEngagement', defaultText: 'Weekly engagement'),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
+                    context.tr('caregiver.weeklyEngagement',
+                        defaultText: 'Weekly engagement'),
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppColors.borderLight),
                   borderRadius: BorderRadius.circular(8),
@@ -51,8 +57,10 @@ class WeeklyEngagementChart extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      context.tr('caregiver.thisWeek', defaultText: 'This week'),
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      context.tr('caregiver.thisWeek',
+                          defaultText: 'This week'),
+                      style: const TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(width: 4),
                     const Icon(Icons.keyboard_arrow_down_rounded, size: 16),
@@ -85,8 +93,11 @@ class WeeklyEngagementChart extends StatelessWidget {
                               heightFactor: pct * 0.75,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: isToday ? AppColors.teal : AppColors.tealPale,
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                  color: isToday
+                                      ? AppColors.teal
+                                      : AppColors.tealPale,
+                                  borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(8)),
                                 ),
                               ),
                             ),
@@ -97,8 +108,10 @@ class WeeklyEngagementChart extends StatelessWidget {
                           day,
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                            color: isToday ? AppColors.tealDeep : AppColors.muted,
+                            fontWeight:
+                                isToday ? FontWeight.w800 : FontWeight.w600,
+                            color:
+                                isToday ? AppColors.tealDeep : AppColors.muted,
                           ),
                         ),
                       ],
@@ -117,12 +130,16 @@ class WeeklyEngagementChart extends StatelessWidget {
             ),
             child: const Row(
               children: [
-                Icon(Icons.trending_up_rounded, size: 18, color: AppColors.tealDeep),
+                Icon(Icons.trending_up_rounded,
+                    size: 18, color: AppColors.tealDeep),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     '12% improvement in cognitive engagement compared with last week.',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.tealDeep),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.tealDeep),
                   ),
                 ),
               ],

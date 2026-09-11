@@ -57,7 +57,8 @@ class EmergencySettingsData {
       primaryName: primaryName ?? this.primaryName,
       secondaryName: secondaryName ?? this.secondaryName,
       primaryRelationship: primaryRelationship ?? this.primaryRelationship,
-      secondaryRelationship: secondaryRelationship ?? this.secondaryRelationship,
+      secondaryRelationship:
+          secondaryRelationship ?? this.secondaryRelationship,
       updatedAt: updatedAt ?? this.updatedAt,
       isCloudSynced: isCloudSynced ?? this.isCloudSynced,
     );
@@ -77,11 +78,13 @@ class EmergencySettingsData {
   factory EmergencySettingsData.fromMap(Map<String, dynamic> map) =>
       EmergencySettingsData(
         primaryNumber: (map['primaryNumber'] as String?) ?? '+91 98765 43210',
-        secondaryNumber: (map['secondaryNumber'] as String?) ?? '+91 91234 56780',
+        secondaryNumber:
+            (map['secondaryNumber'] as String?) ?? '+91 91234 56780',
         primaryName: (map['primaryName'] as String?) ?? 'Rahul Das',
         secondaryName: (map['secondaryName'] as String?) ?? 'Dr. Ananya Bora',
         primaryRelationship: (map['primaryRelationship'] as String?) ?? 'Son',
-        secondaryRelationship: (map['secondaryRelationship'] as String?) ?? 'Family Doctor',
+        secondaryRelationship:
+            (map['secondaryRelationship'] as String?) ?? 'Family Doctor',
         updatedAt: map['updatedAt'] != null
             ? DateTime.tryParse(map['updatedAt'] as String) ?? DateTime.now()
             : DateTime.now(),
@@ -167,12 +170,15 @@ class EmergencyService extends ChangeNotifier {
   // ── Validation Helpers ──────────────────────────────────────────────────────
 
   /// Validates phone number format
-  static String? validatePhoneNumber(String? value, {String label = 'Phone number'}) {
+  static String? validatePhoneNumber(String? value,
+      {String label = 'Phone number'}) {
     if (value == null || value.trim().isEmpty) {
       return '$label cannot be empty.';
     }
     final clean = value.replaceAll(RegExp(r'[\s\-\(\)\+]'), '');
-    if (clean.length < 8 || clean.length > 15 || !RegExp(r'^[0-9]+$').hasMatch(clean)) {
+    if (clean.length < 8 ||
+        clean.length > 15 ||
+        !RegExp(r'^[0-9]+$').hasMatch(clean)) {
       return 'Enter a valid phone number (8-15 digits).';
     }
     return null;
@@ -214,7 +220,8 @@ class EmergencyService extends ChangeNotifier {
         isSuccess: false,
         isLocalSaved: false,
         isCloudSynced: false,
-        statusMessage: 'Permission denied: Only verified caregivers can edit emergency numbers.',
+        statusMessage:
+            'Permission denied: Only verified caregivers can edit emergency numbers.',
       );
     }
 
@@ -246,10 +253,18 @@ class EmergencyService extends ChangeNotifier {
     _settings = _settings.copyWith(
       primaryNumber: p1,
       secondaryNumber: p2,
-      primaryName: primaryName?.trim().isNotEmpty == true ? primaryName!.trim() : _settings.primaryName,
-      secondaryName: secondaryName?.trim().isNotEmpty == true ? secondaryName!.trim() : _settings.secondaryName,
-      primaryRelationship: primaryRelationship?.trim().isNotEmpty == true ? primaryRelationship!.trim() : _settings.primaryRelationship,
-      secondaryRelationship: secondaryRelationship?.trim().isNotEmpty == true ? secondaryRelationship!.trim() : _settings.secondaryRelationship,
+      primaryName: primaryName?.trim().isNotEmpty == true
+          ? primaryName!.trim()
+          : _settings.primaryName,
+      secondaryName: secondaryName?.trim().isNotEmpty == true
+          ? secondaryName!.trim()
+          : _settings.secondaryName,
+      primaryRelationship: primaryRelationship?.trim().isNotEmpty == true
+          ? primaryRelationship!.trim()
+          : _settings.primaryRelationship,
+      secondaryRelationship: secondaryRelationship?.trim().isNotEmpty == true
+          ? secondaryRelationship!.trim()
+          : _settings.secondaryRelationship,
       updatedAt: now,
       isCloudSynced: false,
     );
@@ -279,7 +294,8 @@ class EmergencyService extends ChangeNotifier {
         cloudSynced = true;
       }
     } catch (firestoreError) {
-      debugPrint('[EmergencyService] Firestore sync notice (offline/placeholder): $firestoreError');
+      debugPrint(
+          '[EmergencyService] Firestore sync notice (offline/placeholder): $firestoreError');
     }
 
     _settings = _settings.copyWith(isCloudSynced: cloudSynced);
@@ -310,8 +326,11 @@ class EmergencyService extends ChangeNotifier {
     required SosLocation location,
     String patientName = 'Mr. Ramesh Das',
   }) {
-    final status = location.isLastKnown ? 'Last Known Location' : 'Current GPS Fix';
-    final accuracyStr = location.accuracy > 0 ? '${location.accuracy.toStringAsFixed(1)}m' : 'Standard';
+    final status =
+        location.isLastKnown ? 'Last Known Location' : 'Current GPS Fix';
+    final accuracyStr = location.accuracy > 0
+        ? '${location.accuracy.toStringAsFixed(1)}m'
+        : 'Standard';
 
     final buffer = StringBuffer();
     buffer.writeln('EMERGENCY SOS from SmritiCare.');
@@ -320,7 +339,8 @@ class EmergencyService extends ChangeNotifier {
     buffer.writeln('Latitude: ${location.latitude.toStringAsFixed(6)}');
     buffer.writeln('Longitude: ${location.longitude.toStringAsFixed(6)}');
     buffer.writeln('Accuracy: $accuracyStr');
-    buffer.writeln('Time: ${location.timestamp.toLocal().toString().split('.').first}');
+    buffer.writeln(
+        'Time: ${location.timestamp.toLocal().toString().split('.').first}');
     buffer.writeln('Google Maps: ${location.mapsUrl}');
 
     return buffer.toString();
@@ -338,7 +358,8 @@ class EmergencyService extends ChangeNotifier {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
         return true;
       } else {
-        debugPrint('[EmergencyService] Cannot launch phone dialer for: $cleanPhone');
+        debugPrint(
+            '[EmergencyService] Cannot launch phone dialer for: $cleanPhone');
         return false;
       }
     } catch (e) {

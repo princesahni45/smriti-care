@@ -43,7 +43,12 @@ class DoctorProfileTab extends StatelessWidget {
                   radius: 34,
                   backgroundColor: AppColors.tealLight,
                   child: Text(
-                    doctorName.replaceAll('Dr. ', '').split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join(),
+                    doctorName
+                        .replaceAll('Dr. ', '')
+                        .split(' ')
+                        .map((e) => e.isNotEmpty ? e[0] : '')
+                        .take(2)
+                        .join(),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
@@ -57,7 +62,9 @@ class DoctorProfileTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        doctorName.startsWith('Dr.') ? doctorName : 'Dr. $doctorName',
+                        doctorName.startsWith('Dr.')
+                            ? doctorName
+                            : 'Dr. $doctorName',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -100,7 +107,8 @@ class DoctorProfileTab extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded, color: Color(0xFFF57F17), size: 20),
+                const Icon(Icons.info_outline_rounded,
+                    color: Color(0xFFF57F17), size: 20),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -150,15 +158,19 @@ class DoctorProfileTab extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _buildInfoRow('Doctor ID', doctor.doctorId, Icons.badge_rounded),
+                _buildInfoRow(
+                    'Doctor ID', doctor.doctorId, Icons.badge_rounded),
                 const Divider(height: 18, color: AppColors.cardBorder),
-                _buildInfoRow('Registration No.', doctor.registrationNumber, Icons.verified_user_rounded),
+                _buildInfoRow('Registration No.', doctor.registrationNumber,
+                    Icons.verified_user_rounded),
                 const Divider(height: 18, color: AppColors.cardBorder),
-                _buildInfoRow('Email Address', doctor.email, Icons.email_rounded),
+                _buildInfoRow(
+                    'Email Address', doctor.email, Icons.email_rounded),
                 const Divider(height: 18, color: AppColors.cardBorder),
                 _buildInfoRow('Phone', doctor.phone, Icons.phone_rounded),
                 const Divider(height: 18, color: AppColors.cardBorder),
-                _buildInfoRow('Hospital / Clinic', doctor.hospitalOrClinic, Icons.apartment_rounded),
+                _buildInfoRow('Hospital / Clinic', doctor.hospitalOrClinic,
+                    Icons.apartment_rounded),
               ],
             ),
           ),
@@ -191,7 +203,8 @@ class DoctorProfileTab extends StatelessWidget {
                         color: const Color(0xFF2E7D32).withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.cloud_done_rounded, color: Color(0xFF2E7D32), size: 18),
+                      child: const Icon(Icons.cloud_done_rounded,
+                          color: Color(0xFF2E7D32), size: 18),
                     ),
                     const SizedBox(width: 12),
                     const Expanded(
@@ -208,7 +221,8 @@ class DoctorProfileTab extends StatelessWidget {
                           ),
                           Text(
                             'Clinical logs & patient summaries stored encrypted on device.',
-                            style: TextStyle(fontSize: 11, color: AppColors.muted),
+                            style:
+                                TextStyle(fontSize: 11, color: AppColors.muted),
                           ),
                         ],
                       ),
@@ -224,7 +238,8 @@ class DoctorProfileTab extends StatelessWidget {
                         color: AppColors.teal.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.lock_rounded, color: AppColors.teal, size: 18),
+                      child: const Icon(Icons.lock_rounded,
+                          color: AppColors.teal, size: 18),
                     ),
                     const SizedBox(width: 12),
                     const Expanded(
@@ -241,7 +256,8 @@ class DoctorProfileTab extends StatelessWidget {
                           ),
                           Text(
                             'Only caregivers can grant access via unique patient link codes.',
-                            style: TextStyle(fontSize: 11, color: AppColors.muted),
+                            style:
+                                TextStyle(fontSize: 11, color: AppColors.muted),
                           ),
                         ],
                       ),
@@ -272,7 +288,8 @@ class DoctorProfileTab extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('Exit Doctor Mode', style: TextStyle(color: Colors.red)),
+                        child: const Text('Exit Doctor Mode',
+                            style: TextStyle(color: Colors.red)),
                       ),
                     ],
                   ),

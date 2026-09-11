@@ -362,7 +362,8 @@ class _FamilyMemoriesGameScreenState extends State<FamilyMemoriesGameScreen> {
                     return InkWell(
                       onTap: _answered
                           ? null
-                          : () => _handleSelect(opt, currentMember.relationship),
+                          : () =>
+                              _handleSelect(opt, currentMember.relationship),
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         padding: const EdgeInsets.symmetric(

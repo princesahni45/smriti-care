@@ -81,12 +81,17 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _alerts.isNotEmpty ? const Color(0xFFC62828).withValues(alpha: 0.12) : AppColors.surface,
+                    color: _alerts.isNotEmpty
+                        ? const Color(0xFFC62828).withValues(alpha: 0.12)
+                        : AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: _alerts.isNotEmpty ? const Color(0xFFC62828).withValues(alpha: 0.3) : AppColors.cardBorder,
+                      color: _alerts.isNotEmpty
+                          ? const Color(0xFFC62828).withValues(alpha: 0.3)
+                          : AppColors.cardBorder,
                     ),
                   ),
                   child: Text(
@@ -94,7 +99,9 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: _alerts.isNotEmpty ? const Color(0xFFC62828) : AppColors.muted,
+                      color: _alerts.isNotEmpty
+                          ? const Color(0xFFC62828)
+                          : AppColors.muted,
                     ),
                   ),
                 ),
@@ -114,7 +121,8 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2E7D32).withValues(alpha: 0.1),
+                              color: const Color(0xFF2E7D32)
+                                  .withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -136,7 +144,8 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                           const SizedBox(height: 6),
                           const Text(
                             'All cognitive assessment scores and MRI scans across your linked patients are stable and reviewed.',
-                            style: TextStyle(fontSize: 13, color: AppColors.muted),
+                            style:
+                                TextStyle(fontSize: 13, color: AppColors.muted),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -144,7 +153,8 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                     itemCount: _alerts.length,
                     itemBuilder: (context, index) {
                       final alert = _alerts[index];
@@ -190,11 +200,14 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (ctx) => PatientClinicalOverviewScreen(patientId: alert.patientId),
-              ),
-            ).then((_) => _loadAlerts());
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (ctx) => PatientClinicalOverviewScreen(
+                        patientId: alert.patientId),
+                  ),
+                )
+                .then((_) => _loadAlerts());
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
@@ -230,7 +243,8 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                           ),
                           Text(
                             _formatTime(alert.timestamp),
-                            style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                            style: const TextStyle(
+                                fontSize: 11, color: AppColors.muted),
                           ),
                         ],
                       ),
@@ -264,7 +278,8 @@ class _DoctorAlertsTabState extends State<DoctorAlertsTab> {
                             ),
                           ),
                           SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_rounded, size: 13, color: AppColors.tealDark),
+                          Icon(Icons.arrow_forward_rounded,
+                              size: 13, color: AppColors.tealDark),
                         ],
                       ),
                     ],

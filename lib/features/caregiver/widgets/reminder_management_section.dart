@@ -9,7 +9,8 @@ class ReminderManagementSection extends StatefulWidget {
   const ReminderManagementSection({super.key});
 
   @override
-  State<ReminderManagementSection> createState() => _ReminderManagementSectionState();
+  State<ReminderManagementSection> createState() =>
+      _ReminderManagementSectionState();
 }
 
 class _ReminderManagementSectionState extends State<ReminderManagementSection> {
@@ -32,20 +33,27 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
           children: [
             const Text(
               "Today's Reminders",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.ink),
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.teal,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 elevation: 0,
               ),
               icon: const Icon(Icons.add_rounded, size: 18),
               label: Text(
-                context.tr('reminders.addReminder', defaultText: 'Add Reminder'),
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                context.tr('reminders.addReminder',
+                    defaultText: 'Add Reminder'),
+                style:
+                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
               ),
               onPressed: () => _openAddReminderDialog(context),
             ),
@@ -93,7 +101,8 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
         decoration: BoxDecoration(
           color: isSelected ? AppColors.teal : AppColors.softSection,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? AppColors.teal : AppColors.borderLight),
+          border: Border.all(
+              color: isSelected ? AppColors.teal : AppColors.borderLight),
         ),
         child: Text(
           label,
@@ -147,14 +156,17 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: AppColors.ink,
-                          decoration: isDone ? TextDecoration.lineThrough : null,
+                          decoration:
+                              isDone ? TextDecoration.lineThrough : null,
                         ),
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: isDone ? AppColors.tealLight : AppColors.amberPale,
+                        color:
+                            isDone ? AppColors.tealLight : AppColors.amberPale,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -162,7 +174,8 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: isDone ? AppColors.tealDark : AppColors.amberDeep,
+                          color:
+                              isDone ? AppColors.tealDark : AppColors.amberDeep,
                         ),
                       ),
                     ),
@@ -202,9 +215,11 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
-            context.tr('reminders.addReminder', defaultText: 'Add Patient Reminder'),
+            context.tr('reminders.addReminder',
+                defaultText: 'Add Patient Reminder'),
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
           content: SingleChildScrollView(
@@ -215,7 +230,8 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                 TextField(
                   controller: titleCtrl,
                   decoration: InputDecoration(
-                    labelText: context.tr('reminders.title', defaultText: 'Reminder Title'),
+                    labelText: context.tr('reminders.title',
+                        defaultText: 'Reminder Title'),
                     hintText: 'e.g. Afternoon Medicine',
                     border: const OutlineInputBorder(),
                   ),
@@ -232,15 +248,32 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: selectedType,
-                  decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                      labelText: 'Category', border: OutlineInputBorder()),
                   items: [
-                    DropdownMenuItem(value: 'medication', child: Text('💊 ${context.tr('reminders.morningMedicine', defaultText: 'Medication')}')),
-                    DropdownMenuItem(value: 'hydration', child: Text('💧 ${context.tr('reminders.hydration', defaultText: 'Hydration')}')),
-                    DropdownMenuItem(value: 'cognitive_activity', child: Text('🧠 ${context.tr('reminders.activity', defaultText: 'Brain Activity')}')),
-                    DropdownMenuItem(value: 'appointment', child: Text('📅 ${context.tr('reminders.appointment', defaultText: 'Appointment')}')),
-                    DropdownMenuItem(value: 'daily_routine', child: Text('🚶 ${context.tr('reminders.routine', defaultText: 'Daily Routine')}')),
+                    DropdownMenuItem(
+                        value: 'medication',
+                        child: Text(
+                            '💊 ${context.tr('reminders.morningMedicine', defaultText: 'Medication')}')),
+                    DropdownMenuItem(
+                        value: 'hydration',
+                        child: Text(
+                            '💧 ${context.tr('reminders.hydration', defaultText: 'Hydration')}')),
+                    DropdownMenuItem(
+                        value: 'cognitive_activity',
+                        child: Text(
+                            '🧠 ${context.tr('reminders.activity', defaultText: 'Brain Activity')}')),
+                    DropdownMenuItem(
+                        value: 'appointment',
+                        child: Text(
+                            '📅 ${context.tr('reminders.appointment', defaultText: 'Appointment')}')),
+                    DropdownMenuItem(
+                        value: 'daily_routine',
+                        child: Text(
+                            '🚶 ${context.tr('reminders.routine', defaultText: 'Daily Routine')}')),
                   ],
-                  onChanged: (v) => setDlgState(() => selectedType = v ?? 'medication'),
+                  onChanged: (v) =>
+                      setDlgState(() => selectedType = v ?? 'medication'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -281,7 +314,8 @@ class _ReminderManagementSectionState extends State<ReminderManagementSection> {
                 }
               },
               child: Text(
-                context.tr('caregiver.saveReminder', defaultText: 'Save Reminder'),
+                context.tr('caregiver.saveReminder',
+                    defaultText: 'Save Reminder'),
                 style: const TextStyle(color: Colors.white),
               ),
             ),

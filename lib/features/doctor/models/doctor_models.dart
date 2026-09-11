@@ -39,44 +39,46 @@ class DoctorProfile {
       : 'Self-registered medical practitioner. Official institutional verification pending.';
 
   Map<String, dynamic> toMap() => {
-    'doctorId': doctorId,
-    'name': name,
-    'email': email,
-    'phone': phone,
-    'specialization': specialization,
-    'hospitalOrClinic': hospitalOrClinic,
-    'registrationNumber': registrationNumber,
-    'profilePhoto': profilePhoto,
-    'createdAt': createdAt.toIso8601String(),
-    'isVerified': isVerified,
-  };
+        'doctorId': doctorId,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'specialization': specialization,
+        'hospitalOrClinic': hospitalOrClinic,
+        'registrationNumber': registrationNumber,
+        'profilePhoto': profilePhoto,
+        'createdAt': createdAt.toIso8601String(),
+        'isVerified': isVerified,
+      };
 
   factory DoctorProfile.fromMap(Map<String, dynamic> map) => DoctorProfile(
-    doctorId: map['doctorId'] ?? 'DOC-001',
-    name: map['name'] ?? 'Dr. Ananya Bora',
-    email: map['email'] ?? 'doctor@smriti.care',
-    phone: map['phone'] ?? '+91 98765 11223',
-    specialization: map['specialization'] ?? 'Neurologist & Dementia Specialist',
-    hospitalOrClinic: map['hospitalOrClinic'] ?? 'Guwahati Neurological Institute',
-    registrationNumber: map['registrationNumber'] ?? 'NMC-2018-094827',
-    profilePhoto: map['profilePhoto'],
-    createdAt: map['createdAt'] != null
-        ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
-        : DateTime.now(),
-    isVerified: map['isVerified'] == true,
-  );
+        doctorId: map['doctorId'] ?? 'DOC-001',
+        name: map['name'] ?? 'Dr. Ananya Bora',
+        email: map['email'] ?? 'doctor@smriti.care',
+        phone: map['phone'] ?? '+91 98765 11223',
+        specialization:
+            map['specialization'] ?? 'Neurologist & Dementia Specialist',
+        hospitalOrClinic:
+            map['hospitalOrClinic'] ?? 'Guwahati Neurological Institute',
+        registrationNumber: map['registrationNumber'] ?? 'NMC-2018-094827',
+        profilePhoto: map['profilePhoto'],
+        createdAt: map['createdAt'] != null
+            ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
+            : DateTime.now(),
+        isVerified: map['isVerified'] == true,
+      );
 
   factory DoctorProfile.defaultProfile() => DoctorProfile(
-    doctorId: 'DOC-001',
-    name: 'Dr. Ananya Bora',
-    email: 'doctor@smriti.care',
-    phone: '+91 98765 11223',
-    specialization: 'Neurologist & Dementia Specialist',
-    hospitalOrClinic: 'Guwahati Neurological Institute',
-    registrationNumber: 'NMC-2018-094827',
-    createdAt: DateTime(2025, 1, 15),
-    isVerified: false,
-  );
+        doctorId: 'DOC-001',
+        name: 'Dr. Ananya Bora',
+        email: 'doctor@smriti.care',
+        phone: '+91 98765 11223',
+        specialization: 'Neurologist & Dementia Specialist',
+        hospitalOrClinic: 'Guwahati Neurological Institute',
+        registrationNumber: 'NMC-2018-094827',
+        createdAt: DateTime(2025, 1, 15),
+        isVerified: false,
+      );
 }
 
 // FIX: Added secure doctor-patient linking - DoctorPatientLink relationship
@@ -129,47 +131,49 @@ class DoctorPatientLink {
     DateTime? approvedAt,
     DateTime? revokedAt,
     String? notes,
-  }) => DoctorPatientLink(
-    linkId: linkId,
-    doctorId: doctorId,
-    patientId: patientId,
-    status: status ?? this.status,
-    linkCode: linkCode,
-    createdAt: createdAt,
-    approvedAt: approvedAt ?? this.approvedAt,
-    revokedAt: revokedAt ?? this.revokedAt,
-    notes: notes ?? this.notes,
-  );
+  }) =>
+      DoctorPatientLink(
+        linkId: linkId,
+        doctorId: doctorId,
+        patientId: patientId,
+        status: status ?? this.status,
+        linkCode: linkCode,
+        createdAt: createdAt,
+        approvedAt: approvedAt ?? this.approvedAt,
+        revokedAt: revokedAt ?? this.revokedAt,
+        notes: notes ?? this.notes,
+      );
 
   Map<String, dynamic> toMap() => {
-    'linkId': linkId,
-    'doctorId': doctorId,
-    'patientId': patientId,
-    'status': status.name,
-    'linkCode': linkCode,
-    'createdAt': createdAt.toIso8601String(),
-    'approvedAt': approvedAt?.toIso8601String(),
-    'revokedAt': revokedAt?.toIso8601String(),
-    'notes': notes,
-  };
+        'linkId': linkId,
+        'doctorId': doctorId,
+        'patientId': patientId,
+        'status': status.name,
+        'linkCode': linkCode,
+        'createdAt': createdAt.toIso8601String(),
+        'approvedAt': approvedAt?.toIso8601String(),
+        'revokedAt': revokedAt?.toIso8601String(),
+        'notes': notes,
+      };
 
-  factory DoctorPatientLink.fromMap(Map<String, dynamic> map) => DoctorPatientLink(
-    linkId: map['linkId'] ?? '',
-    doctorId: map['doctorId'] ?? '',
-    patientId: map['patientId'] ?? '',
-    status: DoctorLinkStatus.fromString(map['status'] ?? 'pending'),
-    linkCode: map['linkCode'] ?? '',
-    createdAt: map['createdAt'] != null
-        ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
-        : DateTime.now(),
-    approvedAt: map['approvedAt'] != null
-        ? DateTime.tryParse(map['approvedAt'])
-        : null,
-    revokedAt: map['revokedAt'] != null
-        ? DateTime.tryParse(map['revokedAt'])
-        : null,
-    notes: map['notes'],
-  );
+  factory DoctorPatientLink.fromMap(Map<String, dynamic> map) =>
+      DoctorPatientLink(
+        linkId: map['linkId'] ?? '',
+        doctorId: map['doctorId'] ?? '',
+        patientId: map['patientId'] ?? '',
+        status: DoctorLinkStatus.fromString(map['status'] ?? 'pending'),
+        linkCode: map['linkCode'] ?? '',
+        createdAt: map['createdAt'] != null
+            ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
+            : DateTime.now(),
+        approvedAt: map['approvedAt'] != null
+            ? DateTime.tryParse(map['approvedAt'])
+            : null,
+        revokedAt: map['revokedAt'] != null
+            ? DateTime.tryParse(map['revokedAt'])
+            : null,
+        notes: map['notes'],
+      );
 }
 
 // FIX: Added multi-patient doctor dashboard - DoctorNote model
@@ -195,39 +199,40 @@ class DoctorNote {
   DoctorNote copyWith({
     String? text,
     DateTime? updatedAt,
-  }) => DoctorNote(
-    noteId: noteId,
-    doctorId: doctorId,
-    doctorName: doctorName,
-    patientId: patientId,
-    text: text ?? this.text,
-    createdAt: createdAt,
-    updatedAt: updatedAt ?? DateTime.now(),
-  );
+  }) =>
+      DoctorNote(
+        noteId: noteId,
+        doctorId: doctorId,
+        doctorName: doctorName,
+        patientId: patientId,
+        text: text ?? this.text,
+        createdAt: createdAt,
+        updatedAt: updatedAt ?? DateTime.now(),
+      );
 
   Map<String, dynamic> toMap() => {
-    'noteId': noteId,
-    'doctorId': doctorId,
-    'doctorName': doctorName,
-    'patientId': patientId,
-    'text': text,
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
-  };
+        'noteId': noteId,
+        'doctorId': doctorId,
+        'doctorName': doctorName,
+        'patientId': patientId,
+        'text': text,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+      };
 
   factory DoctorNote.fromMap(Map<String, dynamic> map) => DoctorNote(
-    noteId: map['noteId'] ?? '',
-    doctorId: map['doctorId'] ?? '',
-    doctorName: map['doctorName'] ?? 'Doctor',
-    patientId: map['patientId'] ?? '',
-    text: map['text'] ?? '',
-    createdAt: map['createdAt'] != null
-        ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
-        : DateTime.now(),
-    updatedAt: map['updatedAt'] != null
-        ? DateTime.tryParse(map['updatedAt']) ?? DateTime.now()
-        : DateTime.now(),
-  );
+        noteId: map['noteId'] ?? '',
+        doctorId: map['doctorId'] ?? '',
+        doctorName: map['doctorName'] ?? 'Doctor',
+        patientId: map['patientId'] ?? '',
+        text: map['text'] ?? '',
+        createdAt: map['createdAt'] != null
+            ? DateTime.tryParse(map['createdAt']) ?? DateTime.now()
+            : DateTime.now(),
+        updatedAt: map['updatedAt'] != null
+            ? DateTime.tryParse(map['updatedAt']) ?? DateTime.now()
+            : DateTime.now(),
+      );
 }
 
 // FIX: Added deterministic Attention Indicator logic
@@ -253,7 +258,9 @@ class PatientAttentionStatus {
     required this.icon,
   });
 
-  factory PatientAttentionStatus.stable({String reason = 'Cognitive performance is consistent with baseline.'}) =>
+  factory PatientAttentionStatus.stable(
+          {String reason =
+              'Cognitive performance is consistent with baseline.'}) =>
       PatientAttentionStatus(
         level: PatientAttentionLevel.stable,
         label: 'Stable',
@@ -280,7 +287,9 @@ class PatientAttentionStatus {
         icon: Icons.warning_amber_rounded,
       );
 
-  factory PatientAttentionStatus.insufficientData({String reason = 'Not enough assessment data yet to determine trend.'}) =>
+  factory PatientAttentionStatus.insufficientData(
+          {String reason =
+              'Not enough assessment data yet to determine trend.'}) =>
       PatientAttentionStatus(
         level: PatientAttentionLevel.insufficientData,
         label: 'Insufficient Data',
@@ -297,7 +306,8 @@ class DoctorSmartAlert {
   final String patientName;
   final String title;
   final String message;
-  final String type; // 'score_drop', 'mri_pending', 'sos_trigger', 'routine_change'
+  final String
+      type; // 'score_drop', 'mri_pending', 'sos_trigger', 'routine_change'
   final DateTime timestamp;
   final bool isRead;
 
@@ -313,37 +323,38 @@ class DoctorSmartAlert {
   });
 
   DoctorSmartAlert copyWith({bool? isRead}) => DoctorSmartAlert(
-    id: id,
-    patientId: patientId,
-    patientName: patientName,
-    title: title,
-    message: message,
-    type: type,
-    timestamp: timestamp,
-    isRead: isRead ?? this.isRead,
-  );
+        id: id,
+        patientId: patientId,
+        patientName: patientName,
+        title: title,
+        message: message,
+        type: type,
+        timestamp: timestamp,
+        isRead: isRead ?? this.isRead,
+      );
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'patientId': patientId,
-    'patientName': patientName,
-    'title': title,
-    'message': message,
-    'type': type,
-    'timestamp': timestamp.toIso8601String(),
-    'isRead': isRead,
-  };
+        'id': id,
+        'patientId': patientId,
+        'patientName': patientName,
+        'title': title,
+        'message': message,
+        'type': type,
+        'timestamp': timestamp.toIso8601String(),
+        'isRead': isRead,
+      };
 
-  factory DoctorSmartAlert.fromMap(Map<String, dynamic> map) => DoctorSmartAlert(
-    id: map['id'] ?? '',
-    patientId: map['patientId'] ?? '',
-    patientName: map['patientName'] ?? 'Patient',
-    title: map['title'] ?? 'Clinical Alert',
-    message: map['message'] ?? '',
-    type: map['type'] ?? 'general',
-    timestamp: map['timestamp'] != null
-        ? DateTime.tryParse(map['timestamp']) ?? DateTime.now()
-        : DateTime.now(),
-    isRead: map['isRead'] == true,
-  );
+  factory DoctorSmartAlert.fromMap(Map<String, dynamic> map) =>
+      DoctorSmartAlert(
+        id: map['id'] ?? '',
+        patientId: map['patientId'] ?? '',
+        patientName: map['patientName'] ?? 'Patient',
+        title: map['title'] ?? 'Clinical Alert',
+        message: map['message'] ?? '',
+        type: map['type'] ?? 'general',
+        timestamp: map['timestamp'] != null
+            ? DateTime.tryParse(map['timestamp']) ?? DateTime.now()
+            : DateTime.now(),
+        isRead: map['isRead'] == true,
+      );
 }

@@ -23,7 +23,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
   final _searchController = TextEditingController();
   bool _isLoading = true;
   String _searchQuery = '';
-  String _selectedFilter = 'All'; // 'All', 'Needs Review', 'MRI Pending', 'Recent Assessment'
+  String _selectedFilter =
+      'All'; // 'All', 'Needs Review', 'MRI Pending', 'Recent Assessment'
   String _sortBy = 'Name'; // 'Name', 'Score', 'Last Assessed'
 
   List<PatientProfile> _patients = [];
@@ -49,7 +50,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
 
       final Map<String, PatientClinicalSummary> summaryMap = {};
       for (final p in patients) {
-        final clinSummary = await DoctorService.instance.getPatientClinicalSummary(p.id);
+        final clinSummary =
+            await DoctorService.instance.getPatientClinicalSummary(p.id);
         if (clinSummary != null) {
           summaryMap[p.id] = clinSummary;
         }
@@ -82,9 +84,12 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
       final summary = _summaries[p.id];
       switch (_selectedFilter) {
         case 'Needs Review':
-          return summary?.attentionStatus.level == PatientAttentionLevel.reviewSuggested;
+          return summary?.attentionStatus.level ==
+              PatientAttentionLevel.reviewSuggested;
         case 'MRI Pending':
-          return summary?.mriScans.any((m) => !m.isReviewed && m.status == 'completed') ?? false;
+          return summary?.mriScans
+                  .any((m) => !m.isReviewed && m.status == 'completed') ??
+              false;
         case 'Recent Assessment':
           if (summary?.lastAssessedAt == null) return false;
           final weekAgo = DateTime.now().subtract(const Duration(days: 7));
@@ -154,7 +159,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                     ),
                     Text(
                       '${_patients.length} authorized patient${_patients.length == 1 ? '' : 's'}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                      style:
+                          const TextStyle(fontSize: 12, color: AppColors.muted),
                     ),
                   ],
                 ),
@@ -166,7 +172,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                     backgroundColor: AppColors.teal,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -191,11 +198,14 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                     ),
                     child: TextField(
                       controller: _searchController,
-                      onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                      onChanged: (val) =>
+                          setState(() => _searchQuery = val.trim()),
                       decoration: InputDecoration(
                         hintText: 'Search patients...',
-                        hintStyle: const TextStyle(fontSize: 13, color: AppColors.muted),
-                        prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.muted),
+                        hintStyle: const TextStyle(
+                            fontSize: 13, color: AppColors.muted),
+                        prefixIcon: const Icon(Icons.search_rounded,
+                            size: 18, color: AppColors.muted),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
                                 icon: const Icon(Icons.clear_rounded, size: 16),
@@ -207,7 +217,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                             : null,
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 12),
                       ),
                     ),
                   ),
@@ -224,12 +235,20 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: _sortBy,
-                      icon: const Icon(Icons.sort_rounded, size: 18, color: AppColors.ink),
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.ink),
+                      icon: const Icon(Icons.sort_rounded,
+                          size: 18, color: AppColors.ink),
+                      style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink),
                       items: const [
-                        DropdownMenuItem(value: 'Name', child: Text('Sort: Name')),
-                        DropdownMenuItem(value: 'Score', child: Text('Sort: Score')),
-                        DropdownMenuItem(value: 'Last Assessed', child: Text('Sort: Recent')),
+                        DropdownMenuItem(
+                            value: 'Name', child: Text('Sort: Name')),
+                        DropdownMenuItem(
+                            value: 'Score', child: Text('Sort: Score')),
+                        DropdownMenuItem(
+                            value: 'Last Assessed',
+                            child: Text('Sort: Recent')),
                       ],
                       onChanged: (val) {
                         if (val != null) setState(() => _sortBy = val);
@@ -292,7 +311,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                             _patients.isEmpty
                                 ? 'Obtain a secure Patient Link Code from the patient\'s caregiver to connect.'
                                 : 'Try changing your search query or selecting a different category filter.',
-                            style: const TextStyle(fontSize: 13, color: AppColors.muted),
+                            style: const TextStyle(
+                                fontSize: 13, color: AppColors.muted),
                             textAlign: TextAlign.center,
                           ),
                           if (_patients.isEmpty) ...[
@@ -304,7 +324,8 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.teal,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -316,12 +337,14 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                     itemCount: filteredList.length,
                     itemBuilder: (context, index) {
                       final patient = filteredList[index];
                       final summary = _summaries[patient.id];
-                      final mriPending = summary?.mriScans.any((m) => !m.isReviewed) ?? false;
+                      final mriPending =
+                          summary?.mriScans.any((m) => !m.isReviewed) ?? false;
                       final mriStatus = summary?.mriScans.isEmpty ?? true
                           ? 'No MRI'
                           : (mriPending ? 'Review Pending' : 'Reviewed');
@@ -373,18 +396,23 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
   }
 
   void _openPatientOverview(PatientProfile patient) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => PatientClinicalOverviewScreen(patientId: patient.id),
-      ),
-    ).then((_) => _loadPatients());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (ctx) =>
+                PatientClinicalOverviewScreen(patientId: patient.id),
+          ),
+        )
+        .then((_) => _loadPatients());
   }
 
   void _openAddPatient() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => const AddPatientScreen(),
-      ),
-    ).then((_) => _loadPatients());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (ctx) => const AddPatientScreen(),
+          ),
+        )
+        .then((_) => _loadPatients());
   }
 }

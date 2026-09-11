@@ -77,12 +77,14 @@ class PatientBannerCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 14, color: AppColors.muted),
+                        const Icon(Icons.location_on_outlined,
+                            size: 14, color: AppColors.muted),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             '${patient.location} • ID: ${patient.id}',
-                            style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                            style: const TextStyle(
+                                fontSize: 12, color: AppColors.muted),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -97,16 +99,19 @@ class PatientBannerCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.amberPale,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.amber.withValues(alpha: 0.3)),
+                  border:
+                      Border.all(color: AppColors.amber.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.shield_outlined, size: 14, color: AppColors.amberDeep),
+                    const Icon(Icons.shield_outlined,
+                        size: 14, color: AppColors.amberDeep),
                     const SizedBox(width: 6),
                     Text(
                       '${patient.dementiaLevel} Dementia (Needs regular support)',
@@ -128,7 +133,10 @@ class PatientBannerCard extends StatelessWidget {
               SizedBox(width: 6),
               Text(
                 'Live local sync • Last updated today, 9:42 AM',
-                style: TextStyle(fontSize: 12, color: AppColors.tealDark, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.tealDark,
+                    fontWeight: FontWeight.w600),
               ),
             ],
           ),

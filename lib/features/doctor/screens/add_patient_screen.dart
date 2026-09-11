@@ -100,7 +100,8 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                       color: AppColors.tealLight,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.security_rounded, size: 22, color: AppColors.tealDark),
+                    child: const Icon(Icons.security_rounded,
+                        size: 22, color: AppColors.tealDark),
                   ),
                   const SizedBox(width: 14),
                   const Expanded(
@@ -135,7 +136,10 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
             // ── Instructions Step Card
             const Text(
               'How to Link a Patient',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink),
             ),
             const SizedBox(height: 10),
             Container(
@@ -149,22 +153,26 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                 children: [
                   _buildStepRow(
                     step: '1',
-                    text: 'Ask the patient\'s caregiver to open the Caregiver Portal.',
+                    text:
+                        'Ask the patient\'s caregiver to open the Caregiver Portal.',
                   ),
                   const SizedBox(height: 12),
                   _buildStepRow(
                     step: '2',
-                    text: 'Caregiver navigates to "Manage Doctors" and generates a link code.',
+                    text:
+                        'Caregiver navigates to "Manage Doctors" and generates a link code.',
                   ),
                   const SizedBox(height: 12),
                   _buildStepRow(
                     step: '3',
-                    text: 'Enter the 6-character code below and submit your connection request.',
+                    text:
+                        'Enter the 6-character code below and submit your connection request.',
                   ),
                   const SizedBox(height: 12),
                   _buildStepRow(
                     step: '4',
-                    text: 'Caregiver approves the request, and the patient appears in your dashboard.',
+                    text:
+                        'Caregiver approves the request, and the patient appears in your dashboard.',
                   ),
                 ],
               ),
@@ -174,7 +182,10 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
             // ── Input Field Form
             const Text(
               'Enter Patient Link Code',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink),
             ),
             const SizedBox(height: 10),
             Container(
@@ -202,7 +213,8 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                     color: AppColors.muted,
                   ),
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.vpn_key_rounded, color: AppColors.teal),
+                  prefixIcon:
+                      Icon(Icons.vpn_key_rounded, color: AppColors.teal),
                 ),
               ),
             ),
@@ -218,12 +230,16 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.send_rounded, size: 18),
                 label: Text(
-                  _isSubmitting ? 'Sending Request...' : 'Send Connection Request',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  _isSubmitting
+                      ? 'Sending Request...'
+                      : 'Send Connection Request',
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w700),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.teal,
@@ -254,8 +270,12 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      _isSuccess ? Icons.check_circle_rounded : Icons.error_outline_rounded,
-                      color: _isSuccess ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
+                      _isSuccess
+                          ? Icons.check_circle_rounded
+                          : Icons.error_outline_rounded,
+                      color: _isSuccess
+                          ? const Color(0xFF2E7D32)
+                          : const Color(0xFFC62828),
                       size: 20,
                     ),
                     const SizedBox(width: 10),
@@ -265,7 +285,9 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: _isSuccess ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
+                          color: _isSuccess
+                              ? const Color(0xFF2E7D32)
+                              : const Color(0xFFC62828),
                         ),
                       ),
                     ),
@@ -288,14 +310,18 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
           backgroundColor: AppColors.tealLight,
           child: Text(
             step,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.tealDark),
+            style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: AppColors.tealDark),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 12, color: AppColors.ink, height: 1.3),
+            style: const TextStyle(
+                fontSize: 12, color: AppColors.ink, height: 1.3),
           ),
         ),
       ],

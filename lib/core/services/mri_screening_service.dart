@@ -60,9 +60,8 @@ class MriScreeningService {
 
       try {
         final uri = Uri.parse('$clean${ApiConfig.healthEndpoint}');
-        final response = await http
-            .get(uri)
-            .timeout(const Duration(seconds: 2));
+        final response =
+            await http.get(uri).timeout(const Duration(seconds: 2));
         if (response.statusCode == 200) {
           _apiBaseUrl = clean;
           return true;
@@ -106,7 +105,7 @@ class MriScreeningService {
     required String filePath,
     required String fileName,
     required String caregiverId,
-    String? hdrPath,           // Required for Analyze 7.5 .img files
+    String? hdrPath, // Required for Analyze 7.5 .img files
     bool generateGradcam = false,
   }) async {
     final timestamp = DateTime.now();
@@ -149,9 +148,11 @@ class MriScreeningService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        return MriScanResult.fromBackendMap(data, scanId: scanId, caregiverId: caregiverId,
-            serverUrl: _apiBaseUrl, imageName: fileName);
-
+        return MriScanResult.fromBackendMap(data,
+            scanId: scanId,
+            caregiverId: caregiverId,
+            serverUrl: _apiBaseUrl,
+            imageName: fileName);
       } else if (response.statusCode == 503) {
         // Model not loaded (checkpoint missing)
         String detail = 'AI model is not loaded on the server.';
@@ -160,15 +161,17 @@ class MriScreeningService {
           detail = errData['detail']?.toString() ?? detail;
         } catch (_) {}
         return MriScanResult(
-          scanId: scanId, patientId: caregiverId,
+          scanId: scanId,
+          patientId: caregiverId,
           prediction: 'Model Not Available',
           predictionClass: MriPredictionClass.inconclusive,
           confidenceScore: 0.0,
           recommendation: detail,
-          status: 'failed', timestamp: timestamp,
-          serverUrl: _apiBaseUrl, imageName: fileName,
+          status: 'failed',
+          timestamp: timestamp,
+          serverUrl: _apiBaseUrl,
+          imageName: fileName,
         );
-
       } else if (response.statusCode == 400 || response.statusCode == 422) {
         String detail = 'Invalid file or format not supported by the backend.';
         try {
@@ -176,27 +179,31 @@ class MriScreeningService {
           detail = errData['detail']?.toString() ?? detail;
         } catch (_) {}
         return MriScanResult(
-          scanId: scanId, patientId: caregiverId,
+          scanId: scanId,
+          patientId: caregiverId,
           prediction: 'Invalid MRI File',
           predictionClass: MriPredictionClass.inconclusive,
           confidenceScore: 0.0,
           recommendation: detail,
-          status: 'failed', timestamp: timestamp,
-          serverUrl: _apiBaseUrl, imageName: fileName,
+          status: 'failed',
+          timestamp: timestamp,
+          serverUrl: _apiBaseUrl,
+          imageName: fileName,
         );
-
       } else {
         return MriScanResult(
-          scanId: scanId, patientId: caregiverId,
+          scanId: scanId,
+          patientId: caregiverId,
           prediction: 'Analysis Inconclusive',
           predictionClass: MriPredictionClass.inconclusive,
           confidenceScore: 0.0,
           recommendation: 'Server responded with HTTP ${response.statusCode}.',
-          status: 'failed', timestamp: timestamp,
-          serverUrl: _apiBaseUrl, imageName: fileName,
+          status: 'failed',
+          timestamp: timestamp,
+          serverUrl: _apiBaseUrl,
+          imageName: fileName,
         );
       }
-
     } on SocketException {
       return _offlineResult(scanId, caregiverId, fileName, timestamp);
     } on http.ClientException {
@@ -204,21 +211,25 @@ class MriScreeningService {
     } catch (e) {
       debugPrint('MriScreeningService error: $e');
       return MriScanResult(
-        scanId: scanId, patientId: caregiverId,
+        scanId: scanId,
+        patientId: caregiverId,
         prediction: 'Analysis Failed',
         predictionClass: MriPredictionClass.inconclusive,
         confidenceScore: 0.0,
         recommendation: 'Unexpected error: ${e.toString().split('\n').first}',
-        status: 'failed', timestamp: timestamp,
-        serverUrl: _apiBaseUrl, imageName: fileName,
+        status: 'failed',
+        timestamp: timestamp,
+        serverUrl: _apiBaseUrl,
+        imageName: fileName,
       );
     }
   }
 
-  MriScanResult _offlineResult(
-      String scanId, String caregiverId, String fileName, DateTime timestamp) =>
+  MriScanResult _offlineResult(String scanId, String caregiverId,
+          String fileName, DateTime timestamp) =>
       MriScanResult(
-        scanId: scanId, patientId: caregiverId,
+        scanId: scanId,
+        patientId: caregiverId,
         prediction: 'Backend Offline',
         predictionClass: MriPredictionClass.inconclusive,
         confidenceScore: 0.0,
@@ -226,7 +237,9 @@ class MriScreeningService {
             'Ensure the Python server is running:\n'
             'cd smriti-care-mri-dementia-module/backend\n'
             'uvicorn main:app --host 0.0.0.0 --port 8000',
-        status: 'failed', timestamp: timestamp,
-        serverUrl: _apiBaseUrl, imageName: fileName,
+        status: 'failed',
+        timestamp: timestamp,
+        serverUrl: _apiBaseUrl,
+        imageName: fileName,
       );
 }

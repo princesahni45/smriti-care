@@ -143,7 +143,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink, size: 28),
+          icon: const Icon(Icons.arrow_back_rounded,
+              color: AppColors.ink, size: 28),
           onPressed: () {
             if (widget.onBack != null) {
               widget.onBack!();
@@ -174,7 +175,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: _sosSent ? const Color(0xFFE8F5E9) : AppColors.tealLight,
+                  color:
+                      _sosSent ? const Color(0xFFE8F5E9) : AppColors.tealLight,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: _sosSent ? Colors.green.shade400 : AppColors.teal,
@@ -191,8 +193,12 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        _sosSent ? Icons.check_circle_rounded : Icons.favorite_rounded,
-                        color: _sosSent ? Colors.green.shade800 : AppColors.tealDark,
+                        _sosSent
+                            ? Icons.check_circle_rounded
+                            : Icons.favorite_rounded,
+                        color: _sosSent
+                            ? Colors.green.shade800
+                            : AppColors.tealDark,
                         size: 28,
                       ),
                     ),
@@ -202,11 +208,15 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _sosSent ? 'Help is being coordinated.' : 'Don\'t worry, you are safe.',
+                            _sosSent
+                                ? 'Help is being coordinated.'
+                                : 'Don\'t worry, you are safe.',
                             style: GoogleFonts.dmSans(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              color: _sosSent ? Colors.green.shade900 : AppColors.tealDeep,
+                              color: _sosSent
+                                  ? Colors.green.shade900
+                                  : AppColors.tealDeep,
                             ),
                           ),
                           const SizedBox(height: 3),
@@ -216,7 +226,9 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                                 : 'Help is one tap away. Sit comfortably and breathe gently.',
                             style: TextStyle(
                               fontSize: 13,
-                              color: _sosSent ? Colors.green.shade800 : AppColors.tealDark,
+                              color: _sosSent
+                                  ? Colors.green.shade800
+                                  : AppColors.tealDark,
                               height: 1.3,
                             ),
                           ),
@@ -258,7 +270,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
 
               // ── TWO-NUMBER EMERGENCY CONTACTS (Primary & Secondary) ─────────
               Text(
-                context.tr('safety.emergencySettings', defaultText: 'Emergency Contacts'),
+                context.tr('safety.emergencySettings',
+                    defaultText: 'Emergency Contacts'),
                 style: GoogleFonts.dmSans(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -276,8 +289,10 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                 relationship: emergencySettings.primaryRelationship,
                 phone: emergencySettings.primaryNumber,
                 badgeColor: AppColors.teal,
-                onCall: () => _callNumber(emergencySettings.primaryNumber, emergencySettings.primaryName),
-                onSms: () => _smsNumber(emergencySettings.primaryNumber, emergencySettings.primaryName),
+                onCall: () => _callNumber(emergencySettings.primaryNumber,
+                    emergencySettings.primaryName),
+                onSms: () => _smsNumber(emergencySettings.primaryNumber,
+                    emergencySettings.primaryName),
               ),
 
               const SizedBox(height: 12),
@@ -291,8 +306,10 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                 relationship: emergencySettings.secondaryRelationship,
                 phone: emergencySettings.secondaryNumber,
                 badgeColor: AppColors.violet,
-                onCall: () => _callNumber(emergencySettings.secondaryNumber, emergencySettings.secondaryName),
-                onSms: () => _smsNumber(emergencySettings.secondaryNumber, emergencySettings.secondaryName),
+                onCall: () => _callNumber(emergencySettings.secondaryNumber,
+                    emergencySettings.secondaryName),
+                onSms: () => _smsNumber(emergencySettings.secondaryNumber,
+                    emergencySettings.secondaryName),
               ),
 
               const SizedBox(height: 22),
@@ -328,7 +345,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                             color: AppColors.bluePale,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.home_rounded, color: AppColors.blueDeep, size: 24),
+                          child: const Icon(Icons.home_rounded,
+                              color: AppColors.blueDeep, size: 24),
                         ),
                         const SizedBox(width: 12),
                         const Expanded(
@@ -345,7 +363,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                               ),
                               Text(
                                 'Show this to anyone helping you',
-                                style: TextStyle(fontSize: 12, color: AppColors.inkSoft),
+                                style: TextStyle(
+                                    fontSize: 12, color: AppColors.inkSoft),
                               ),
                             ],
                           ),
@@ -388,7 +407,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  icon: const Icon(Icons.local_police_rounded, size: 22, color: AppColors.muted),
+                  icon: const Icon(Icons.local_police_rounded,
+                      size: 22, color: AppColors.muted),
                   label: const Text(
                     'Call National Emergency 112',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
@@ -434,7 +454,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: badgeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -448,7 +469,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                   ),
                 ),
               ),
-              const Icon(Icons.verified_user_outlined, size: 16, color: AppColors.muted),
+              const Icon(Icons.verified_user_outlined,
+                  size: 16, color: AppColors.muted),
             ],
           ),
           const SizedBox(height: 10),
@@ -481,13 +503,15 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.teal,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
                     icon: const Icon(Icons.phone_in_talk_rounded, size: 18),
                     label: const Text(
                       'Call',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                     ),
                     onPressed: onCall,
                   ),
@@ -501,12 +525,14 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.teal,
                       side: const BorderSide(color: AppColors.teal, width: 1.5),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                     icon: const Icon(Icons.sms_rounded, size: 18),
                     label: const Text(
                       'SMS',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                     ),
                     onPressed: onSms,
                   ),
@@ -543,7 +569,8 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                       color: AppColors.amberPale,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.location_on_rounded, color: AppColors.amberDeep, size: 22),
+                    child: const Icon(Icons.location_on_rounded,
+                        color: AppColors.amberDeep, size: 22),
                   ),
                   const SizedBox(width: 10),
                   const Text(
@@ -557,26 +584,30 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.refresh_rounded, size: 20, color: AppColors.teal),
+                icon: const Icon(Icons.refresh_rounded,
+                    size: 20, color: AppColors.teal),
                 onPressed: _isLoadingLocation ? null : _acquireLocation,
                 tooltip: 'Refresh Location',
               ),
             ],
           ),
           const SizedBox(height: 12),
-
           if (_isLoadingLocation) ...[
             const Row(
               children: [
                 SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.teal),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.teal),
                 ),
                 SizedBox(width: 12),
                 Text(
                   'Acquiring satellite GPS fix (offline capable)...',
-                  style: TextStyle(fontSize: 13, color: AppColors.muted, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.muted,
+                      fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -585,24 +616,34 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: loc.isLastKnown ? Colors.amber.shade100 : Colors.green.shade100,
+                color: loc.isLastKnown
+                    ? Colors.amber.shade100
+                    : Colors.green.shade100,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    loc.isLastKnown ? Icons.history_rounded : Icons.satellite_alt_rounded,
+                    loc.isLastKnown
+                        ? Icons.history_rounded
+                        : Icons.satellite_alt_rounded,
                     size: 14,
-                    color: loc.isLastKnown ? Colors.amber.shade900 : Colors.green.shade900,
+                    color: loc.isLastKnown
+                        ? Colors.amber.shade900
+                        : Colors.green.shade900,
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    loc.isLastKnown ? 'Last Known Location' : 'Live Satellite GPS Fix',
+                    loc.isLastKnown
+                        ? 'Last Known Location'
+                        : 'Live Satellite GPS Fix',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: loc.isLastKnown ? Colors.amber.shade900 : Colors.green.shade900,
+                      color: loc.isLastKnown
+                          ? Colors.amber.shade900
+                          : Colors.green.shade900,
                     ),
                   ),
                 ],
@@ -623,10 +664,17 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(context.tr('safety.latitude', defaultText: 'Latitude:'), style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+                      Text(
+                          context.tr('safety.latitude',
+                              defaultText: 'Latitude:'),
+                          style: const TextStyle(
+                              fontSize: 13, color: AppColors.muted)),
                       Text(
                         loc.latitude.toStringAsFixed(6),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink),
                       ),
                     ],
                   ),
@@ -634,10 +682,17 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(context.tr('safety.longitude', defaultText: 'Longitude:'), style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+                      Text(
+                          context.tr('safety.longitude',
+                              defaultText: 'Longitude:'),
+                          style: const TextStyle(
+                              fontSize: 13, color: AppColors.muted)),
                       Text(
                         loc.longitude.toStringAsFixed(6),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink),
                       ),
                     ],
                   ),
@@ -646,10 +701,17 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(context.tr('safety.accuracy', defaultText: 'Accuracy:'), style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+                        Text(
+                            context.tr('safety.accuracy',
+                                defaultText: 'Accuracy:'),
+                            style: const TextStyle(
+                                fontSize: 13, color: AppColors.muted)),
                         Text(
                           '± ${loc.accuracy.toStringAsFixed(1)} meters',
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.inkSoft),
                         ),
                       ],
                     ),
@@ -658,7 +720,6 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
               ),
             ),
           ],
-
           const SizedBox(height: 10),
           const Row(
             children: [
@@ -667,7 +728,10 @@ class _TakeMeHomeScreenState extends State<TakeMeHomeScreen> {
               Expanded(
                 child: Text(
                   'GPS satellite positioning works 100% without cellular data or Wi-Fi.',
-                  style: TextStyle(fontSize: 11, color: AppColors.muted, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.muted,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
             ],

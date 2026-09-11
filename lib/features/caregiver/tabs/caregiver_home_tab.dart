@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
+import '../../../core/services/step_storage_service.dart';
 import '../widgets/patient_banner_card.dart';
 import '../widgets/activity_timeline_section.dart';
 
@@ -82,16 +83,19 @@ class CaregiverHomeTab extends StatelessWidget {
               GestureDetector(
                 onTap: onSwitchPatientTap,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.tealPale,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: AppColors.teal.withValues(alpha: 0.3)),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.swap_horiz_rounded, size: 16, color: AppColors.tealDark),
+                      Icon(Icons.swap_horiz_rounded,
+                          size: 16, color: AppColors.tealDark),
                       SizedBox(width: 4),
                       Text(
                         'Switch',
@@ -138,6 +142,12 @@ class CaregiverHomeTab extends StatelessWidget {
           // FIX: Added MRI Screening to Caregiver Dashboard
           // MRI Screening Featured Card
           _buildMriScreeningCard(context),
+
+          const SizedBox(height: 22),
+
+          // FIX: Added authorized caregiver/doctor activity access
+          // Patient Physical Activity & Step Tracking Section
+          _buildPatientActivitySection(context, patient),
 
           const SizedBox(height: 22),
 
@@ -446,7 +456,8 @@ class CaregiverHomeTab extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.teal,
                   borderRadius: BorderRadius.circular(10),
@@ -463,6 +474,187 @@ class CaregiverHomeTab extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // FIX: Added authorized caregiver/doctor activity access
+  Widget _buildPatientActivitySection(
+      BuildContext context, PatientProfile patient) {
+    // Retrieve today's cached step record and recent 7-day history
+    final today = StepStorageService.instance.getTodayRecordCached();
+    final steps = today?.steps ?? 0;
+    final goal = today?.goal ?? 10000;
+    final progress = (steps / goal).clamp(0.0, 1.0);
+    final remaining = (goal - steps).clamp(0, goal);
+    final history = StepStorageService.instance
+        .getRecentHistory(days: 7, patientId: patient.id);
+    final syncStatus = today?.syncStatus ?? 'offline';
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderLight, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.teal.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.tealPale,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.directions_walk_rounded,
+                        color: AppColors.teal, size: 20),
+                  ),
+                  const SizedBox(width: 10),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Patient Activity',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      Text(
+                        'Daily Walking & Steps',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.muted,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: syncStatus == 'synced'
+                      ? AppColors.tealPale
+                      : AppColors.softSection,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  syncStatus == 'synced' ? 'Synced' : 'Saved Locally',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: syncStatus == 'synced'
+                        ? AppColors.tealDark
+                        : AppColors.muted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Steps Progress Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Today: $steps / $goal',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              Text(
+                '${(progress * 100).toInt()}% completed',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.teal,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: AppColors.tealPale,
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.teal),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            steps >= goal
+                ? '🎉 Daily Goal Completed!'
+                : '$remaining steps remaining to reach daily target',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: steps >= goal ? const Color(0xFF2E7D32) : AppColors.muted,
+            ),
+          ),
+
+          if (history.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            const Divider(height: 1, color: AppColors.borderLight),
+            const SizedBox(height: 10),
+            const Text(
+              'Recent History (Last 7 Days)',
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.inkSoft),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: history.take(5).map((rec) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.borderLight),
+                  ),
+                  child: Text(
+                    '${rec.date.substring(5)}: ${rec.steps}',
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.inkSoft),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
       ),
     );
   }

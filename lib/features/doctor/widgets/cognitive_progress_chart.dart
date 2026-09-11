@@ -26,9 +26,8 @@ class _CognitiveProgressChartState extends State<CognitiveProgressChart> {
 
   List<GameResult> _getFilteredData() {
     final cutoff = DateTime.now().subtract(Duration(days: _selectedDays));
-    final filtered = widget.gameHistory
-        .where((g) => g.timestamp.isAfter(cutoff))
-        .toList();
+    final filtered =
+        widget.gameHistory.where((g) => g.timestamp.isAfter(cutoff)).toList();
     // Sort oldest to newest for chronological progress
     filtered.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     return filtered;
@@ -82,7 +81,8 @@ class _CognitiveProgressChartState extends State<CognitiveProgressChart> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.timeline_rounded, size: 36, color: Colors.grey.shade400),
+                  Icon(Icons.timeline_rounded,
+                      size: 36, color: Colors.grey.shade400),
                   const SizedBox(height: 8),
                   const Text(
                     'Not enough assessment data yet.',
@@ -122,7 +122,9 @@ class _CognitiveProgressChartState extends State<CognitiveProgressChart> {
                 _buildStatItem('Sessions', '${filteredData.length}'),
                 _buildStatItem(
                   'Average',
-                  (filteredData.map((e) => e.score).reduce((a, b) => a + b) / filteredData.length).toStringAsFixed(1),
+                  (filteredData.map((e) => e.score).reduce((a, b) => a + b) /
+                          filteredData.length)
+                      .toStringAsFixed(1),
                 ),
                 _buildStatItem(
                   'Peak',
@@ -176,7 +178,8 @@ class _CognitiveProgressChartState extends State<CognitiveProgressChart> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: AppColors.muted)),
+        Text(label,
+            style: const TextStyle(fontSize: 10, color: AppColors.muted)),
         const SizedBox(height: 2),
         Text(
           value,

@@ -126,20 +126,20 @@ class AppLocalizations {
 
   // FIX: MaterialLocalizations / localization configuration fix
   // Provides MaterialLocalizations fallback for regional languages not in Flutter SDK
-  static const LocalizationsDelegate<MaterialLocalizations> fallbackMaterialDelegate =
-      FallbackMaterialLocalizationsDelegate();
+  static const LocalizationsDelegate<MaterialLocalizations>
+      fallbackMaterialDelegate = FallbackMaterialLocalizationsDelegate();
 
   // FIX: MaterialLocalizations / localization configuration fix
   // Provides CupertinoLocalizations fallback for regional languages not in Flutter SDK
-  static const LocalizationsDelegate<CupertinoLocalizations> fallbackCupertinoDelegate =
-      FallbackCupertinoLocalizationsDelegate();
+  static const LocalizationsDelegate<CupertinoLocalizations>
+      fallbackCupertinoDelegate = FallbackCupertinoLocalizationsDelegate();
 
   /// Load translations from assets/i18n/{code}.json
   Future<bool> load() async {
     // 1. Load active locale
     try {
-      final jsonString =
-          await rootBundle.loadString('assets/i18n/${locale.languageCode}.json', cache: false);
+      final jsonString = await rootBundle
+          .loadString('assets/i18n/${locale.languageCode}.json', cache: false);
       _localizedStrings = jsonDecode(jsonString) as Map<String, dynamic>;
     } catch (_) {
       _localizedStrings = {};
@@ -274,7 +274,8 @@ class LocalizationService {
       final file = File('${dir.path}/$_storageFileName');
       if (await file.exists()) {
         final code = (await file.readAsString()).trim();
-        if (AppLocalizations.supportedLocales.any((l) => l.languageCode == code)) {
+        if (AppLocalizations.supportedLocales
+            .any((l) => l.languageCode == code)) {
           currentLocaleNotifier.value = Locale(code);
         }
       }

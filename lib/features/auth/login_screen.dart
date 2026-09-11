@@ -22,11 +22,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController    = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _isLoading       = false;
+  bool _isLoading = false;
   String? _errorMessage;
 
   bool get _isPatient => widget.role.toLowerCase() == 'patient';
@@ -40,7 +40,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     // Simulate network delay for prototype
     await Future.delayed(const Duration(milliseconds: 400));
@@ -56,7 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
         UserSessionService.instance.setActiveRole(UserRole.patient);
         context.go('/dashboard');
       } else {
-        setState(() { _errorMessage = result.error; _isLoading = false; });
+        setState(() {
+          _errorMessage = result.error;
+          _isLoading = false;
+        });
       }
     } else if (widget.role.toLowerCase() == 'doctor') {
       // FIX: Added doctor role support - handle doctor login in generic login screen
@@ -68,7 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
         UserSessionService.instance.setActiveRole(UserRole.doctor);
         context.go('/doctor');
       } else {
-        setState(() { _errorMessage = result.error; _isLoading = false; });
+        setState(() {
+          _errorMessage = result.error;
+          _isLoading = false;
+        });
       }
     } else {
       final result = AuthService.authenticateCaregiver(
@@ -79,7 +88,10 @@ class _LoginScreenState extends State<LoginScreen> {
         UserSessionService.instance.setActiveRole(UserRole.caregiver);
         context.go('/caregiver-dashboard');
       } else {
-        setState(() { _errorMessage = result.error; _isLoading = false; });
+        setState(() {
+          _errorMessage = result.error;
+          _isLoading = false;
+        });
       }
     }
   }
@@ -113,12 +125,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 64,
                         height: 64,
                         decoration: BoxDecoration(
-                          color: _isPatient ? AppColors.tealLight : AppColors.bluePale,
+                          color: _isPatient
+                              ? AppColors.tealLight
+                              : AppColors.bluePale,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Icon(
-                          _isPatient ? Icons.psychology_rounded : Icons.favorite_rounded,
-                          color: _isPatient ? AppColors.teal : AppColors.blueDeep,
+                          _isPatient
+                              ? Icons.psychology_rounded
+                              : Icons.favorite_rounded,
+                          color:
+                              _isPatient ? AppColors.teal : AppColors.blueDeep,
                           size: 32,
                         ),
                       ),
@@ -134,8 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             : 'Sign in to view your patient\'s care overview.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.muted,
-                        ),
+                              color: AppColors.muted,
+                            ),
                       ),
                     ],
                   ),
@@ -158,7 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Please enter your email.';
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Please enter your email.';
+                    }
                     return null;
                   },
                   onChanged: (_) => setState(() => _errorMessage = null),
@@ -185,12 +204,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                      tooltip:
+                          _obscurePassword ? 'Show password' : 'Hide password',
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Please enter your password.';
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Please enter your password.';
+                    }
                     return null;
                   },
                   onChanged: (_) => setState(() => _errorMessage = null),
@@ -200,23 +223,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ── Error message
                 if (_errorMessage != null) ...[
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
                       color: AppColors.errorLight,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                      border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 18),
+                        const Icon(Icons.error_outline_rounded,
+                            color: AppColors.error, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             _errorMessage!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.error,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                           ),
                         ),
                       ],
@@ -248,10 +275,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Sample credentials',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: AppColors.inkSoft,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: AppColors.inkSoft,
+                                  fontWeight: FontWeight.w700,
+                                ),
                       ),
                       const SizedBox(height: 8),
                       _CredRow(
@@ -308,12 +336,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () => context.go('/register'),
                         child: Text(
                           'Register',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.teal,
-                            fontWeight: FontWeight.w700,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.teal,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.teal,
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppColors.teal,
+                                  ),
                         ),
                       ),
                     ],
@@ -342,15 +371,18 @@ class _CredRow extends StatelessWidget {
           width: 64,
           child: Text(
             '$label:',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.muted),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppColors.muted),
           ),
         ),
         Text(
           value,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.inkSoft,
-          ),
+                fontWeight: FontWeight.w700,
+                color: AppColors.inkSoft,
+              ),
         ),
       ],
     );
