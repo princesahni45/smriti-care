@@ -40,9 +40,27 @@ class GameResult {
     this.syncStatus = 'pending',
   });
 
-  /// Helpful aliases satisfying Step 7 cognitive game telemetry specs
+  /// Helpful aliases satisfying cognitive score telemetry specs
+  String get scoreId => id;
+  String get gameType => gameId;
+  int get errors => wrongAnswers;
   int get mistakes => wrongAnswers;
+  DateTime get completedAt => timestamp;
   DateTime get completionTime => timestamp;
+
+  /// Normalized percentage (0 - 100) for cross-game comparison
+  int get normalizedPercentage {
+    if (accuracy > 0) return accuracy.clamp(0, 100);
+    if (attempts > 0) {
+      return ((score / attempts) * 100).round().clamp(0, 100);
+    }
+    return score.clamp(0, 100);
+  }
+
+  int get percentage => normalizedPercentage;
+
+  int get maxScore => attempts > 0 ? attempts : 100;
+
   double get responseTime => avgResponseTimeSeconds > 0
       ? avgResponseTimeSeconds
       : (attempts > 0 ? (completionTimeSeconds / attempts) : 0.0);
@@ -57,14 +75,19 @@ class GameResult {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'scoreId': id,
       'patientId': patientId,
       'gameId': gameId,
+      'gameType': gameId,
       'gameName': gameName,
       'score': score,
+      'maxScore': maxScore,
+      'percentage': percentage,
       'accuracy': accuracy,
       'attempts': attempts,
       'correctAnswers': correctAnswers,
       'wrongAnswers': wrongAnswers,
+      'errors': errors,
       'mistakes': mistakes,
       'difficulty': difficulty,
       'level': level,
@@ -72,6 +95,7 @@ class GameResult {
       'responseTime': responseTime,
       'avgResponseTimeSeconds': avgResponseTimeSeconds,
       'timestamp': timestamp.toIso8601String(),
+      'completedAt': timestamp.toIso8601String(),
       'completionTime': timestamp.toIso8601String(),
       'recommendation': recommendation,
       'syncStatus': syncStatus,
@@ -79,30 +103,48 @@ class GameResult {
   }
 
   factory GameResult.fromMap(Map<String, dynamic> map) {
+    DateTime parseDateTime(dynamic val) {
+      if (val == null) return DateTime.now();
+      if (val is DateTime) return val;
+      if (val.runtimeType.toString() == 'Timestamp' ||
+          val.toString().startsWith('Timestamp(')) {
+        try {
+          return (val as dynamic).toDate() as DateTime;
+        } catch (_) {}
+      }
+      return DateTime.tryParse(val.toString()) ?? DateTime.now();
+    }
+
+    final rawScore = (map['score'] as num?)?.toInt() ?? 0;
+    final rawMax = (map['maxScore'] ?? map['attempts'] as num?)?.toInt() ?? 0;
+    var rawAcc = (map['percentage'] ?? map['accuracy'] as num?)?.toInt() ?? 0;
+    if (rawAcc == 0 && rawMax > 0) {
+      rawAcc = ((rawScore / rawMax) * 100).round().clamp(0, 100);
+    }
+
     return GameResult(
-      id: map['id'] as String? ?? '',
+      id: (map['scoreId'] ?? map['id'] as String?) ?? '',
       patientId: map['patientId'] as String? ?? 'MC-2048',
-      gameId: map['gameId'] as String? ?? 'unknown',
+      gameId: (map['gameType'] ?? map['gameId'] as String?) ?? 'unknown',
       gameName: map['gameName'] as String? ?? 'Activity',
-      score: (map['score'] as num?)?.toInt() ?? 0,
-      accuracy: (map['accuracy'] as num?)?.toInt() ?? 0,
-      attempts: (map['attempts'] as num?)?.toInt() ?? 0,
+      score: rawScore,
+      accuracy: rawAcc,
+      attempts: rawMax > 0 ? rawMax : (map['attempts'] as num?)?.toInt() ?? 0,
       correctAnswers: (map['correctAnswers'] as num?)?.toInt() ?? 0,
-      wrongAnswers:
-          (map['wrongAnswers'] ?? map['mistakes'] as num?)?.toInt() ?? 0,
+      wrongAnswers: (map['errors'] ??
+              map['wrongAnswers'] ??
+              map['mistakes'] as num?)
+          ?.toInt() ??
+          0,
       difficulty: map['difficulty'] as String? ?? 'Level 1',
       completionTimeSeconds:
           (map['completionTimeSeconds'] as num?)?.toInt() ?? 0,
-      avgResponseTimeSeconds:
-          (map['responseTime'] ?? map['avgResponseTimeSeconds'] as num?)
-                  ?.toDouble() ??
-              0.0,
-      timestamp: map['timestamp'] != null
-          ? DateTime.tryParse(map['timestamp'] as String) ?? DateTime.now()
-          : (map['completionTime'] != null
-              ? DateTime.tryParse(map['completionTime'] as String) ??
-                  DateTime.now()
-              : DateTime.now()),
+      avgResponseTimeSeconds: (map['responseTime'] ??
+              map['avgResponseTimeSeconds'] as num?)
+          ?.toDouble() ??
+          0.0,
+      timestamp: parseDateTime(
+          map['completedAt'] ?? map['timestamp'] ?? map['completionTime']),
       recommendation: map['recommendation'] as String? ?? '',
       syncStatus: map['syncStatus'] as String? ?? 'pending',
     );

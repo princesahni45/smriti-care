@@ -37,6 +37,10 @@ class PatientClinicalSummary {
   final int? previousScore;
   final double? trendPercent;
   final DateTime? lastAssessedAt;
+  final double? averageScore;
+  final Map<String, double>? periodicTrends;
+  final DateTime? lastSyncedAt;
+  final bool isOffline;
 
   const PatientClinicalSummary({
     required this.patient,
@@ -49,6 +53,10 @@ class PatientClinicalSummary {
     this.previousScore,
     this.trendPercent,
     this.lastAssessedAt,
+    this.averageScore,
+    this.periodicTrends,
+    this.lastSyncedAt,
+    this.isOffline = false,
   });
 }
 
@@ -431,10 +439,14 @@ class DoctorService extends ChangeNotifier {
       ),
     );
 
-    // Pull real game results for this patient
-    final allGameResults = GameStorageService.instance.getHistory();
+    // FIX: Sync cognitive result to linked dashboards - fetch cloud scores
+    try {
+      await GameStorageService.instance.fetchScoresFromFirestore(patientId);
+    } catch (_) {}
+
+    // Pull real game results strictly for this patient
     final patientGames =
-        allGameResults.where((g) => g.patientId == patientId).toList();
+        GameStorageService.instance.getHistory(patientId: patientId);
 
     // Pull real MRI scans for this patient
     final allMriScans = await MriFileStorageService.instance.loadMriHistory();
@@ -483,17 +495,26 @@ class DoctorService extends ChangeNotifier {
     int? previousScore;
     double? trendPercent;
     DateTime? lastAssessedAt;
+    double? averageScore;
 
     if (patientGames.isNotEmpty) {
-      latestScore = patientGames.first.score;
+      latestScore = patientGames.first.normalizedPercentage;
       lastAssessedAt = patientGames.first.timestamp;
+      final totalScore = patientGames.fold<int>(
+          0, (sum, g) => sum + g.normalizedPercentage);
+      averageScore = totalScore / patientGames.length;
+
       if (patientGames.length > 1) {
-        previousScore = patientGames[1].score;
+        previousScore = patientGames[1].normalizedPercentage;
         trendPercent = previousScore > 0
             ? ((latestScore - previousScore) / previousScore) * 100
             : 0.0;
       }
     }
+
+    final periodicTrends =
+        GameStorageService.instance.getPeriodicTrends(patientId: patientId);
+    final isOffline = patientGames.any((g) => g.syncStatus == 'pending');
 
     return PatientClinicalSummary(
       patient: patient,
@@ -506,6 +527,10 @@ class DoctorService extends ChangeNotifier {
       previousScore: previousScore,
       trendPercent: trendPercent,
       lastAssessedAt: lastAssessedAt,
+      averageScore: averageScore,
+      periodicTrends: periodicTrends,
+      lastSyncedAt: DateTime.now(),
+      isOffline: isOffline,
     );
   }
 

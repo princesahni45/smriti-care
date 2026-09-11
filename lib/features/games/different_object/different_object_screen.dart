@@ -211,6 +211,9 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
       timestamp: DateTime.now(),
       recommendation: recommendation,
     );
+
+    // FIX: Save real cognitive score after game completion
+    // FIX: Sync cognitive result to linked dashboards
     GameStorageService.instance.saveResult(gameResult);
 
     Navigator.of(context).push(

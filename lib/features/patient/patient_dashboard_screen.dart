@@ -23,6 +23,7 @@ import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/smriti_button.dart';
 import '../../widgets/sos_button.dart';
 import 'widgets/daily_steps_card.dart';
+import 'widgets/patient_cognitive_performance_card.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -331,6 +332,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
 
                   const SizedBox(height: 16),
                   const DailyStepsCard(),
+
+                  const SizedBox(height: 16),
+                  // FIX: Save real cognitive score after game completion & show in Patient Dashboard
+                  const PatientCognitivePerformanceCard(),
 
                   const SizedBox(height: 24),
 

@@ -20,6 +20,7 @@ import '../../../core/services/caregiver_service.dart';
 import '../../../core/services/step_storage_service.dart';
 import '../widgets/patient_banner_card.dart';
 import '../widgets/activity_timeline_section.dart';
+import '../widgets/patient_cognitive_progress_card.dart';
 
 class CaregiverHomeTab extends StatelessWidget {
   final VoidCallback onSwitchPatientTap;
@@ -136,6 +137,11 @@ class CaregiverHomeTab extends StatelessWidget {
 
           // 6 Summary Cards in 2x3 Grid
           _buildSummaryCardsGrid(context, metrics, risk),
+
+          const SizedBox(height: 22),
+
+          // FIX: Sync cognitive result to linked dashboards - Caregiver Patient Cognitive Progress
+          PatientCognitiveProgressCard(patientId: patient.id),
 
           const SizedBox(height: 22),
 

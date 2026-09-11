@@ -67,6 +67,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
           : 'Gentle support recommended. Daily memory matching and orientation games help build confidence.',
     );
 
+    // FIX: Save real cognitive score after game completion
+    // FIX: Sync cognitive result to linked dashboards
     await GameStorageService.instance.saveResult(result);
 
     setState(() {

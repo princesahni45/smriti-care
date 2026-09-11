@@ -55,7 +55,11 @@ class _PatientClinicalOverviewScreenState
   }
 
   Future<void> _loadPatientData() async {
-    setState(() => _isLoading = true);
+    // FIX: Multiple patient safety - clear previous patient's loaded score state before loading new patient
+    setState(() {
+      _summary = null;
+      _isLoading = true;
+    });
     try {
       await DoctorService.instance.init();
       final summary = await DoctorService.instance
@@ -68,6 +72,16 @@ class _PatientClinicalOverviewScreenState
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  void didUpdateWidget(PatientClinicalOverviewScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.patientId != widget.patientId) {
+      // FIX: Multiple patient safety - clear state immediately when switching patients
+      _summary = null;
+      _loadPatientData();
     }
   }
 
@@ -457,8 +471,23 @@ class _PatientClinicalOverviewScreenState
   }
 
   // ── Section D: Cognitive Game Performance Breakdown ───────────────────────
+  // FIX: Added authorized doctor dashboard cognitive scores with offline sync notice
   Widget _buildGamePerformanceSection() {
     final games = _summary!.gameHistory;
+    final latestScore = _summary!.latestScore;
+    final avgScore = _summary!.averageScore;
+    final trends = _summary!.periodicTrends ?? {};
+    final isOffline = _summary!.isOffline;
+
+    // Helper for relative time formatting
+    String formatRelativeTime(DateTime? dt) {
+      if (dt == null) return 'Never';
+      final diff = DateTime.now().difference(dt);
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inHours < 1) return '${diff.inMinutes}m ago';
+      if (diff.inDays < 1) return '${diff.inHours}h ago';
+      return '${diff.inDays}d ago';
+    }
 
     // Group games by gameId
     final Map<String, List<GameResult>> grouped = {};
@@ -469,20 +498,172 @@ class _PatientClinicalOverviewScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Cognitive Game Performance',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: AppColors.ink,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Cognitive Performance',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+            ),
+            if (isOffline)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.amberPale,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.wifi_off_rounded,
+                        size: 12, color: AppColors.amberDeep),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Last synced: ${formatRelativeTime(_summary!.lastSyncedAt)}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.amberDeep,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 4),
         const Text(
-          'Breakdown of individual interactive cognitive activities',
+          'Clinical assessment history, domain breakdown, and multi-period trends',
           style: TextStyle(fontSize: 12, color: AppColors.muted),
         ),
+        if (isOffline) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.amberPale.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                  color: AppColors.amberDeep.withValues(alpha: 0.3)),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 14, color: AppColors.amberDeep),
+                SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Offline - showing last synced cognitive data',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.amberDeep,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
+
+        // ── Summary Strip: Latest, Average & 7D/30D/90D Trend
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.cardBorder),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Latest Score',
+                            style: TextStyle(
+                                fontSize: 11, color: AppColors.muted)),
+                        const SizedBox(height: 2),
+                        Text(
+                          latestScore != null ? '$latestScore%' : '—',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.teal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Average Score',
+                            style: TextStyle(
+                                fontSize: 11, color: AppColors.muted)),
+                        const SizedBox(height: 2),
+                        Text(
+                          avgScore != null ? '${avgScore.round()}%' : '—',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Total Sessions',
+                            style: TextStyle(
+                                fontSize: 11, color: AppColors.muted)),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${games.length}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              const Divider(height: 1, color: AppColors.cardBorder),
+              const SizedBox(height: 10),
+              // 7D / 30D / 90D trend row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildPeriodPill(
+                      '7D Avg', '${trends['7D']?.round() ?? 0}%'),
+                  _buildPeriodPill(
+                      '30D Avg', '${trends['30D']?.round() ?? 0}%'),
+                  _buildPeriodPill(
+                      '90D Avg', '${trends['90D']?.round() ?? 0}%'),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
         if (games.isEmpty)
           Container(
             padding: const EdgeInsets.all(24),
@@ -512,15 +693,13 @@ class _PatientClinicalOverviewScreenState
               ],
             ),
           )
-        else
+        else ...[
+          // ── Individual Game Breakdown
           ...grouped.entries.map((entry) {
             final gameList = entry.value;
             final latestGame = gameList.first;
-            final avgScore =
-                gameList.map((e) => e.score).reduce((a, b) => a + b) ~/
-                    gameList.length;
-            final avgAccuracy =
-                gameList.map((e) => e.accuracy).reduce((a, b) => a + b) ~/
+            final avgScoreForGame =
+                gameList.map((e) => e.normalizedPercentage).reduce((a, b) => a + b) ~/
                     gameList.length;
 
             return Container(
@@ -567,7 +746,7 @@ class _PatientClinicalOverviewScreenState
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        'Score: ${latestGame.score} / 100',
+                        'Score: ${latestGame.score} / ${latestGame.maxScore}',
                         style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
@@ -575,7 +754,7 @@ class _PatientClinicalOverviewScreenState
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Avg: $avgScore • Acc: $avgAccuracy%',
+                        'Avg: $avgScoreForGame% • ${latestGame.normalizedPercentage}%',
                         style: const TextStyle(
                             fontSize: 11, color: AppColors.muted),
                       ),
@@ -585,7 +764,103 @@ class _PatientClinicalOverviewScreenState
               ),
             );
           }),
+
+          const SizedBox(height: 16),
+
+          // ── Assessment History Log
+          const Text(
+            'Assessment History',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: AppColors.ink,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          ...games.take(5).map((g) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 6),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.cardBorder),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          g.gameName,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Score: ${g.score} / ${g.maxScore} • ${_formatDate(g.timestamp)}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.tealLight,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${g.normalizedPercentage}%',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.tealDark,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
       ],
+    );
+  }
+
+  Widget _buildPeriodPill(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.softSection,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('$label: ',
+              style: const TextStyle(fontSize: 11, color: AppColors.muted)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: AppColors.ink,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

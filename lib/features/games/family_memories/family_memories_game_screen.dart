@@ -161,6 +161,8 @@ class _FamilyMemoriesGameScreenState extends State<FamilyMemoriesGameScreen> {
           : 'Family memories bring gentle comfort. Practicing familiar faces every day is comforting.',
     );
 
+    // FIX: Save real cognitive score after game completion
+    // FIX: Sync cognitive result to linked dashboards
     await GameStorageService.instance.saveResult(result);
 
     if (mounted) {

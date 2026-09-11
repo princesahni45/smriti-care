@@ -229,6 +229,9 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
       timestamp: DateTime.now(),
       recommendation: recommendation,
     );
+
+    // FIX: Save real cognitive score after game completion
+    // FIX: Sync cognitive result to linked dashboards
     GameStorageService.instance.saveResult(gameResult);
 
     setState(() {

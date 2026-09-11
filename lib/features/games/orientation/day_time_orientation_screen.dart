@@ -231,6 +231,8 @@ class _DayTimeOrientationScreenState extends State<DayTimeOrientationScreen> {
           : 'Great effort! Reviewing the date and morning sunlight daily builds reassuring confidence.',
     );
 
+    // FIX: Save real cognitive score after game completion
+    // FIX: Sync cognitive result to linked dashboards
     await GameStorageService.instance.saveResult(result);
 
     if (mounted) {

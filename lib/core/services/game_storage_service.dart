@@ -183,12 +183,22 @@ class GameStorageService {
   }
 
   /// Syncs an individual game result to Firestore
+  // FIX: Save real cognitive score after game completion
+  // FIX: Sync cognitive result to linked dashboards
   Future<void> _syncResultToFirestore(GameResult result) async {
     final db = _firestore;
     if (db == null) return;
 
     try {
-      await db.collection('patientGameResults').doc(result.id).set(result.toMap());
+      final docRef = db
+          .collection('patients')
+          .doc(result.patientId)
+          .collection('cognitiveScores')
+          .doc(result.id);
+
+      final data = result.toMap();
+      await docRef.set(data, SetOptions(merge: true));
+
       // Mark as synced locally
       final index = _history.indexWhere((r) => r.id == result.id);
       if (index != -1) {
@@ -196,11 +206,12 @@ class GameStorageService {
         await _persist();
       }
     } catch (e) {
-      debugPrint('[GameStorageService] Firestore sync skipped/offline: $e');
+      debugPrint('[GameStorageService] Firestore sync offline/pending: $e');
     }
   }
 
   /// Synchronize all pending game results when online connectivity is restored
+  // FIX: Sync cognitive result to linked dashboards
   Future<int> syncPendingResults() async {
     await init();
     final db = _firestore;
@@ -211,9 +222,11 @@ class GameStorageService {
       if (_history[i].syncStatus == 'pending') {
         try {
           await db
-              .collection('patientGameResults')
+              .collection('patients')
+              .doc(_history[i].patientId)
+              .collection('cognitiveScores')
               .doc(_history[i].id)
-              .set(_history[i].toMap());
+              .set(_history[i].toMap(), SetOptions(merge: true));
           _history[i] = _history[i].copyWith(syncStatus: 'synced');
           syncedCount++;
         } catch (e) {
@@ -227,6 +240,81 @@ class GameStorageService {
       await _persist();
     }
     return syncedCount;
+  }
+
+  /// Fetch cognitive scores from Firestore and cache locally
+  // FIX: Sync cognitive result to linked dashboards
+  Future<List<GameResult>> fetchScoresFromFirestore(String patientId) async {
+    await init();
+    final db = _firestore;
+    if (db == null) return getHistory(patientId: patientId);
+
+    try {
+      final snapshot = await db
+          .collection('patients')
+          .doc(patientId)
+          .collection('cognitiveScores')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      final fetched = snapshot.docs
+          .map((doc) => GameResult.fromMap(doc.data()))
+          .where((r) => r.patientId == patientId)
+          .toList();
+
+      for (final r in fetched) {
+        final idx = _history.indexWhere((h) => h.id == r.id);
+        if (idx == -1) {
+          _history.add(r.copyWith(syncStatus: 'synced'));
+        } else {
+          _history[idx] = r.copyWith(syncStatus: 'synced');
+        }
+      }
+
+      _history.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      await _persist();
+      return getHistory(patientId: patientId);
+    } catch (e) {
+      debugPrint('[GameStorageService] fetchScores offline fallback: $e');
+      return getHistory(patientId: patientId);
+    }
+  }
+
+  /// Stream real-time cognitive score updates for a specific patient
+  // FIX: Sync cognitive result to linked dashboards
+  Stream<List<GameResult>> streamScores(String patientId) {
+    final db = _firestore;
+    if (db == null) {
+      return Stream.value(getHistory(patientId: patientId));
+    }
+
+    return db
+        .collection('patients')
+        .doc(patientId)
+        .collection('cognitiveScores')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snap) {
+      final remoteList = snap.docs
+          .map((d) => GameResult.fromMap(d.data()))
+          .where((r) => r.patientId == patientId)
+          .toList();
+
+      for (final r in remoteList) {
+        final idx = _history.indexWhere((h) => h.id == r.id);
+        if (idx == -1) {
+          _history.add(r.copyWith(syncStatus: 'synced'));
+        } else {
+          _history[idx] = r.copyWith(syncStatus: 'synced');
+        }
+      }
+      _history.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      _persist();
+      return getHistory(patientId: patientId);
+    }).handleError((e) {
+      debugPrint('[GameStorageService] streamScores error: $e');
+      return getHistory(patientId: patientId);
+    });
   }
 
   // ── Per-Patient Queries & Analytics ───────────────────────────────────────
@@ -266,8 +354,94 @@ class GameStorageService {
   double getAverageAccuracy({String? patientId}) {
     final list = getHistory(patientId: patientId);
     if (list.isEmpty) return 0.0;
-    final totalAcc = list.fold<int>(0, (acc, r) => acc + r.accuracy);
+    final totalAcc =
+        list.fold<int>(0, (acc, r) => acc + r.normalizedPercentage);
     return totalAcc / list.length;
+  }
+
+  /// 7-day average score percentage for a given patient
+  double get7DayAveragePercentage({String? patientId}) {
+    final list = getHistory(patientId: patientId);
+    if (list.isEmpty) return 0.0;
+
+    final weekAgo = DateTime.now().subtract(const Duration(days: 7));
+    final recent = list.where((r) => r.timestamp.isAfter(weekAgo)).toList();
+
+    if (recent.isEmpty) {
+      // If no games played in last 7 days, fallback to overall recent average
+      final fallback = list.take(5).toList();
+      final total = fallback.fold<int>(
+          0, (accSum, r) => accSum + r.normalizedPercentage);
+      return total / fallback.length;
+    }
+
+    final total =
+        recent.fold<int>(0, (accSum, r) => accSum + r.normalizedPercentage);
+    return total / recent.length;
+  }
+
+  /// Cognitive trend comparison (latest vs previous assessment)
+  ({String text, double? delta, bool hasEnoughData}) getCognitiveTrend(
+      {String? patientId}) {
+    final list = getHistory(patientId: patientId);
+    if (list.length < 2) {
+      return (
+        text: 'Not enough data for trend yet.',
+        delta: null,
+        hasEnoughData: false,
+      );
+    }
+
+    final latest = list[0].normalizedPercentage;
+    final previous = list[1].normalizedPercentage;
+    final delta = (latest - previous).toDouble();
+
+    if (delta > 0) {
+      return (
+        text: '↑ +${delta.toStringAsFixed(0)}% vs previous',
+        delta: delta,
+        hasEnoughData: true,
+      );
+    } else if (delta < 0) {
+      return (
+        text: '↓ ${delta.toStringAsFixed(0)}% vs previous',
+        delta: delta,
+        hasEnoughData: true,
+      );
+    } else {
+      return (
+        text: 'Stable (0% change)',
+        delta: 0.0,
+        hasEnoughData: true,
+      );
+    }
+  }
+
+  /// Periodic trend averages (7D, 30D, 90D) for doctor clinical view
+  Map<String, double> getPeriodicTrends({String? patientId}) {
+    final list = getHistory(patientId: patientId);
+    if (list.isEmpty) {
+      return {'7D': 0.0, '30D': 0.0, '90D': 0.0};
+    }
+
+    final now = DateTime.now();
+    double calcAvg(Duration duration) {
+      final cutoff = now.subtract(duration);
+      final filtered =
+          list.where((r) => r.timestamp.isAfter(cutoff)).toList();
+      if (filtered.isEmpty) {
+        return list.first.normalizedPercentage.toDouble();
+      }
+      final sum = filtered.fold<int>(
+          0, (acc, r) => acc + r.normalizedPercentage);
+      return sum / filtered.length;
+    }
+
+    return {
+      '7D': calcAvg(const Duration(days: 7)),
+      '30D': calcAvg(const Duration(days: 30)),
+      '90D': calcAvg(const Duration(days: 90)),
+    };
   }
 
   /// Average response time in seconds for a given patient

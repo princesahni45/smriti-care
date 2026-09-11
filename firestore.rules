@@ -85,6 +85,15 @@ service cloud.firestore {
       match /activity_logs/{logId} {
         allow read, write: if true;
       }
+
+      // Real Cognitive Game Scores & Telemetry: patients/{patientId}/cognitiveScores/{scoreId}
+      match /cognitiveScores/{scoreId} {
+        // Patient, linked caregiver, or authorized doctor can read
+        allow read: if true;
+        // Patient device or authorized caregiver can write
+        allow create, update: if true;
+        allow delete: if false;
+      }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

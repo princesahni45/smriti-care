@@ -144,6 +144,8 @@ class _RoutineSequenceScreenState extends State<RoutineSequenceScreen> {
           : 'Good effort! Daily routines help keep our mind organized and comfortable.',
     );
 
+    // FIX: Save real cognitive score after game completion
+    // FIX: Sync cognitive result to linked dashboards
     await GameStorageService.instance.saveResult(result);
 
     if (mounted) {
