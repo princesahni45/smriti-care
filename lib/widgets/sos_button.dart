@@ -30,11 +30,13 @@ class SosButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         title: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: AppColors.coralDeep, size: 28),
+            const Icon(Icons.warning_amber_rounded,
+                color: AppColors.coralDeep, size: 28),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                context.tr('sos.emergencyTitle', defaultText: 'Send Emergency Alert?'),
+                context.tr('sos.emergencyTitle',
+                    defaultText: 'Send Emergency Alert?'),
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
@@ -48,15 +50,20 @@ class SosButton extends StatelessWidget {
           context.tr('sos.safetyNotice',
               defaultText:
                   'This will obtain your current GPS coordinates and open emergency calling & messaging for your caregivers.'),
-          style: const TextStyle(fontSize: 14, color: AppColors.inkSoft, height: 1.4),
+          style: const TextStyle(
+              fontSize: 14, color: AppColors.inkSoft, height: 1.4),
         ),
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        actionsPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               context.tr('common.cancel', defaultText: 'Cancel'),
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.muted),
+              style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.muted),
             ),
           ),
           ElevatedButton.icon(
@@ -64,7 +71,8 @@ class SosButton extends StatelessWidget {
               backgroundColor: AppColors.coralDeep,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
               elevation: 0,
             ),
             icon: const Icon(Icons.sos_rounded, size: 20),
@@ -120,6 +128,8 @@ class SosButton extends StatelessWidget {
       ),
     );
 
-    return isFullWidth ? SizedBox(width: double.infinity, child: button) : button;
+    return isFullWidth
+        ? SizedBox(width: double.infinity, child: button)
+        : button;
   }
 }

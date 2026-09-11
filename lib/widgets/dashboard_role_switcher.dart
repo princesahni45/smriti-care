@@ -56,7 +56,8 @@ class DashboardRoleSwitcher extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.muted),
+                    icon:
+                        const Icon(Icons.close_rounded, color: AppColors.muted),
                     onPressed: () => Navigator.pop(ctx),
                   ),
                 ],
@@ -113,7 +114,8 @@ class DashboardRoleSwitcher extends StatelessWidget {
               _buildRoleOption(
                 context: ctx,
                 title: '🩺 Doctor',
-                subtitle: 'Clinical portal • Multi-patient cognitive & MRI monitoring',
+                subtitle:
+                    'Clinical portal • Multi-patient cognitive & MRI monitoring',
                 isSelected: isDoctor,
                 color: const Color(0xFF00796B),
                 onTap: () {
@@ -153,7 +155,9 @@ class DashboardRoleSwitcher extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.08) : AppColors.softSection,
+          color: isSelected
+              ? color.withValues(alpha: 0.08)
+              : AppColors.softSection,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : AppColors.borderLight,
@@ -188,7 +192,8 @@ class DashboardRoleSwitcher extends StatelessWidget {
             if (isSelected)
               Icon(Icons.check_circle_rounded, color: color, size: 22)
             else
-              const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.muted, size: 14),
+              const Icon(Icons.arrow_forward_ios_rounded,
+                  color: AppColors.muted, size: 14),
           ],
         ),
       ),

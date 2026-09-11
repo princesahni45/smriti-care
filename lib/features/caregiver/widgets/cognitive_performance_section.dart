@@ -9,7 +9,8 @@ class CognitivePerformanceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recentResults = GameStorageService.instance.getRecentResults(limit: 6);
+    final recentResults =
+        GameStorageService.instance.getRecentResults(limit: 6);
     final totalGames = GameStorageService.instance.getTotalGamesCompleted();
     final streak = GameStorageService.instance.getCurrentStreakDays();
     final avgScore = GameStorageService.instance.getTodayScore();
@@ -19,21 +20,23 @@ class CognitivePerformanceSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            _buildMiniMetric('Completed', '$totalGames games', Icons.emoji_events_rounded, AppColors.teal),
+            _buildMiniMetric('Completed', '$totalGames games',
+                Icons.emoji_events_rounded, AppColors.teal),
             const SizedBox(width: 10),
-            _buildMiniMetric('Streak', '$streak days', Icons.local_fire_department_rounded, AppColors.coral),
+            _buildMiniMetric('Streak', '$streak days',
+                Icons.local_fire_department_rounded, AppColors.coral),
             const SizedBox(width: 10),
-            _buildMiniMetric('Today Avg', '$avgScore%', Icons.stars_rounded, AppColors.amberDeep),
+            _buildMiniMetric('Today Avg', '$avgScore%', Icons.stars_rounded,
+                AppColors.amberDeep),
           ],
         ),
         const SizedBox(height: 20),
-
         const Text(
           'Recent Game Sessions',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 12),
-
         if (recentResults.isEmpty)
           Container(
             padding: const EdgeInsets.all(20),
@@ -46,7 +49,8 @@ class CognitivePerformanceSection extends StatelessWidget {
               child: Text(
                 'No cognitive games played yet. As the patient completes activities, their real-time performance and accuracy will appear here.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.muted, fontSize: 13, height: 1.4),
+                style: TextStyle(
+                    color: AppColors.muted, fontSize: 13, height: 1.4),
               ),
             ),
           )
@@ -56,7 +60,8 @@ class CognitivePerformanceSection extends StatelessWidget {
     );
   }
 
-  Widget _buildMiniMetric(String label, String value, IconData icon, Color color) {
+  Widget _buildMiniMetric(
+      String label, String value, IconData icon, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
@@ -69,8 +74,16 @@ class CognitivePerformanceSection extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: color),
             const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink)),
-            Text(label, style: const TextStyle(fontSize: 11, color: AppColors.muted, fontWeight: FontWeight.w600)),
+            Text(value,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink)),
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.muted,
+                    fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -93,7 +106,10 @@ class CognitivePerformanceSection extends StatelessWidget {
             backgroundColor: AppColors.tealPale,
             child: Text(
               '${r.score}%',
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.tealDeep),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  color: AppColors.tealDeep),
             ),
           ),
           const SizedBox(width: 14),
@@ -103,7 +119,10 @@ class CognitivePerformanceSection extends StatelessWidget {
               children: [
                 Text(
                   r.gameName,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -114,7 +133,10 @@ class CognitivePerformanceSection extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     r.recommendation,
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.tealDark),
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.tealDark),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

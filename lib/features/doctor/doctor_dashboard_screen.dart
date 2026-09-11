@@ -160,12 +160,14 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             if (isOffline)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 color: const Color(0xFFE0F2F1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.cloud_off_rounded, size: 14, color: Colors.teal.shade800),
+                    Icon(Icons.cloud_off_rounded,
+                        size: 14, color: Colors.teal.shade800),
                     const SizedBox(width: 6),
                     Text(
                       'Offline - showing last synced data',
@@ -185,7 +187,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 index: _currentIndex,
                 children: [
                   DoctorHomeTab(
-                    onNavigateTab: (index) => setState(() => _currentIndex = index),
+                    onNavigateTab: (index) =>
+                        setState(() => _currentIndex = index),
                   ),
                   const DoctorPatientsTab(),
                   const DoctorAlertsTab(),
@@ -211,8 +214,10 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           backgroundColor: AppColors.surface,
           selectedItemColor: AppColors.tealDark,
           unselectedItemColor: AppColors.muted,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+          selectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w700, fontSize: 11),
+          unselectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
           type: BottomNavigationBarType.fixed,
           elevation: 0,
           items: const [

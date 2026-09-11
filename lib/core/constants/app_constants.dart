@@ -7,9 +7,10 @@ class AppConstants {
   AppConstants._();
 
   // ── App Identity
-  static const String appName        = 'Smriti Care';
-  static const String appTagline     = 'AI-powered cognitive care for elderly minds.';
-  static const String appVersion     = '1.0.0';
+  static const String appName = 'Smriti Care';
+  static const String appTagline =
+      'AI-powered cognitive care for elderly minds.';
+  static const String appVersion = '1.0.0';
 
   // ── FIX: Centralized API Base URL
   // IMPORTANT: When testing on a physical Android phone, localhost / 127.0.0.1
@@ -21,38 +22,39 @@ class AppConstants {
   // For Physical Device : http://192.168.9.221:8000 (Wi-Fi) or http://127.0.0.1:8000 (USB adb reverse)
   // FIX: Updated physical device LAN IP and USB ADB reverse URL
   static const String kApiBaseUrlAndroidEmulator = 'http://10.0.2.2:8000';
-  static const String kApiBaseUrlPhysicalDevice  = 'http://192.168.9.221:8000';
-  static const String kApiBaseUrlUsbReverse      = 'http://127.0.0.1:8000';
-  static const String kApiBaseUrlWeb             = 'http://localhost:8000';
+  static const String kApiBaseUrlPhysicalDevice = 'http://192.168.9.221:8000';
+  static const String kApiBaseUrlUsbReverse = 'http://127.0.0.1:8000';
+  static const String kApiBaseUrlWeb = 'http://localhost:8000';
 
   // Change this to kApiBaseUrlUsbReverse or kApiBaseUrlPhysicalDevice when testing on real phone:
   static const String kApiBaseUrl = kApiBaseUrlUsbReverse;
 
   // ── API Endpoint Paths
-  static const String kEndpointHealth         = '/health';
-  static const String kEndpointMriAnalyze     = '/api/v1/mri/analyze';
-  static const String kEndpointCognitiveBatch = '/api/v1/cognitive/telemetry/batch';
-  static const String kEndpointCognitiveRisk  = '/api/v1/cognitive/risk-analysis';
+  static const String kEndpointHealth = '/health';
+  static const String kEndpointMriAnalyze = '/api/v1/mri/analyze';
+  static const String kEndpointCognitiveBatch =
+      '/api/v1/cognitive/telemetry/batch';
+  static const String kEndpointCognitiveRisk =
+      '/api/v1/cognitive/risk-analysis';
   static const String kEndpointCognitivePredict = '/api/cognitive/predict';
-  static const String kEndpointMriPredict     = '/api/mri/predict';
-
+  static const String kEndpointMriPredict = '/api/mri/predict';
 
   // ── Patient Demo Credentials (from authConfig.js PROTOTYPE_PATIENT_ACCOUNT)
-  static const String patientEmail    = 'patient@example.com';
+  static const String patientEmail = 'patient@example.com';
   static const String patientPassword = 'Hello@123';
-  static const String patientId       = 'MC-2048';
-  static const String patientName     = 'Ramesh';
+  static const String patientId = 'MC-2048';
+  static const String patientName = 'Ramesh';
   static const String patientFullName = 'Mr. Ramesh Das';
-  static const int    patientAge      = 72;
+  static const int patientAge = 72;
   static const String patientLocation = 'Guwahati, Assam';
   static const String patientBloodGroup = 'B+';
-  static const String patientPhysician  = 'Dr. Ananya Bora';
+  static const String patientPhysician = 'Dr. Ananya Bora';
   static const String patientDementiaLevel = 'Moderate';
 
   // ── Caregiver Demo Credentials
-  static const String caregiverEmail    = 'singhmohak360@gmail.com';
+  static const String caregiverEmail = 'singhmohak360@gmail.com';
   static const String caregiverPassword = 'Hello@123';
-  static const String caregiverName     = 'Mohak Singh';
+  static const String caregiverName = 'Mohak Singh';
   static const String caregiverInitials = 'MS';
 
   // ── Caregiver PIN for patient session exit (from authConfig PROTOTYPE_CAREGIVER_PIN_CONFIG)
@@ -102,10 +104,30 @@ class AppConstants {
 
   // ── Caregiver Stats (mock data from CaregiverDashboard in App.jsx)
   static const List<Map<String, String>> caregiverStats = [
-    {'label': "Today's activity", 'value': '42 min',  'color': 'teal',   'icon': 'clock'},
-    {'label': 'Cognitive score',  'value': '72 / 100', 'color': 'violet', 'icon': 'trending'},
-    {'label': 'Medication',       'value': '2 of 3 taken', 'color': 'coral', 'icon': 'pill'},
-    {'label': 'Next appointment', 'value': '12 Sep',  'color': 'blue',   'icon': 'calendar'},
+    {
+      'label': "Today's activity",
+      'value': '42 min',
+      'color': 'teal',
+      'icon': 'clock'
+    },
+    {
+      'label': 'Cognitive score',
+      'value': '72 / 100',
+      'color': 'violet',
+      'icon': 'trending'
+    },
+    {
+      'label': 'Medication',
+      'value': '2 of 3 taken',
+      'color': 'coral',
+      'icon': 'pill'
+    },
+    {
+      'label': 'Next appointment',
+      'value': '12 Sep',
+      'color': 'blue',
+      'icon': 'calendar'
+    },
   ];
 
   // ── Weekly cognitive engagement mock data (from bar chart in CaregiverDashboard)
@@ -121,9 +143,9 @@ class AppConstants {
 
   // ── Care tasks mock data (from routine-card in CaregiverDashboard)
   static const List<Map<String, dynamic>> careTasks = [
-    {'task': 'Morning medicine',        'time': '8:00 AM',  'done': true},
+    {'task': 'Morning medicine', 'time': '8:00 AM', 'done': true},
     {'task': 'Memory matching activity', 'time': '10:30 AM', 'done': true},
-    {'task': 'Afternoon medicine',       'time': '2:00 PM',  'done': false},
-    {'task': 'Evening walk',             'time': '5:30 PM',  'done': false},
+    {'task': 'Afternoon medicine', 'time': '2:00 PM', 'done': false},
+    {'task': 'Evening walk', 'time': '5:30 PM', 'done': false},
   ];
 }

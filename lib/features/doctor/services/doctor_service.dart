@@ -170,7 +170,8 @@ class DoctorService extends ChangeNotifier {
           doctorId: 'DOC-001',
           doctorName: 'Dr. Ananya Bora',
           patientId: 'MC-2048',
-          text: 'Baseline cognitive assessment reviewed. Mild recall fluctuations noted during morning sessions. Recommended continuation of routine memory games and family photo associations.',
+          text:
+              'Baseline cognitive assessment reviewed. Mild recall fluctuations noted during morning sessions. Recommended continuation of routine memory games and family photo associations.',
           createdAt: DateTime.now().subtract(const Duration(days: 4)),
           updatedAt: DateTime.now().subtract(const Duration(days: 4)),
         ),
@@ -179,7 +180,8 @@ class DoctorService extends ChangeNotifier {
           doctorId: 'DOC-001',
           doctorName: 'Dr. Ananya Bora',
           patientId: 'MC-3109',
-          text: 'Patient demonstrates solid orientation and word recall scores. Caregiver instructed to maintain hydration and daily garden walks.',
+          text:
+              'Patient demonstrates solid orientation and word recall scores. Caregiver instructed to maintain hydration and daily garden walks.',
           createdAt: DateTime.now().subtract(const Duration(days: 8)),
           updatedAt: DateTime.now().subtract(const Duration(days: 8)),
         ),
@@ -255,13 +257,17 @@ class DoctorService extends ChangeNotifier {
 
   /// Doctor initiates a connection request by entering the patient link code.
   // FIX: Added secure doctor-patient linking - requestPatientLink
-  Future<({bool success, String message})> requestPatientLink(String linkCode) async {
+  Future<({bool success, String message})> requestPatientLink(
+      String linkCode) async {
     await init();
     await CaregiverService.instance.init();
 
     final cleanCode = linkCode.trim().toUpperCase();
     if (cleanCode.isEmpty) {
-      return (success: false, message: 'Please enter a valid Patient Link Code.');
+      return (
+        success: false,
+        message: 'Please enter a valid Patient Link Code.'
+      );
     }
 
     // Find patient matching link code
@@ -277,7 +283,8 @@ class DoctorService extends ChangeNotifier {
     if (matchedPatientId == null) {
       final allPatients = CaregiverService.instance.getLinkedPatients();
       for (final p in allPatients) {
-        if (cleanCode == 'SMR-${p.id.replaceAll('MC-', '')}' || cleanCode == p.id) {
+        if (cleanCode == 'SMR-${p.id.replaceAll('MC-', '')}' ||
+            cleanCode == p.id) {
           matchedPatientId = p.id;
           _patientLinkCodes[p.id] = cleanCode;
           break;
@@ -288,7 +295,8 @@ class DoctorService extends ChangeNotifier {
     if (matchedPatientId == null) {
       return (
         success: false,
-        message: 'Invalid code. Please check the code with the patient\'s caregiver.',
+        message:
+            'Invalid code. Please check the code with the patient\'s caregiver.',
       );
     }
 
@@ -300,7 +308,10 @@ class DoctorService extends ChangeNotifier {
     if (existingIndex >= 0) {
       final link = _links[existingIndex];
       if (link.status == DoctorLinkStatus.approved) {
-        return (success: false, message: 'This patient is already linked to your dashboard.');
+        return (
+          success: false,
+          message: 'This patient is already linked to your dashboard.'
+        );
       } else if (link.status == DoctorLinkStatus.pending) {
         return (
           success: false,
@@ -338,7 +349,8 @@ class DoctorService extends ChangeNotifier {
 
     return (
       success: true,
-      message: 'Connection request sent! The caregiver must approve it to grant access.',
+      message:
+          'Connection request sent! The caregiver must approve it to grant access.',
     );
   }
 
@@ -373,14 +385,16 @@ class DoctorService extends ChangeNotifier {
   /// Caregiver helper: gets pending requests for a specific patient.
   List<DoctorPatientLink> getPendingRequestsForPatient(String patientId) {
     return _links
-        .where((l) => l.patientId == patientId && l.status == DoctorLinkStatus.pending)
+        .where((l) =>
+            l.patientId == patientId && l.status == DoctorLinkStatus.pending)
         .toList();
   }
 
   /// Caregiver helper: gets approved doctor links for a specific patient.
   List<DoctorPatientLink> getApprovedLinksForPatient(String patientId) {
     return _links
-        .where((l) => l.patientId == patientId && l.status == DoctorLinkStatus.approved)
+        .where((l) =>
+            l.patientId == patientId && l.status == DoctorLinkStatus.approved)
         .toList();
   }
 
@@ -388,10 +402,12 @@ class DoctorService extends ChangeNotifier {
 
   /// Fetches clinical summary for an authorized patient.
   // FIX: Added multi-patient doctor dashboard - secure patient data retrieval
-  Future<PatientClinicalSummary?> getPatientClinicalSummary(String patientId) async {
+  Future<PatientClinicalSummary?> getPatientClinicalSummary(
+      String patientId) async {
     await init();
     if (!isPatientAuthorized(patientId)) {
-      debugPrint('[DoctorService] Unauthorized access attempt for patient: $patientId');
+      debugPrint(
+          '[DoctorService] Unauthorized access attempt for patient: $patientId');
       return null;
     }
 
@@ -417,45 +433,51 @@ class DoctorService extends ChangeNotifier {
 
     // Pull real game results for this patient
     final allGameResults = GameStorageService.instance.getHistory();
-    final patientGames = allGameResults.where((g) => g.patientId == patientId).toList();
+    final patientGames =
+        allGameResults.where((g) => g.patientId == patientId).toList();
 
     // Pull real MRI scans for this patient
     final allMriScans = await MriFileStorageService.instance.loadMriHistory();
-    final patientMriScans = allMriScans.where((m) => m.patientId == patientId).toList();
+    final patientMriScans =
+        allMriScans.where((m) => m.patientId == patientId).toList();
 
     // Use reminders with messages as caregiver observations
-    final caregiverObs = CaregiverService.instance
-        .getLinkedPatients()
-        .isNotEmpty ? [
-          CaregiverReminder(
-            id: 'obs-001',
-            patientId: patientId,
-            type: 'daily_routine',
-            title: 'Caregiver Observation',
-            message: 'Patient showed mild hesitation during evening name recall, but remained cheerful and completed walks comfortably.',
-            scheduledTime: '06:00 PM',
-            repeat: 'daily',
-            enabled: true,
-            status: 'acknowledged',
-          ),
-          CaregiverReminder(
-            id: 'obs-002',
-            patientId: patientId,
-            type: 'medication',
-            title: 'Routine Compliance',
-            message: 'All prescribed doses taken on schedule with no reported side effects.',
-            scheduledTime: '08:00 AM',
-            repeat: 'daily',
-            enabled: true,
-            status: 'acknowledged',
-          ),
-        ] : <CaregiverReminder>[];
+    final caregiverObs =
+        CaregiverService.instance.getLinkedPatients().isNotEmpty
+            ? [
+                CaregiverReminder(
+                  id: 'obs-001',
+                  patientId: patientId,
+                  type: 'daily_routine',
+                  title: 'Caregiver Observation',
+                  message:
+                      'Patient showed mild hesitation during evening name recall, but remained cheerful and completed walks comfortably.',
+                  scheduledTime: '06:00 PM',
+                  repeat: 'daily',
+                  enabled: true,
+                  status: 'acknowledged',
+                ),
+                CaregiverReminder(
+                  id: 'obs-002',
+                  patientId: patientId,
+                  type: 'medication',
+                  title: 'Routine Compliance',
+                  message:
+                      'All prescribed doses taken on schedule with no reported side effects.',
+                  scheduledTime: '08:00 AM',
+                  repeat: 'daily',
+                  enabled: true,
+                  status: 'acknowledged',
+                ),
+              ]
+            : <CaregiverReminder>[];
 
     // Pull doctor notes for this patient
     final patientNotes = getDoctorNotes(patientId);
 
     // Calculate attention status & trends
-    final attention = calculateAttentionStatus(patientId, patientGames, patientMriScans);
+    final attention =
+        calculateAttentionStatus(patientId, patientGames, patientMriScans);
 
     int? latestScore;
     int? previousScore;
@@ -496,10 +518,12 @@ class DoctorService extends ChangeNotifier {
     List<MriScanResult> mriScans,
   ) {
     // Check unreviewed MRI scans
-    final hasUnreviewedMri = mriScans.any((m) => !m.isReviewed && m.status == 'completed');
+    final hasUnreviewedMri =
+        mriScans.any((m) => !m.isReviewed && m.status == 'completed');
     if (hasUnreviewedMri) {
       return PatientAttentionStatus.reviewSuggested(
-        reason: 'New AI-assisted MRI screening result is awaiting clinical review.',
+        reason:
+            'New AI-assisted MRI screening result is awaiting clinical review.',
       );
     }
 
@@ -517,11 +541,13 @@ class DoctorService extends ChangeNotifier {
 
     if (diff <= -5) {
       return PatientAttentionStatus.reviewSuggested(
-        reason: 'Recent cognitive score declined by ${diff.abs()} points across sessions.',
+        reason:
+            'Recent cognitive score declined by ${diff.abs()} points across sessions.',
       );
     } else if (diff < 0) {
       return PatientAttentionStatus.monitor(
-        reason: 'Minor variance of ${diff.abs()} points observed in recent activity.',
+        reason:
+            'Minor variance of ${diff.abs()} points observed in recent activity.',
       );
     }
 
@@ -534,9 +560,7 @@ class DoctorService extends ChangeNotifier {
 
   // FIX: Added multi-patient doctor dashboard - Doctor Notes CRUD
   List<DoctorNote> getDoctorNotes(String patientId) {
-    return _notes
-        .where((n) => n.patientId == patientId)
-        .toList()
+    return _notes.where((n) => n.patientId == patientId).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
@@ -571,7 +595,8 @@ class DoctorService extends ChangeNotifier {
     if (idx < 0) return false;
 
     // Doctor can only edit their own note
-    if (_notes[idx].doctorId != currentDoctorId && _notes[idx].doctorId != 'DOC-001') {
+    if (_notes[idx].doctorId != currentDoctorId &&
+        _notes[idx].doctorId != 'DOC-001') {
       debugPrint('[DoctorService] Cannot edit another doctor\'s note');
       return false;
     }
@@ -592,7 +617,8 @@ class DoctorService extends ChangeNotifier {
     final idx = _notes.indexWhere((n) => n.noteId == noteId);
     if (idx < 0) return false;
 
-    if (_notes[idx].doctorId != currentDoctorId && _notes[idx].doctorId != 'DOC-001') {
+    if (_notes[idx].doctorId != currentDoctorId &&
+        _notes[idx].doctorId != 'DOC-001') {
       debugPrint('[DoctorService] Cannot delete another doctor\'s note');
       return false;
     }
@@ -634,8 +660,13 @@ class DoctorService extends ChangeNotifier {
 
   // ── Dashboard Metrics & Smart Alerts ───────────────────────────────────────
 
-  Future<({int totalPatients, int needsReview, int mriPending, int recentAssessments})>
-      getDashboardSummary() async {
+  Future<
+      ({
+        int totalPatients,
+        int needsReview,
+        int mriPending,
+        int recentAssessments
+      })> getDashboardSummary() async {
     final patients = await getAuthorizedPatients();
     final allMri = await MriFileStorageService.instance.loadMriHistory();
     final allGames = GameStorageService.instance.getHistory();
@@ -652,13 +683,13 @@ class DoctorService extends ChangeNotifier {
         needsReviewCount++;
       }
 
-      mriPendingCount += pMri.where((m) => !m.isReviewed && m.status == 'completed').length;
+      mriPendingCount +=
+          pMri.where((m) => !m.isReviewed && m.status == 'completed').length;
     }
 
     final oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
-    final recentAssessments = allGames
-        .where((g) => g.timestamp.isAfter(oneWeekAgo))
-        .length;
+    final recentAssessments =
+        allGames.where((g) => g.timestamp.isAfter(oneWeekAgo)).length;
 
     return (
       totalPatients: patients.length,
@@ -681,14 +712,16 @@ class DoctorService extends ChangeNotifier {
       final pMri = allMri.where((m) => m.patientId == patient.id).toList();
 
       // Check unreviewed MRI
-      final pendingMri = pMri.where((m) => !m.isReviewed && m.status == 'completed').toList();
+      final pendingMri =
+          pMri.where((m) => !m.isReviewed && m.status == 'completed').toList();
       for (final mri in pendingMri) {
         alerts.add(DoctorSmartAlert(
           id: 'alt-mri-${mri.scanId}',
           patientId: patient.id,
           patientName: patient.fullName,
           title: 'MRI Screening Pending Review',
-          message: 'New AI screening (${mri.prediction}) awaiting doctor review.',
+          message:
+              'New AI screening (${mri.prediction}) awaiting doctor review.',
           type: 'mri_pending',
           timestamp: mri.timestamp,
         ));
@@ -704,7 +737,8 @@ class DoctorService extends ChangeNotifier {
             patientId: patient.id,
             patientName: patient.fullName,
             title: 'Patient May Require Review',
-            message: 'Recent assessment showed a ${prev - latest} point score variance compared to previous session.',
+            message:
+                'Recent assessment showed a ${prev - latest} point score variance compared to previous session.',
             type: 'score_drop',
             timestamp: pGames.first.timestamp,
           ));

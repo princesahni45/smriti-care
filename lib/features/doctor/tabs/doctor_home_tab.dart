@@ -55,7 +55,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
 
       final Map<String, PatientClinicalSummary> summaryMap = {};
       for (final p in patients) {
-        final clinSummary = await DoctorService.instance.getPatientClinicalSummary(p.id);
+        final clinSummary =
+            await DoctorService.instance.getPatientClinicalSummary(p.id);
         if (clinSummary != null) {
           summaryMap[p.id] = clinSummary;
         }
@@ -141,7 +142,9 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        doctorName.startsWith('Dr.') ? doctorName : 'Dr. $doctorName',
+                        doctorName.startsWith('Dr.')
+                            ? doctorName
+                            : 'Dr. $doctorName',
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -154,7 +157,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          const Icon(Icons.local_hospital_rounded, size: 13, color: AppColors.tealDark),
+                          const Icon(Icons.local_hospital_rounded,
+                              size: 13, color: AppColors.tealDark),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
@@ -176,7 +180,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                 const CircleAvatar(
                   radius: 24,
                   backgroundColor: AppColors.tealLight,
-                  child: Icon(Icons.medical_services_rounded, color: AppColors.teal, size: 26),
+                  child: Icon(Icons.medical_services_rounded,
+                      color: AppColors.teal, size: 26),
                 ),
               ],
             ),
@@ -248,8 +253,10 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                 onChanged: (val) => setState(() => _searchQuery = val.trim()),
                 decoration: InputDecoration(
                   hintText: 'Search patients by name, ID or location...',
-                  hintStyle: const TextStyle(fontSize: 13, color: AppColors.muted),
-                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.muted, size: 20),
+                  hintStyle:
+                      const TextStyle(fontSize: 13, color: AppColors.muted),
+                  prefixIcon: const Icon(Icons.search_rounded,
+                      color: AppColors.muted, size: 20),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.clear_rounded, size: 18),
@@ -260,7 +267,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                         )
                       : null,
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 ),
               ),
             ),
@@ -294,14 +302,18 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                   ),
                   Text(
                     '${attentionPatients.length} patient${attentionPatients.length > 1 ? 's' : ''}',
-                    style: const TextStyle(fontSize: 12, color: AppColors.muted, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.muted,
+                        fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               ...attentionPatients.map((patient) {
                 final summary = _summaries[patient.id];
-                final mriPending = summary?.mriScans.any((m) => !m.isReviewed) ?? false;
+                final mriPending =
+                    summary?.mriScans.any((m) => !m.isReviewed) ?? false;
                 final mriStatus = summary?.mriScans.isEmpty ?? true
                     ? 'No MRI'
                     : (mriPending ? 'Review Pending' : 'Reviewed');
@@ -325,7 +337,9 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _searchQuery.isNotEmpty ? 'Search Results (${filteredPatients.length})' : 'My Patients',
+                  _searchQuery.isNotEmpty
+                      ? 'Search Results (${filteredPatients.length})'
+                      : 'My Patients',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -336,7 +350,10 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                   onPressed: () => widget.onNavigateTab?.call(1),
                   child: const Text(
                     'View All',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.tealDark),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.tealDark),
                   ),
                 ),
               ],
@@ -345,7 +362,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
 
             if (filteredPatients.isEmpty)
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: AppColors.surface,
@@ -354,13 +372,17 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.person_search_rounded, size: 40, color: Colors.grey.shade400),
+                    Icon(Icons.person_search_rounded,
+                        size: 40, color: Colors.grey.shade400),
                     const SizedBox(height: 10),
                     Text(
                       _searchQuery.isNotEmpty
                           ? 'No patients matching "$_searchQuery"'
                           : 'No patients linked yet.',
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.muted),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.muted),
                     ),
                     if (_searchQuery.isEmpty) ...[
                       const SizedBox(height: 6),
@@ -376,7 +398,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
             else
               ...filteredPatients.take(3).map((patient) {
                 final summary = _summaries[patient.id];
-                final mriPending = summary?.mriScans.any((m) => !m.isReviewed) ?? false;
+                final mriPending =
+                    summary?.mriScans.any((m) => !m.isReviewed) ?? false;
                 final mriStatus = summary?.mriScans.isEmpty ?? true
                     ? 'No MRI'
                     : (mriPending ? 'Review Pending' : 'Reviewed');
@@ -448,11 +471,14 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
   }
 
   void _openPatientOverview(PatientProfile patient) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => PatientClinicalOverviewScreen(patientId: patient.id),
-      ),
-    ).then((_) => _loadDashboardData());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (ctx) =>
+                PatientClinicalOverviewScreen(patientId: patient.id),
+          ),
+        )
+        .then((_) => _loadDashboardData());
   }
 
   Widget _buildActivityItem({

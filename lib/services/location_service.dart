@@ -148,7 +148,8 @@ class LocationService {
     if (!serviceEnabled) {
       // Location service is off, try last-known fallback
       return _fallbackToLastKnown(
-        reason: 'Device Location Services are disabled. Using last known location.',
+        reason:
+            'Device Location Services are disabled. Using last known location.',
       );
     }
 
@@ -196,7 +197,8 @@ class LocationService {
       await _persistLocation(liveLocation);
       return liveLocation;
     } catch (e) {
-      debugPrint('[LocationService] Live GPS fix timed out / failed: $e. Falling back to last known.');
+      debugPrint(
+          '[LocationService] Live GPS fix timed out / failed: $e. Falling back to last known.');
       // 4. Fallback to Geolocator last known position
       return _fallbackToLastKnown(
         reason: 'GPS satellite search timed out. Using last known location.',

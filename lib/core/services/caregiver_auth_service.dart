@@ -209,7 +209,8 @@ class CaregiverAuthService extends ChangeNotifier {
     final cleanPassword = password.trim();
 
     if (cleanEmail.isEmpty || cleanPassword.isEmpty) {
-      return CaregiverAuthResult.failure('Please enter both email and password.');
+      return CaregiverAuthResult.failure(
+          'Please enter both email and password.');
     }
 
     // ── Test Mode Handling (For automated widget and unit tests) ───────────

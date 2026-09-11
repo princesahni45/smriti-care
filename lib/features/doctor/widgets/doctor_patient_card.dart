@@ -149,7 +149,8 @@ class DoctorPatientCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 14),
-                const Divider(height: 1, thickness: 1, color: AppColors.cardBorder),
+                const Divider(
+                    height: 1, thickness: 1, color: AppColors.cardBorder),
                 const SizedBox(height: 12),
 
                 // Metrics row: Cognitive Score, Trend, Last Test, MRI Status
@@ -162,7 +163,8 @@ class DoctorPatientCard extends StatelessWidget {
                         children: [
                           const Text(
                             'Cognitive Score',
-                            style: TextStyle(fontSize: 11, color: AppColors.muted),
+                            style:
+                                TextStyle(fontSize: 11, color: AppColors.muted),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -184,7 +186,8 @@ class DoctorPatientCard extends StatelessWidget {
                         children: [
                           const Text(
                             'Trend',
-                            style: TextStyle(fontSize: 11, color: AppColors.muted),
+                            style:
+                                TextStyle(fontSize: 11, color: AppColors.muted),
                           ),
                           const SizedBox(height: 2),
                           Row(
@@ -213,7 +216,8 @@ class DoctorPatientCard extends StatelessWidget {
                         children: [
                           const Text(
                             'Last Test',
-                            style: TextStyle(fontSize: 11, color: AppColors.muted),
+                            style:
+                                TextStyle(fontSize: 11, color: AppColors.muted),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -236,16 +240,19 @@ class DoctorPatientCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: mriBadgeBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: mriBadgeColor.withValues(alpha: 0.3)),
+                        border: Border.all(
+                            color: mriBadgeColor.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.biotech_rounded, size: 14, color: mriBadgeColor),
+                          Icon(Icons.biotech_rounded,
+                              size: 14, color: mriBadgeColor),
                           const SizedBox(width: 4),
                           Text(
                             'MRI: $mriStatus',

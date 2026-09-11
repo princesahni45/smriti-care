@@ -41,7 +41,8 @@ class EmergencySettingsScreen extends StatefulWidget {
   }
 
   @override
-  State<EmergencySettingsScreen> createState() => _EmergencySettingsScreenState();
+  State<EmergencySettingsScreen> createState() =>
+      _EmergencySettingsScreenState();
 }
 
 class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
@@ -65,17 +66,20 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
     _primaryNameCtrl = TextEditingController(text: settings.primaryName);
     _secondaryNameCtrl = TextEditingController(text: settings.secondaryName);
     _primaryRelCtrl = TextEditingController(text: settings.primaryRelationship);
-    _secondaryRelCtrl = TextEditingController(text: settings.secondaryRelationship);
+    _secondaryRelCtrl =
+        TextEditingController(text: settings.secondaryRelationship);
 
     _primaryCtrl.addListener(_checkDuplicate);
     _secondaryCtrl.addListener(_checkDuplicate);
   }
 
   void _checkDuplicate() {
-    final isDup = EmergencyService.areNumbersDuplicate(_primaryCtrl.text, _secondaryCtrl.text);
+    final isDup = EmergencyService.areNumbersDuplicate(
+        _primaryCtrl.text, _secondaryCtrl.text);
     if (isDup && _duplicateWarning == null) {
       setState(() {
-        _duplicateWarning = 'Warning: Primary and Secondary numbers are identical.';
+        _duplicateWarning =
+            'Warning: Primary and Secondary numbers are identical.';
       });
     } else if (!isDup && _duplicateWarning != null) {
       setState(() {
@@ -104,7 +108,8 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
           content: Text(
             context.tr(
               'caregiver.caregiverOnlyEmergency',
-              defaultText: 'Access Denied: Only verified caregivers can edit emergency numbers.',
+              defaultText:
+                  'Access Denied: Only verified caregivers can edit emergency numbers.',
             ),
           ),
           backgroundColor: AppColors.coralDeep,
@@ -140,7 +145,9 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
           content: Row(
             children: [
               Icon(
-                result.isCloudSynced ? Icons.cloud_done_rounded : Icons.offline_pin_rounded,
+                result.isCloudSynced
+                    ? Icons.cloud_done_rounded
+                    : Icons.offline_pin_rounded,
                 color: Colors.white,
                 size: 20,
               ),
@@ -155,7 +162,8 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
           ),
           backgroundColor: AppColors.teal,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
 
@@ -198,7 +206,8 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                           color: AppColors.tealPale,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.contact_phone_rounded, color: AppColors.teal, size: 22),
+                        child: const Icon(Icons.contact_phone_rounded,
+                            color: AppColors.teal, size: 22),
                       ),
                       const SizedBox(width: 12),
                       const Text(
@@ -212,7 +221,8 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                     ],
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.muted),
+                    icon:
+                        const Icon(Icons.close_rounded, color: AppColors.muted),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -220,14 +230,16 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
               const SizedBox(height: 6),
               const Text(
                 'Configure two emergency contact numbers for patient SOS calls and GPS SMS alerts. Stored locally on device for offline emergency use.',
-                style: TextStyle(fontSize: 12, color: AppColors.muted, height: 1.4),
+                style: TextStyle(
+                    fontSize: 12, color: AppColors.muted, height: 1.4),
               ),
               const SizedBox(height: 18),
 
               // ── Duplicate Warning Banner ───────────────────────────────────
               if (_duplicateWarning != null) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.amber.shade50,
                     borderRadius: BorderRadius.circular(10),
@@ -235,12 +247,16 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.warning_amber_rounded, size: 18, color: Colors.amber.shade900),
+                      Icon(Icons.warning_amber_rounded,
+                          size: 18, color: Colors.amber.shade900),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _duplicateWarning!,
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.amber.shade900),
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.amber.shade900),
                         ),
                       ),
                     ],
@@ -255,18 +271,23 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.teal.withValues(alpha: 0.3), width: 1.5),
+                  border: Border.all(
+                      color: AppColors.teal.withValues(alpha: 0.3), width: 1.5),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.phone_in_talk_rounded, color: AppColors.teal, size: 18),
+                        Icon(Icons.phone_in_talk_rounded,
+                            color: AppColors.teal, size: 18),
                         SizedBox(width: 8),
                         Text(
                           'Primary Emergency Contact',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.tealDark),
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.tealDark),
                         ),
                       ],
                     ),
@@ -277,10 +298,12 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Primary Phone Number *',
                         hintText: '+91 98765 43210',
-                        prefixIcon: Icon(Icons.phone_rounded, color: AppColors.teal, size: 20),
+                        prefixIcon: Icon(Icons.phone_rounded,
+                            color: AppColors.teal, size: 20),
                         isDense: true,
                       ),
-                      validator: (v) => EmergencyService.validatePhoneNumber(v, label: 'Primary number'),
+                      validator: (v) => EmergencyService.validatePhoneNumber(v,
+                          label: 'Primary number'),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -320,18 +343,24 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.violet.withValues(alpha: 0.3), width: 1.5),
+                  border: Border.all(
+                      color: AppColors.violet.withValues(alpha: 0.3),
+                      width: 1.5),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.phone_forwarded_rounded, color: AppColors.violet, size: 18),
+                        Icon(Icons.phone_forwarded_rounded,
+                            color: AppColors.violet, size: 18),
                         SizedBox(width: 8),
                         Text(
                           'Secondary Emergency Contact',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.violetDeep),
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.violetDeep),
                         ),
                       ],
                     ),
@@ -342,10 +371,12 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Secondary Phone Number *',
                         hintText: '+91 91234 56780',
-                        prefixIcon: Icon(Icons.phone_rounded, color: AppColors.violet, size: 20),
+                        prefixIcon: Icon(Icons.phone_rounded,
+                            color: AppColors.violet, size: 20),
                         isDense: true,
                       ),
-                      validator: (v) => EmergencyService.validatePhoneNumber(v, label: 'Secondary number'),
+                      validator: (v) => EmergencyService.validatePhoneNumber(v,
+                          label: 'Secondary number'),
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -386,19 +417,22 @@ class _EmergencySettingsScreenState extends State<EmergencySettingsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.teal,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
                   ),
                   icon: _isSaving
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2),
                         )
                       : const Icon(Icons.save_rounded, size: 20),
                   label: Text(
                     _isSaving ? 'Saving Numbers...' : 'Save Emergency Settings',
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w800),
                   ),
                   onPressed: _isSaving ? null : _handleSave,
                 ),

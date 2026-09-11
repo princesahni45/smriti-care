@@ -13,7 +13,9 @@
 
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/models/caregiver_models.dart';
 import '../../../core/models/game_result.dart';
+import '../../../core/services/step_storage_service.dart';
 import '../models/doctor_models.dart';
 import '../services/doctor_service.dart';
 import '../widgets/cognitive_progress_chart.dart';
@@ -56,8 +58,8 @@ class _PatientClinicalOverviewScreenState
     setState(() => _isLoading = true);
     try {
       await DoctorService.instance.init();
-      final summary =
-          await DoctorService.instance.getPatientClinicalSummary(widget.patientId);
+      final summary = await DoctorService.instance
+          .getPatientClinicalSummary(widget.patientId);
       if (mounted) {
         setState(() {
           _summary = summary;
@@ -160,7 +162,8 @@ class _PatientClinicalOverviewScreenState
                 ),
               );
             },
-            icon: const Icon(Icons.description_rounded, size: 16, color: AppColors.tealDark),
+            icon: const Icon(Icons.description_rounded,
+                size: 16, color: AppColors.tealDark),
             label: const Text(
               'Report',
               style: TextStyle(
@@ -200,6 +203,11 @@ class _PatientClinicalOverviewScreenState
 
               // ── Section E: MRI Screening Section
               _buildMriScreeningSection(),
+              const SizedBox(height: 24),
+
+              // FIX: Added authorized caregiver/doctor activity access
+              // ── Section E2: Physical Activity & Step Tracking Section
+              _buildPhysicalActivitySection(p),
               const SizedBox(height: 24),
 
               // ── Section F: Caregiver Observations (Read-only)
@@ -259,12 +267,14 @@ class _PatientClinicalOverviewScreenState
                     const SizedBox(height: 2),
                     Text(
                       'ID: ${p.id} • Age: ${p.age} • Blood Group: ${p.bloodGroup}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                      style:
+                          const TextStyle(fontSize: 12, color: AppColors.muted),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Location: ${p.location}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                      style:
+                          const TextStyle(fontSize: 12, color: AppColors.muted),
                     ),
                   ],
                 ),
@@ -280,22 +290,30 @@ class _PatientClinicalOverviewScreenState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Dementia Stage', style: TextStyle(fontSize: 11, color: AppColors.muted)),
+                  const Text('Dementia Stage',
+                      style: TextStyle(fontSize: 11, color: AppColors.muted)),
                   const SizedBox(height: 2),
                   Text(
                     p.dementiaLevel,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
+                    style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink),
                   ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Primary Language', style: TextStyle(fontSize: 11, color: AppColors.muted)),
+                  const Text('Primary Language',
+                      style: TextStyle(fontSize: 11, color: AppColors.muted)),
                   const SizedBox(height: 2),
                   Text(
                     p.primaryLanguage,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
+                    style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink),
                   ),
                 ],
               ),
@@ -312,12 +330,16 @@ class _PatientClinicalOverviewScreenState
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline_rounded, size: 14, color: attention.color),
+                  Icon(Icons.info_outline_rounded,
+                      size: 14, color: attention.color),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       attention.reason,
-                      style: TextStyle(fontSize: 11, color: attention.color, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: attention.color,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -408,7 +430,8 @@ class _PatientClinicalOverviewScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: const TextStyle(fontSize: 11, color: AppColors.muted)),
+              Text(title,
+                  style: const TextStyle(fontSize: 11, color: AppColors.muted)),
               Icon(icon, size: 14, color: color),
             ],
           ),
@@ -460,7 +483,6 @@ class _PatientClinicalOverviewScreenState
           style: TextStyle(fontSize: 12, color: AppColors.muted),
         ),
         const SizedBox(height: 12),
-
         if (games.isEmpty)
           Container(
             padding: const EdgeInsets.all(24),
@@ -472,11 +494,15 @@ class _PatientClinicalOverviewScreenState
             ),
             child: const Column(
               children: [
-                Icon(Icons.sports_esports_outlined, size: 36, color: AppColors.muted),
+                Icon(Icons.sports_esports_outlined,
+                    size: 36, color: AppColors.muted),
                 SizedBox(height: 8),
                 Text(
                   'No cognitive assessments available yet.',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -490,8 +516,12 @@ class _PatientClinicalOverviewScreenState
           ...grouped.entries.map((entry) {
             final gameList = entry.value;
             final latestGame = gameList.first;
-            final avgScore = gameList.map((e) => e.score).reduce((a, b) => a + b) ~/ gameList.length;
-            final avgAccuracy = gameList.map((e) => e.accuracy).reduce((a, b) => a + b) ~/ gameList.length;
+            final avgScore =
+                gameList.map((e) => e.score).reduce((a, b) => a + b) ~/
+                    gameList.length;
+            final avgAccuracy =
+                gameList.map((e) => e.accuracy).reduce((a, b) => a + b) ~/
+                    gameList.length;
 
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
@@ -509,7 +539,8 @@ class _PatientClinicalOverviewScreenState
                       color: AppColors.tealLight,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.psychology_rounded, size: 20, color: AppColors.tealDark),
+                    child: const Icon(Icons.psychology_rounded,
+                        size: 20, color: AppColors.tealDark),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -518,12 +549,16 @@ class _PatientClinicalOverviewScreenState
                       children: [
                         Text(
                           latestGame.gameName,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink),
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           '${gameList.length} session${gameList.length > 1 ? 's' : ''} • Level: ${latestGame.difficulty}',
-                          style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                          style: const TextStyle(
+                              fontSize: 11, color: AppColors.muted),
                         ),
                       ],
                     ),
@@ -533,12 +568,16 @@ class _PatientClinicalOverviewScreenState
                     children: [
                       Text(
                         'Score: ${latestGame.score} / 100',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.ink),
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.ink),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         'Avg: $avgScore • Acc: $avgAccuracy%',
-                        style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.muted),
                       ),
                     ],
                   ),
@@ -570,7 +609,10 @@ class _PatientClinicalOverviewScreenState
             ),
             Text(
               '${scans.length} Scan${scans.length == 1 ? '' : 's'}',
-              style: const TextStyle(fontSize: 12, color: AppColors.muted, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.muted,
+                  fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -618,7 +660,10 @@ class _PatientClinicalOverviewScreenState
                 SizedBox(height: 8),
                 Text(
                   'No MRI screening available.',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -639,7 +684,9 @@ class _PatientClinicalOverviewScreenState
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isReviewed ? AppColors.cardBorder : const Color(0xFFFFB74D),
+                  color: isReviewed
+                      ? AppColors.cardBorder
+                      : const Color(0xFFFFB74D),
                 ),
               ),
               child: Column(
@@ -653,7 +700,9 @@ class _PatientClinicalOverviewScreenState
                           Icon(
                             Icons.biotech_rounded,
                             size: 18,
-                            color: isReviewed ? AppColors.teal : const Color(0xFFE65100),
+                            color: isReviewed
+                                ? AppColors.teal
+                                : const Color(0xFFE65100),
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -667,9 +716,12 @@ class _PatientClinicalOverviewScreenState
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: isReviewed ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0),
+                          color: isReviewed
+                              ? const Color(0xFFE8F5E9)
+                              : const Color(0xFFFFF3E0),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -677,7 +729,9 @@ class _PatientClinicalOverviewScreenState
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
-                            color: isReviewed ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
+                            color: isReviewed
+                                ? const Color(0xFF2E7D32)
+                                : const Color(0xFFE65100),
                           ),
                         ),
                       ),
@@ -686,12 +740,14 @@ class _PatientClinicalOverviewScreenState
                   const SizedBox(height: 8),
                   Text(
                     'Uploaded: ${_formatDate(scan.timestamp)} • Confidence: ${(scan.confidenceScore * 100).toStringAsFixed(1)}%',
-                    style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                    style:
+                        const TextStyle(fontSize: 12, color: AppColors.muted),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     scan.recommendation,
-                    style: const TextStyle(fontSize: 12, color: AppColors.ink, height: 1.3),
+                    style: const TextStyle(
+                        fontSize: 12, color: AppColors.ink, height: 1.3),
                   ),
                   const SizedBox(height: 12),
 
@@ -702,16 +758,22 @@ class _PatientClinicalOverviewScreenState
                       if (isReviewed)
                         Text(
                           'Reviewed by Dr. on ${_formatDate(scan.reviewedAt ?? DateTime.now())}',
-                          style: const TextStyle(fontSize: 11, color: Color(0xFF2E7D32), fontStyle: FontStyle.italic),
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF2E7D32),
+                              fontStyle: FontStyle.italic),
                         )
                       else
                         ElevatedButton.icon(
                           onPressed: () async {
-                            await DoctorService.instance.markMriAsReviewed(scanId: scan.scanId);
+                            await DoctorService.instance
+                                .markMriAsReviewed(scanId: scan.scanId);
                             if (!mounted) return;
                             _loadPatientData();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('MRI marked as clinically reviewed.')),
+                              const SnackBar(
+                                  content: Text(
+                                      'MRI marked as clinically reviewed.')),
                             );
                           },
                           icon: const Icon(Icons.check_rounded, size: 16),
@@ -720,8 +782,10 @@ class _PatientClinicalOverviewScreenState
                             backgroundColor: AppColors.teal,
                             foregroundColor: Colors.white,
                             elevation: 0,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
                           ),
                         ),
                     ],
@@ -730,6 +794,222 @@ class _PatientClinicalOverviewScreenState
               ),
             );
           }),
+      ],
+    );
+  }
+
+  // FIX: Added authorized caregiver/doctor activity access
+  // ── Section E2: Physical Activity Section (Doctor Portal) ────────────────
+  Widget _buildPhysicalActivitySection(PatientProfile patient) {
+    final today = StepStorageService.instance.getTodayRecordCached();
+    final todaySteps = today?.steps ?? 0;
+    final todayGoal = today?.goal ?? 10000;
+    final avg7Day = StepStorageService.instance
+        .getSevenDayAverageSteps(patientId: patient.id);
+    final goalAchievedDays = StepStorageService.instance
+        .getGoalCompletedDays(patientId: patient.id, days: 7);
+    final history = StepStorageService.instance
+        .getRecentHistory(days: 7, patientId: patient.id);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.directions_walk_rounded,
+                    color: AppColors.teal, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Physical Activity',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.tealPale,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                '7-Day Summary',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.tealDark,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Objective mobility metrics & walking volume tracked by device sensor',
+          style: TextStyle(fontSize: 12, color: AppColors.muted),
+        ),
+        const SizedBox(height: 12),
+
+        // 3 Metric Cards Row
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.cardBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Today',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.muted,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$todaySteps',
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Goal: $todayGoal',
+                      style: const TextStyle(
+                          fontSize: 10,
+                          color: AppColors.tealDark,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.cardBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('7-Day Avg',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.muted,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 4),
+                    Text(
+                      avg7Day > 0 ? '$avg7Day' : '$todaySteps',
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink),
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'steps / day',
+                      style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.muted,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.cardBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Goal Met',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.muted,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$goalAchievedDays / 7',
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF2E7D32)),
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'days target met',
+                      style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.muted,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        if (history.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.cardBorder),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.history_rounded,
+                    size: 16, color: AppColors.muted),
+                const SizedBox(width: 8),
+                const Text(
+                  'Recent:',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.muted),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    history
+                        .map((r) => '${r.date.substring(5)}: ${r.steps}')
+                        .join(' • '),
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.inkSoft),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -755,7 +1035,6 @@ class _PatientClinicalOverviewScreenState
           style: TextStyle(fontSize: 12, color: AppColors.muted),
         ),
         const SizedBox(height: 12),
-
         if (obs.isEmpty)
           Container(
             padding: const EdgeInsets.all(20),
@@ -788,23 +1067,31 @@ class _PatientClinicalOverviewScreenState
                     children: [
                       Text(
                         item.title,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink),
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.ink),
                       ),
                       Text(
                         'Scheduled ${item.scheduledTime}',
-                        style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.muted),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     item.message,
-                    style: const TextStyle(fontSize: 13, color: AppColors.ink, height: 1.3),
+                    style: const TextStyle(
+                        fontSize: 13, color: AppColors.ink, height: 1.3),
                   ),
                   const SizedBox(height: 6),
                   const Text(
                     'Author: Primary Caregiver (Read-only)',
-                    style: TextStyle(fontSize: 10, color: AppColors.muted, fontStyle: FontStyle.italic),
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.muted,
+                        fontStyle: FontStyle.italic),
                   ),
                 ],
               ),
@@ -833,7 +1120,9 @@ class _PatientClinicalOverviewScreenState
               ),
             ),
             IconButton(
-              icon: Icon(_isAddingNote ? Icons.close_rounded : Icons.add_comment_rounded),
+              icon: Icon(_isAddingNote
+                  ? Icons.close_rounded
+                  : Icons.add_comment_rounded),
               color: AppColors.tealDark,
               onPressed: () {
                 setState(() => _isAddingNote = !_isAddingNote);
@@ -860,7 +1149,8 @@ class _PatientClinicalOverviewScreenState
                   controller: _newNoteController,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    hintText: 'Enter clinical observations, treatment recommendations, or review notes...',
+                    hintText:
+                        'Enter clinical observations, treatment recommendations, or review notes...',
                     hintStyle: TextStyle(fontSize: 13, color: AppColors.muted),
                     border: InputBorder.none,
                   ),
@@ -884,8 +1174,10 @@ class _PatientClinicalOverviewScreenState
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.teal,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ],
@@ -909,7 +1201,10 @@ class _PatientClinicalOverviewScreenState
                 SizedBox(height: 8),
                 Text(
                   'No doctor notes added yet.',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -921,8 +1216,9 @@ class _PatientClinicalOverviewScreenState
           )
         else
           ...notes.map((note) {
-            final isOwnNote = note.doctorId == DoctorService.instance.currentDoctorId ||
-                note.doctorId == 'DOC-001';
+            final isOwnNote =
+                note.doctorId == DoctorService.instance.currentDoctorId ||
+                    note.doctorId == 'DOC-001';
 
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
@@ -940,18 +1236,23 @@ class _PatientClinicalOverviewScreenState
                     children: [
                       Text(
                         note.doctorName,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.tealDark),
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.tealDark),
                       ),
                       Row(
                         children: [
                           Text(
                             _formatDate(note.createdAt),
-                            style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                            style: const TextStyle(
+                                fontSize: 11, color: AppColors.muted),
                           ),
                           if (isOwnNote) ...[
                             const SizedBox(width: 4),
                             IconButton(
-                              icon: const Icon(Icons.edit_rounded, size: 16, color: AppColors.muted),
+                              icon: const Icon(Icons.edit_rounded,
+                                  size: 16, color: AppColors.muted),
                               onPressed: () => _editNoteDialog(note),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -965,7 +1266,8 @@ class _PatientClinicalOverviewScreenState
                   const SizedBox(height: 6),
                   Text(
                     note.text,
-                    style: const TextStyle(fontSize: 13, color: AppColors.ink, height: 1.3),
+                    style: const TextStyle(
+                        fontSize: 13, color: AppColors.ink, height: 1.3),
                   ),
                 ],
               ),
