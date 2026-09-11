@@ -1,4 +1,3 @@
-````dart
 // lib/services/auth_service.dart
 //
 // SmritiCare — Centralized Firebase Authentication Service
@@ -407,4 +406,3 @@ class AuthService {
     }
   }
 }
-````

@@ -630,9 +630,8 @@ class CaregiverService {
     final cognitiveScoreStr = liveScore > 0 ? '$liveScore / 100' : 'No activity';
 
     final totalCompletedGames =
-        GameStorageService.instance.getTotalGamesCompleted();
-    final gamesCompletedStr =
-        totalCompletedGames > 0 ? '$totalCompletedGames / 4' : '3 / 4';
+        GameStorageService.instance.getTotalGamesCompleted(patientId: targetId);
+    final gamesCompletedStr = '$totalCompletedGames completed';
 
     final streak = GameStorageService.instance.getCurrentStreakDays(patientId: targetId);
     final streakStr = streak > 0 ? '$streak days' : '0 days';

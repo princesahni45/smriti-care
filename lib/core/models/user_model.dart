@@ -1,4 +1,3 @@
-```dart id="k4x2nz"
 // lib/core/models/user_model.dart
 //
 // Simple user models ported from the React session/auth system.
@@ -318,4 +317,3 @@ class UserSessionService {
     _activeRole = role;
   }
 }
-```

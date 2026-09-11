@@ -1,4 +1,3 @@
-```dart
 // lib/features/caregiver/widgets/caregiver_header_bar.dart
 
 import 'package:flutter/material.dart';
@@ -309,4 +308,3 @@ class CaregiverHeaderBar extends StatelessWidget {
     );
   }
 }
-```

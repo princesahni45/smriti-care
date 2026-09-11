@@ -1,4 +1,3 @@
-```dart
 // lib/core/theme/app_theme.dart
 //
 // Design tokens ported from the React app's styles.css and CSS custom properties.
@@ -375,4 +374,3 @@ class AppTheme {
     );
   }
 }
-```

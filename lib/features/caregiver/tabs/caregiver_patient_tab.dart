@@ -1005,7 +1005,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               ),
               child: Center(
                 child: SelectableText(
-                  code!,
+                  code,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,

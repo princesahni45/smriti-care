@@ -1,4 +1,3 @@
-```dart
 // lib/features/caregiver/widgets/cognitive_performance_section.dart
 
 import 'package:flutter/material.dart';
@@ -236,4 +235,3 @@ class CognitivePerformanceSection extends StatelessWidget {
     );
   }
 }
-```

@@ -1,4 +1,3 @@
-```dart
 // lib/core/constants/app_constants.dart
 //
 // Prototype demo credentials and static data ported from React authConfig.js.
@@ -263,4 +262,3 @@ class AppConstants {
     },
   ];
 }
-```

@@ -1,4 +1,3 @@
-```dart
 // lib/core/services/game_storage_service.dart
 //
 // Offline-First Local Storage & Cloud Sync Service for Cognitive Games.
@@ -701,4 +700,3 @@ class GameStorageService {
     await _persist();
   }
 }
-```

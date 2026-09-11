@@ -1,4 +1,3 @@
-```dart
 // lib/screens/main_shell_screen.dart
 //
 // Root mobile shell featuring an accessible BottomNavigationBar.
@@ -377,4 +376,3 @@ class _MainShellScreenState extends State<MainShellScreen> {
     );
   }
 }
-```

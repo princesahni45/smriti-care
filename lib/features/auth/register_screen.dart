@@ -1,4 +1,3 @@
-```dart
 // lib/features/auth/register_screen.dart
 //
 // Registration screen — placeholder UI (no backend yet).
@@ -8,7 +7,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/smriti_button.dart';
 
@@ -423,13 +421,3 @@ class _RoleChip extends StatelessWidget {
     );
   }
 }
-```
-
-After replacing the file, run:
-
-```powershell
-dart format lib/features/auth/register_screen.dart
-flutter analyze
-```
-
-The unused `app_constants.dart` import was removed because this screen does not currently use `AppConstants`.

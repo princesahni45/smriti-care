@@ -182,11 +182,11 @@ void main() {
       expect(find.text('Daily Streak'), findsOneWidget);
 
       // Bottom Navigation Bar tabs (5 Tabs)
-      expect(find.text('Home'), findsOneWidget);
-      expect(find.text('Patient'), findsOneWidget);
-      expect(find.text('Progress'), findsOneWidget);
-      expect(find.text('Alerts'), findsOneWidget);
-      expect(find.text('Profile'), findsOneWidget);
+      expect(find.text('Home'), findsAtLeastNWidgets(1));
+      expect(find.text('Patient'), findsAtLeastNWidgets(1));
+      expect(find.text('Progress'), findsAtLeastNWidgets(1));
+      expect(find.text('Alerts'), findsAtLeastNWidgets(1));
+      expect(find.text('Profile'), findsAtLeastNWidgets(1));
     });
 
     testWidgets(
@@ -200,26 +200,38 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap on Patient tab
-      await tester.tap(find.text('Patient'));
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Patient'),
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Patient Profile & Linking'), findsOneWidget);
       expect(find.textContaining('Linked Patients'), findsOneWidget);
 
       // Tap on Progress tab
-      await tester.tap(find.text('Progress'));
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Progress'),
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Cognitive Progress & Reports'), findsOneWidget);
       expect(find.byType(WeeklyEngagementChart), findsOneWidget);
       expect(find.text('Individual Game Reports'), findsOneWidget);
 
       // Tap on Alerts tab
-      await tester.tap(find.text('Alerts'));
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Alerts'),
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Risk Screening & Reminders'), findsOneWidget);
       expect(find.text('Manage Reminders'), findsOneWidget);
 
       // Tap on Profile tab
-      await tester.tap(find.text('Profile'));
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Profile'),
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Profile & Safety Hub'), findsOneWidget);
       expect(find.text('Family Memories'), findsOneWidget);

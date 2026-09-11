@@ -1,4 +1,3 @@
-```dart
 // lib/features/patient/patient_dashboard_screen.dart
 //
 // Elder-friendly, highly accessible patient dashboard.
@@ -17,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../core/auth/auth_service.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/models/user_model.dart';
 import '../../core/services/caregiver_service.dart';
@@ -175,10 +173,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
       default:
         context.push('/games');
     }
-  }
-
-  void _handleActivityTap(String activityId) {
-    _handleActionTap(activityId);
   }
 
   Future<void> _handleLogout() async {
@@ -1078,4 +1072,3 @@ class _PinKeypad extends StatelessWidget {
     );
   }
 }
-```

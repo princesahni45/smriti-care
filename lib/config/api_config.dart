@@ -1,4 +1,3 @@
-```dart
 // lib/config/api_config.dart
 //
 // Centralized API configuration for SmritiCare FastAPI backend.
@@ -96,4 +95,3 @@ class ApiConfig {
     'mgh', // FreeSurfer — not supported
   ];
 }
-```

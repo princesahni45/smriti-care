@@ -1,4 +1,3 @@
-```dart
 // lib/features/auth/login_screen.dart
 //
 // Accessible Login Screen with dedicated Patient Code Login and Caregiver Login.
@@ -874,4 +873,3 @@ class _CredRow extends StatelessWidget {
     );
   }
 }
-```

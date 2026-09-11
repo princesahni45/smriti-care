@@ -1,4 +1,3 @@
-```dart
 // lib/features/games/different_object/different_object_screen.dart
 //
 // Find the Different Object cognitive game for Flutter.
@@ -808,4 +807,3 @@ class _StatItem extends StatelessWidget {
     );
   }
 }
-```

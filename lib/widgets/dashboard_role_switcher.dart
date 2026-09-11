@@ -1,4 +1,3 @@
-```dart
 // lib/widgets/dashboard_role_switcher.dart
 //
 // Reusable role switcher widget displayed in top-right headers.
@@ -353,4 +352,3 @@ class DashboardRoleSwitcher extends StatelessWidget {
     );
   }
 }
-```

@@ -1,4 +1,3 @@
-```dart
 // lib/app.dart
 //
 // Root app widget with go_router navigation.
@@ -406,4 +405,3 @@ class _SmritiCareAppState extends State<SmritiCareApp> {
     );
   }
 }
-```
