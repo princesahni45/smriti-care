@@ -26,6 +26,10 @@ dependencies:
   # Networking for FastAPI AI backend communication
   http: ^1.2.2
 
+  # FIX: Added file_picker for real MRI/PDF/image file selection from device storage
+  # Version ^12.3.0 resolves win32 conflict with geolocator ^14.0.3
+  file_picker: ^12.3.0
+
   # Icons
   cupertino_icons: ^1.0.8
   firebase_core: ^4.14.0

@@ -1,0 +1,14 @@
+{
+  "architecture": "resnet10_3d",
+  "in_channels": 1,
+  "num_classes": 3,
+  "target_shape": [
+    96,
+    96,
+    96
+  ],
+  "normalize": "zscore",
+  "best_val_macro_f1": 0.7666666666666666,
+  "trained_epochs": 28,
+  "training_time_seconds": 421.74081230163574
+}

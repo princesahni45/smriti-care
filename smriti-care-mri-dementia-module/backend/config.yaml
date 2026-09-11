@@ -1,0 +1,42 @@
+# AI-Assisted Brain MRI Dementia Severity Estimation Configuration
+# Smriti Care AI Integration
+
+project:
+  name: 'smriti_care_mri_module'
+  version: '1.0.0'
+  disclaimer: 'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.'
+  label_header: 'AI-Assisted Dementia Severity Estimation'
+
+paths:
+  models_dir: 'models'
+  reports_dir: 'reports'
+  gradcam_dir: 'reports/gradcam'
+  active_checkpoint: 'best_model_disc5.pth'
+
+target_classes:
+  num_classes: 3
+  mapping:
+    0: 'Normal'
+    1: 'Very Mild Dementia'
+    2: 'Dementia (Mild/Moderate)'
+  key_mapping:
+    0: 'normal'
+    1: 'very_mild'
+    2: 'dementia'
+
+preprocessing:
+  target_shape: [96, 96, 96]
+  prefer_masked: true
+  clip_percentiles: [0.5, 99.5]
+  normalize: 'zscore'
+  remove_background_padding: true
+
+model:
+  architecture: 'resnet10_3d'
+  in_channels: 1
+  num_classes: 3
+  dropout: 0.3
+
+inference:
+  confidence_threshold: 0.60
+  low_confidence_message: 'Low-confidence prediction — further clinical assessment recommended.'

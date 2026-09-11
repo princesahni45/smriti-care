@@ -178,10 +178,17 @@ GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
       builder: (context, state) => const FamilyMemoriesGameScreen(),
     ),
 
-    // ── MRI Screening
+    // ── MRI Screening (Caregiver-only — auth guarded)
+    // FIX: Added MRI Screening to Caregiver Dashboard (only authenticated caregivers)
     GoRoute(
       path: '/mri-screening',
       name: 'mriScreening',
+      redirect: (context, state) {
+        if (!CaregiverAuthService.instance.isCaregiverAuthenticated) {
+          return '/caregiver-login';
+        }
+        return null;
+      },
       builder: (context, state) => const MriScreeningScreen(),
     ),
 

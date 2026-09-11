@@ -13,6 +13,7 @@
 // - Quick Shortcuts & Recent Activity Timeline
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
@@ -131,6 +132,12 @@ class CaregiverHomeTab extends StatelessWidget {
 
           // 6 Summary Cards in 2x3 Grid
           _buildSummaryCardsGrid(context, metrics, risk),
+
+          const SizedBox(height: 22),
+
+          // FIX: Added MRI Screening to Caregiver Dashboard
+          // MRI Screening Featured Card
+          _buildMriScreeningCard(context),
 
           const SizedBox(height: 22),
 
@@ -368,6 +375,98 @@ class CaregiverHomeTab extends StatelessWidget {
     );
   }
 
+  // FIX: Added MRI Screening featured card to Caregiver Dashboard
+  Widget _buildMriScreeningCard(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: () => context.push('/mri-screening'),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.borderLight, width: 1.5),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.tealBg,
+                AppColors.surface,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.teal.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.tealPale,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.biotech_rounded,
+                  color: AppColors.teal,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'MRI Screening',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'AI-assisted dementia MRI screening',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.muted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.teal,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Open',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildQuickActionCards(BuildContext context) {
     return Row(
       children: [
@@ -393,11 +492,11 @@ class CaregiverHomeTab extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _buildActionPill(
-            icon: Icons.insights_rounded,
-            label: 'Cognitive Report',
-            color: AppColors.blueDeep,
-            bgColor: AppColors.bluePale,
-            onTap: () => onNavigateTab(2), // Progress tab
+            icon: Icons.biotech_rounded,
+            label: 'MRI Scan',
+            color: AppColors.tealDark,
+            bgColor: AppColors.tealPale,
+            onTap: () => context.push('/mri-screening'),
           ),
         ),
       ],

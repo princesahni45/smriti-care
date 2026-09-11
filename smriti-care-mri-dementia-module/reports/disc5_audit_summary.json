@@ -1,0 +1,337 @@
+{
+  "total_sessions": 38,
+  "total_unique_subjects": 36,
+  "clinically_labeled_count": 18,
+  "unassessed_count": 20,
+  "class_distribution": {
+    "0": 10,
+    "1": 6,
+    "2": 2
+  },
+  "labeled_subjects": [
+    {
+      "subject_id": "OAS1_0155",
+      "session_id": "OAS1_0155_MR1",
+      "cdr": 0.5,
+      "class": 1,
+      "class_name": "Very Mild Dementia",
+      "mri_path": "data/raw/disc5/OAS1_0155_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0155_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.42,
+      "max": 1.72
+    },
+    {
+      "subject_id": "OAS1_0157",
+      "session_id": "OAS1_0157_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0157_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0157_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.44,
+      "max": 1.77
+    },
+    {
+      "subject_id": "OAS1_0158",
+      "session_id": "OAS1_0158_MR1",
+      "cdr": 0.5,
+      "class": 1,
+      "class_name": "Very Mild Dementia",
+      "mri_path": "data/raw/disc5/OAS1_0158_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0158_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.18,
+      "max": 1.72
+    },
+    {
+      "subject_id": "OAS1_0161",
+      "session_id": "OAS1_0161_MR1",
+      "cdr": 0.5,
+      "class": 1,
+      "class_name": "Very Mild Dementia",
+      "mri_path": "data/raw/disc5/OAS1_0161_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0161_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.14,
+      "max": 1.74
+    },
+    {
+      "subject_id": "OAS1_0164",
+      "session_id": "OAS1_0164_MR1",
+      "cdr": 0.5,
+      "class": 1,
+      "class_name": "Very Mild Dementia",
+      "mri_path": "data/raw/disc5/OAS1_0164_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0164_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.09,
+      "max": 1.73
+    },
+    {
+      "subject_id": "OAS1_0165",
+      "session_id": "OAS1_0165_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0165_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0165_MR1_mpr_n3_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.42,
+      "max": 1.66
+    },
+    {
+      "subject_id": "OAS1_0166",
+      "session_id": "OAS1_0166_MR1",
+      "cdr": 0.5,
+      "class": 1,
+      "class_name": "Very Mild Dementia",
+      "mri_path": "data/raw/disc5/OAS1_0166_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0166_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.38,
+      "max": 1.68
+    },
+    {
+      "subject_id": "OAS1_0169",
+      "session_id": "OAS1_0169_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0169_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0169_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.15,
+      "max": 1.78
+    },
+    {
+      "subject_id": "OAS1_0170",
+      "session_id": "OAS1_0170_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0170_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0170_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.04,
+      "max": 1.72
+    },
+    {
+      "subject_id": "OAS1_0176",
+      "session_id": "OAS1_0176_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0176_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0176_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.11,
+      "max": 1.68
+    },
+    {
+      "subject_id": "OAS1_0177",
+      "session_id": "OAS1_0177_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0177_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0177_MR1_mpr_n3_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.5,
+      "max": 1.62
+    },
+    {
+      "subject_id": "OAS1_0179",
+      "session_id": "OAS1_0179_MR1",
+      "cdr": 0.5,
+      "class": 1,
+      "class_name": "Very Mild Dementia",
+      "mri_path": "data/raw/disc5/OAS1_0179_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0179_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.12,
+      "max": 1.79
+    },
+    {
+      "subject_id": "OAS1_0180",
+      "session_id": "OAS1_0180_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0180_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0180_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.37,
+      "max": 1.7
+    },
+    {
+      "subject_id": "OAS1_0181",
+      "session_id": "OAS1_0181_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0181_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0181_MR1_mpr_n3_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.52,
+      "max": 1.61
+    },
+    {
+      "subject_id": "OAS1_0184",
+      "session_id": "OAS1_0184_MR1",
+      "cdr": 1.0,
+      "class": 2,
+      "class_name": "Dementia (Mild/Moderate)",
+      "mri_path": "data/raw/disc5/OAS1_0184_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0184_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.08,
+      "max": 1.68
+    },
+    {
+      "subject_id": "OAS1_0185",
+      "session_id": "OAS1_0185_MR1",
+      "cdr": 1.0,
+      "class": 2,
+      "class_name": "Dementia (Mild/Moderate)",
+      "mri_path": "data/raw/disc5/OAS1_0185_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0185_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.31,
+      "max": 1.68
+    },
+    {
+      "subject_id": "OAS1_0186",
+      "session_id": "OAS1_0186_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0186_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0186_MR1_mpr_n4_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.19,
+      "max": 1.59
+    },
+    {
+      "subject_id": "OAS1_0188",
+      "session_id": "OAS1_0188_MR1",
+      "cdr": 0.0,
+      "class": 0,
+      "class_name": "Normal",
+      "mri_path": "data/raw/disc5/OAS1_0188_MR1/PROCESSED/MPRAGE/T88_111/OAS1_0188_MR1_mpr_n3_anon_111_t88_masked_gfc.img",
+      "valid": true,
+      "shape": [
+        1,
+        96,
+        96,
+        96
+      ],
+      "dtype": "torch.float32",
+      "min": -2.39,
+      "max": 1.68
+    }
+  ]
+}

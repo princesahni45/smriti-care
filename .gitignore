@@ -58,3 +58,34 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Python & MRI Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Temporary uploads & generated visualizations
+uploads/
+**/uploads/
+reports/gradcam/*.png
+reports/gradcam/*.jpg
+**/reports/gradcam/*.png
+**/reports/gradcam/*.jpg
+
+# Local test MRI scans / patient data (ensure no raw patient scans committed)
+*.nii
+*.nii.gz
+*.dcm
+
+# Temporary installer and system test artifacts
+*.exe
+vc_log*.txt
+phone_screen*.png

@@ -1,0 +1,3 @@
+@echo off
+echo Starting AI-Assisted Dementia Severity Estimation FastAPI Service on port 8000...
+.venv\Scripts\uvicorn.exe api.main:app --host 0.0.0.0 --port 8000 --reload

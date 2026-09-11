@@ -1,14 +1,7 @@
 // test/enhanced_features_test.dart
 //
-// Comprehensive test suite for newly added SmritiCare features:
-// 1. Enhanced GameResult telemetry fields (Step 7)
-// 2. Multilingual AppLocalizations (Step 10)
-// 3. MRI Screening Architecture & Models (Step 8)
-// 4. Offline Telemetry Sync architecture (Step 9)
-// 5. Patient Take Me Home & SOS screen (Step 5)
-// 6. Day & Time Orientation Game (Step 5)
-// 7. Routine Sequence Game (Step 5)
-// 8. Family Memories Game (Step 5)
+// Comprehensive test suite for SmritiCare features.
+// Updated to match real MRI models (veryMild/dementia enum names, no demo results).
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,7 +38,6 @@ void main() {
         syncStatus: 'pending',
       );
 
-      // Verify Step 7 fields
       expect(result.patientId, 'MC-2048');
       expect(result.gameName, 'Day & Time Orientation');
       expect(result.level, 2);
@@ -56,7 +48,6 @@ void main() {
       expect(result.completionTime, now);
       expect(result.syncStatus, 'pending');
 
-      // Serialization round-trip
       final map = result.toMap();
       expect(map['patientId'], 'MC-2048');
       expect(map['mistakes'], 1);
@@ -77,53 +68,125 @@ void main() {
     });
   });
 
+  // FIX: Updated MRI tests to use real backend model enum names (veryMild, dementia)
   group('MRI Screening Models & Service Tests (Step 8)', () {
-    test('MriScanResult serializes and deserializes properly', () {
+    test('MriScanResult serializes and deserializes properly — Normal class', () {
       final now = DateTime.now();
       final scan = MriScanResult(
-        scanId: 'mri_test_1',
+        scanId: 'mri_test_normal',
         patientId: 'MC-2048',
-        prediction: 'Mild Cognitive Impairment (MCI)',
-        predictionClass: MriPredictionClass.mildCognitiveImpairment,
-        confidenceScore: 0.89,
-        recommendation: 'Hippocampal volume check recommended.',
+        prediction: 'Normal',
+        predictionClass: MriPredictionClass.normal,
+        classId: 0,
+        confidenceScore: 0.92,
+        recommendation: 'No dementia markers detected. Continue routine monitoring.',
         status: 'completed',
         timestamp: now,
         serverUrl: 'http://10.0.2.2:8000',
       );
 
       final map = scan.toMap();
-      expect(map['predictionClass'], 'mildCognitiveImpairment');
-      expect(map['confidenceScore'], 0.89);
+      expect(map['predictionClass'], 'normal');
+      expect(map['confidenceScore'], 0.92);
+      expect(map['classId'], 0);
 
       final restored = MriScanResult.fromMap(map);
-      expect(restored.predictionClass, MriPredictionClass.mildCognitiveImpairment);
-      expect(restored.confidenceScore, 0.89);
-      expect(restored.disclaimer, contains('AI screening aid only'));
+      expect(restored.predictionClass, MriPredictionClass.normal);
+      expect(restored.confidenceScore, 0.92);
+      expect(restored.disclaimer, contains('AI-generated'));
     });
 
-    test('MriScreeningService generates appropriate demo results', () {
-      final normal = MriScreeningService.instance.generateDemoResult(
+    test('MriScanResult handles Very Mild Dementia (class 1)', () {
+      final scan = MriScanResult(
+        scanId: 'mri_test_verymild',
         patientId: 'MC-2048',
-        sampleType: 'normal',
-        fileName: 'normal.png',
+        prediction: 'Very Mild Dementia',
+        predictionClass: MriPredictionClass.veryMild,
+        classId: 1,
+        confidenceScore: 0.78,
+        recommendation: 'Clinical follow-up recommended.',
+        status: 'completed',
+        timestamp: DateTime.now(),
+        serverUrl: 'http://10.0.2.2:8000',
       );
-      expect(normal.predictionClass, MriPredictionClass.normal);
-      expect(normal.confidenceScore, greaterThan(0.9));
 
-      final mci = MriScreeningService.instance.generateDemoResult(
-        patientId: 'MC-2048',
-        sampleType: 'mci',
-        fileName: 'mci.png',
-      );
-      expect(mci.predictionClass, MriPredictionClass.mildCognitiveImpairment);
+      final map = scan.toMap();
+      expect(map['predictionClass'], 'veryMild');
+      final restored = MriScanResult.fromMap(map);
+      expect(restored.predictionClass, MriPredictionClass.veryMild);
+      expect(restored.classId, 1);
+    });
 
-      final dementia = MriScreeningService.instance.generateDemoResult(
+    test('MriScanResult handles Dementia class (class 2)', () {
+      final scan = MriScanResult(
+        scanId: 'mri_test_dementia',
         patientId: 'MC-2048',
-        sampleType: 'dementia',
-        fileName: 'atrophy.png',
+        prediction: 'Dementia (Mild/Moderate)',
+        predictionClass: MriPredictionClass.dementia,
+        classId: 2,
+        confidenceScore: 0.85,
+        recommendation: 'Urgent consultation with neurologist recommended.',
+        status: 'completed',
+        timestamp: DateTime.now(),
+        serverUrl: 'http://10.0.2.2:8000',
       );
-      expect(dementia.predictionClass, MriPredictionClass.dementiaRisk);
+
+      final map = scan.toMap();
+      expect(map['predictionClass'], 'dementia');
+      final restored = MriScanResult.fromMap(map);
+      expect(restored.predictionClass, MriPredictionClass.dementia);
+      expect(restored.classId, 2);
+    });
+
+    test('MriScanResult handles low confidence (inconclusive)', () {
+      final scan = MriScanResult(
+        scanId: 'mri_test_inconclusive',
+        patientId: 'MC-2048',
+        prediction: 'Backend Offline',
+        predictionClass: MriPredictionClass.inconclusive,
+        classId: 0,
+        confidenceScore: 0.0,
+        isLowConfidence: true,
+        recommendation: 'Cannot connect to backend.',
+        status: 'failed',
+        timestamp: DateTime.now(),
+        serverUrl: 'http://10.0.2.2:8000',
+      );
+
+      expect(scan.predictionClass, MriPredictionClass.inconclusive);
+      expect(scan.isLowConfidence, isTrue);
+      expect(scan.status, 'failed');
+    });
+
+    test('MriScreeningService singleton is accessible and has correct base URL', () {
+      final service = MriScreeningService.instance;
+      expect(service.apiBaseUrl, contains('8000'));
+    });
+
+    test('MriUploadedFile serializes round-trip correctly', () {
+      final now = DateTime.now();
+      final file = MriUploadedFile(
+        id: 'mri_${now.millisecondsSinceEpoch}',
+        originalFileName: 'scan_001.nii.gz',
+        localFilePath: '/data/mri/mri_20260911_144500.nii.gz',
+        category: MriFileCategory.mri,
+        fileExtension: 'nii.gz',
+        fileSizeBytes: 14500000,
+        uploadedAt: now,
+        caregiverId: 'Caregiver',
+        isMriCompatible: true,
+        predictionStatus: 'not_analyzed',
+      );
+
+      final map = file.toMap();
+      expect(map['isMriCompatible'], isTrue);
+      expect(map['predictionStatus'], 'not_analyzed');
+      expect(map['fileExtension'], 'nii.gz');
+
+      final restored = MriUploadedFile.fromMap(map);
+      expect(restored.category, MriFileCategory.mri);
+      expect(restored.isMriCompatible, isTrue);
+      expect(restored.formattedSize, contains('MB'));
     });
   });
 
@@ -139,7 +202,6 @@ void main() {
       expect(LocalizationService.instance.currentLocale.languageCode, 'hi');
       LocalizationService.instance.setLocale('as');
       expect(LocalizationService.instance.currentLocale.languageCode, 'as');
-      // Reset to English
       LocalizationService.instance.setLocale('en');
       expect(LocalizationService.instance.currentLocale.languageCode, 'en');
     });
@@ -149,12 +211,9 @@ void main() {
     testWidgets('Renders TakeMeHomeScreen with address and emergency buttons',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: TakeMeHomeScreen(),
-        ),
+        const MaterialApp(home: TakeMeHomeScreen()),
       );
       await tester.pumpAndSettle();
-
       expect(find.text('Take Me Home & SOS'), findsOneWidget);
       expect(find.text('Your Safe Home Address'), findsOneWidget);
       expect(find.text('PRESS FOR EMERGENCY SOS'), findsOneWidget);
@@ -166,12 +225,9 @@ void main() {
     testWidgets('Renders DayTimeOrientationScreen question and options',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: DayTimeOrientationScreen(),
-        ),
+        const MaterialApp(home: DayTimeOrientationScreen()),
       );
       await tester.pumpAndSettle();
-
       expect(find.text('Day & Time Orientation'), findsOneWidget);
       expect(find.text('What day of the week is it today?'), findsOneWidget);
       expect(find.byType(ListView), findsOneWidget);
@@ -182,12 +238,9 @@ void main() {
     testWidgets('Renders RoutineSequenceScreen with reorderable steps',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: RoutineSequenceScreen(),
-        ),
+        const MaterialApp(home: RoutineSequenceScreen()),
       );
       await tester.pumpAndSettle();
-
       expect(find.text('Daily Routine Sequence'), findsOneWidget);
       expect(find.text('Check Sequence'), findsOneWidget);
       expect(find.byType(ReorderableListView), findsOneWidget);
@@ -198,12 +251,9 @@ void main() {
     testWidgets('Renders FamilyMemoriesGameScreen with family association options',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: FamilyMemoriesGameScreen(),
-        ),
+        const MaterialApp(home: FamilyMemoriesGameScreen()),
       );
       await tester.pumpAndSettle();
-
       expect(find.text('Family Memories'), findsOneWidget);
       expect(find.text('What is their relationship with you?'), findsOneWidget);
       expect(find.byType(ListView), findsOneWidget);
@@ -211,19 +261,18 @@ void main() {
   });
 
   group('Widget Tests: MRI Screening Screen (Step 8)', () {
-    testWidgets('Renders MriScreeningScreen with sample scan selectors',
+    testWidgets('Renders MriScreeningScreen with file selector and disclaimer',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: MriScreeningScreen(),
-        ),
+        const MaterialApp(home: MriScreeningScreen()),
       );
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('MRI AI Screening'), findsOneWidget);
-      expect(find.text('Select Structural MRI Scan'), findsOneWidget);
-      expect(find.text('Normal Baseline Scan'), findsOneWidget);
-      expect(find.text('Run AI Model Screening'), findsOneWidget);
+      expect(find.text('MRI Screening'), findsOneWidget);
+      // File selection button should be visible
+      expect(find.text('Select File'), findsOneWidget);
+      // Analyze MRI button should be disabled until file is selected
+      expect(find.text('Analyze MRI'), findsOneWidget);
     });
   });
 }

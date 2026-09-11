@@ -16,6 +16,9 @@ analyzer:
     - windows/**
     - macos/**
     - linux/**
+    # Exclude the MRI module's reference Flutter frontend — it belongs to a separate
+    # project and references AppColors/theme from a different codebase.
+    - smriti-care-mri-dementia-module/**
 include: package:flutter_lints/flutter.yaml
 
 linter:

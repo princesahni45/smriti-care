@@ -1,35 +1,29 @@
 // lib/core/services/mri_screening_service.dart
 //
-// MRI Screening Service for SmritiCare.
-// Manages communication with external Python/FastAPI AI backend.
+// FIX: Updated MRI Screening Service for SmritiCare.
+// Uses the REAL FastAPI backend POST /predict endpoint.
+// Handles both NIfTI (.nii / .nii.gz) and Analyze 7.5 (.img + .hdr pair).
+// No fake/demo predictions — only returns real backend results.
 //
-// Expected flow:
-// Flutter App -> Select/upload MRI image -> FastAPI REST API -> AI model -> Prediction response -> Flutter result screen.
+// Backend endpoint: POST /predict
+// Parameters:
+//   file: UploadFile (.nii, .nii.gz, or .img)
+//   hdr_file: UploadFile (required when file is .img)
+//   generate_gradcam: bool (optional, default false)
 
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/mri_models.dart';
-// FIX: Use centralized API base URL from AppConstants (no more hardcoded IP)
-import '../constants/app_constants.dart';
+import '../../config/api_config.dart';
 
 class MriScreeningService {
   MriScreeningService._();
   static final MriScreeningService instance = MriScreeningService._();
 
-  // FIX: Default URL comes from AppConstants, not hardcoded here.
-  // Update AppConstants.kApiBaseUrl (or kApiBaseUrlPhysicalDevice) for physical device testing.
-  String _apiBaseUrl = AppConstants.kApiBaseUrl;
-
-  // Legacy helper kept for backward compatibility (still picks the right default)
-  static String get defaultApiUrl {
-    if (kIsWeb) return AppConstants.kApiBaseUrlWeb;
-    try {
-      if (Platform.isAndroid) return AppConstants.kApiBaseUrl;
-    } catch (_) {}
-    return AppConstants.kApiBaseUrlWeb;
-  }
+  // FIX: URL comes from ApiConfig — update ApiConfig.baseUrl for your physical device IP
+  String _apiBaseUrl = ApiConfig.baseUrl;
 
   String get apiBaseUrl => _apiBaseUrl;
 
@@ -41,139 +35,173 @@ class MriScreeningService {
     _apiBaseUrl = cleanUrl;
   }
 
-  /// Check whether the FastAPI server is reachable
+  // ── Health Check ──────────────────────────────────────────────────────────
+
+  // FIX: Added FastAPI MRI integration — health check
   Future<bool> checkBackendHealth() async {
     try {
-      final uri = Uri.parse('$_apiBaseUrl/health');
-      final response = await http.get(uri).timeout(const Duration(seconds: 4));
+      final uri = Uri.parse('$_apiBaseUrl${ApiConfig.healthEndpoint}');
+      final response = await http
+          .get(uri)
+          .timeout(Duration(seconds: ApiConfig.healthTimeoutSeconds));
       return response.statusCode == 200;
     } catch (_) {
       return false;
     }
   }
 
-  /// Send MRI scan image to FastAPI backend
-  /// POST /api/v1/mri/analyze
-  Future<MriScanResult> analyzeMriScan({
-    required String patientId,
-    required List<int> imageBytes,
+  Future<Map<String, dynamic>?> getHealthDetails() async {
+    try {
+      final uri = Uri.parse('$_apiBaseUrl${ApiConfig.healthEndpoint}');
+      final response = await http
+          .get(uri)
+          .timeout(Duration(seconds: ApiConfig.healthTimeoutSeconds));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ── MRI File Analysis ─────────────────────────────────────────────────────
+
+  /// Sends a real MRI file to POST /predict and returns the prediction result.
+  ///
+  /// Supported formats (from backend preprocessing.py):
+  ///   - .nii      → send as single file
+  ///   - .nii.gz   → send as single file
+  ///   - .img      → send as 'file'; must also provide [hdrPath] for 'hdr_file'
+  ///
+  /// Returns [MriScanResult] with status='completed' on success.
+  /// On any failure (offline, timeout, model error) returns a result with status='failed'.
+  // FIX: Connected real PyTorch model via FastAPI multipart upload
+  Future<MriScanResult> analyzeMriFile({
+    required String filePath,
     required String fileName,
+    required String caregiverId,
+    String? hdrPath,           // Required for Analyze 7.5 .img files
+    bool generateGradcam = false,
   }) async {
     final timestamp = DateTime.now();
     final scanId = 'mri_${timestamp.millisecondsSinceEpoch}';
 
     try {
-      final uri = Uri.parse('$_apiBaseUrl/api/v1/mri/analyze');
+      final uri = Uri.parse('$_apiBaseUrl${ApiConfig.predictMriEndpoint}');
       final request = http.MultipartRequest('POST', uri);
-      request.fields['patient_id'] = patientId;
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          imageBytes,
-          filename: fileName,
-        ),
-      );
 
-      final streamedResponse =
-          await request.send().timeout(const Duration(seconds: 15));
+      // Add query param for gradcam
+      if (generateGradcam) {
+        request.fields['generate_gradcam'] = 'true';
+      }
+
+      // Attach the primary MRI file
+      final fileToUpload = await http.MultipartFile.fromPath(
+        'file',
+        filePath,
+        filename: fileName,
+      );
+      request.files.add(fileToUpload);
+
+      // Attach .hdr pair file if this is Analyze 7.5 .img format
+      if (hdrPath != null && hdrPath.isNotEmpty) {
+        final hdrFile = File(hdrPath);
+        if (await hdrFile.exists()) {
+          final hdrUpload = await http.MultipartFile.fromPath(
+            'hdr_file',
+            hdrPath,
+            filename: hdrPath.split(Platform.pathSeparator).last,
+          );
+          request.files.add(hdrUpload);
+        }
+      }
+
+      final streamedResponse = await request
+          .send()
+          .timeout(Duration(seconds: ApiConfig.uploadTimeoutSeconds));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        return MriScanResult.fromMap({
-          ...data,
-          'scanId': scanId,
-          'patientId': patientId,
-          'status': 'completed',
-          'serverUrl': _apiBaseUrl,
-          'imageName': fileName,
-        });
+        return MriScanResult.fromBackendMap(data, scanId: scanId, caregiverId: caregiverId,
+            serverUrl: _apiBaseUrl, imageName: fileName);
+
+      } else if (response.statusCode == 503) {
+        // Model not loaded (checkpoint missing)
+        String detail = 'AI model is not loaded on the server.';
+        try {
+          final errData = jsonDecode(response.body) as Map<String, dynamic>;
+          detail = errData['detail']?.toString() ?? detail;
+        } catch (_) {}
+        return MriScanResult(
+          scanId: scanId, patientId: caregiverId,
+          prediction: 'Model Not Available',
+          predictionClass: MriPredictionClass.inconclusive,
+          confidenceScore: 0.0,
+          recommendation: detail,
+          status: 'failed', timestamp: timestamp,
+          serverUrl: _apiBaseUrl, imageName: fileName,
+        );
+
+      } else if (response.statusCode == 400 || response.statusCode == 422) {
+        String detail = 'Invalid file or format not supported by the backend.';
+        try {
+          final errData = jsonDecode(response.body) as Map<String, dynamic>;
+          detail = errData['detail']?.toString() ?? detail;
+        } catch (_) {}
+        return MriScanResult(
+          scanId: scanId, patientId: caregiverId,
+          prediction: 'Invalid MRI File',
+          predictionClass: MriPredictionClass.inconclusive,
+          confidenceScore: 0.0,
+          recommendation: detail,
+          status: 'failed', timestamp: timestamp,
+          serverUrl: _apiBaseUrl, imageName: fileName,
+        );
+
       } else {
         return MriScanResult(
-          scanId: scanId,
-          patientId: patientId,
+          scanId: scanId, patientId: caregiverId,
           prediction: 'Analysis Inconclusive',
           predictionClass: MriPredictionClass.inconclusive,
           confidenceScore: 0.0,
-          recommendation:
-              'Server responded with HTTP ${response.statusCode}. Please verify image format and backend configuration.',
-          status: 'failed',
-          timestamp: timestamp,
-          serverUrl: _apiBaseUrl,
-          imageName: fileName,
+          recommendation: 'Server responded with HTTP ${response.statusCode}.',
+          status: 'failed', timestamp: timestamp,
+          serverUrl: _apiBaseUrl, imageName: fileName,
         );
       }
+
+    } on SocketException {
+      return _offlineResult(scanId, caregiverId, fileName, timestamp);
+    } on http.ClientException {
+      return _offlineResult(scanId, caregiverId, fileName, timestamp);
     } catch (e) {
-      debugPrint('MriScreeningService network note: $e');
-      // Graceful offline fallback: Mark clearly as pending backend integration
+      debugPrint('MriScreeningService error: $e');
       return MriScanResult(
-        scanId: scanId,
-        patientId: patientId,
-        prediction: 'Pending Backend Connection',
+        scanId: scanId, patientId: caregiverId,
+        prediction: 'Analysis Failed',
         predictionClass: MriPredictionClass.inconclusive,
         confidenceScore: 0.0,
-        recommendation:
-            'Could not connect to FastAPI server at $_apiBaseUrl. Ensure your Python backend is running on the host machine or update the server URL in Settings.',
-        status: 'pending_connection',
-        timestamp: timestamp,
-        serverUrl: _apiBaseUrl,
-        imageName: fileName,
+        recommendation: 'Unexpected error: ${e.toString().split('\n').first}',
+        status: 'failed', timestamp: timestamp,
+        serverUrl: _apiBaseUrl, imageName: fileName,
       );
     }
   }
 
-  /// Sample demonstration response for design review & testing when server is not running
-  MriScanResult generateDemoResult({
-    required String patientId,
-    required String sampleType,
-    required String fileName,
-  }) {
-    final timestamp = DateTime.now();
-    final scanId = 'demo_${timestamp.millisecondsSinceEpoch}';
-
-    switch (sampleType.toLowerCase()) {
-      case 'mci':
-        return MriScanResult(
-          scanId: scanId,
-          patientId: patientId,
-          prediction: 'Mild Cognitive Impairment (MCI) Patterns Detected',
-          predictionClass: MriPredictionClass.mildCognitiveImpairment,
-          confidenceScore: 0.88,
-          recommendation:
-              'Slight hippocampal volume variance detected in temporal lobe. Recommended: Follow-up cognitive evaluation and consultation with neurologist.',
-          status: 'completed',
-          timestamp: timestamp,
-          serverUrl: 'Demo Offline Mode',
-          imageName: fileName,
-        );
-      case 'dementia':
-        return MriScanResult(
-          scanId: scanId,
-          patientId: patientId,
-          prediction: 'Potential Structural Atrophy Detected',
-          predictionClass: MriPredictionClass.dementiaRisk,
-          confidenceScore: 0.91,
-          recommendation:
-              'Ventricle enlargement and cortical thinning detected. Clinical correlation with comprehensive neurocognitive battery strongly suggested.',
-          status: 'completed',
-          timestamp: timestamp,
-          serverUrl: 'Demo Offline Mode',
-          imageName: fileName,
-        );
-      default:
-        return MriScanResult(
-          scanId: scanId,
-          patientId: patientId,
-          prediction: 'Cognitively Normal (Age-Appropriate)',
-          predictionClass: MriPredictionClass.normal,
-          confidenceScore: 0.96,
-          recommendation:
-              'No significant structural atrophy or hippocampal volume reduction detected for this age cohort. Continue daily cognitive exercises.',
-          status: 'completed',
-          timestamp: timestamp,
-          serverUrl: 'Demo Offline Mode',
-          imageName: fileName,
-        );
-    }
-  }
+  MriScanResult _offlineResult(
+      String scanId, String caregiverId, String fileName, DateTime timestamp) =>
+      MriScanResult(
+        scanId: scanId, patientId: caregiverId,
+        prediction: 'Backend Offline',
+        predictionClass: MriPredictionClass.inconclusive,
+        confidenceScore: 0.0,
+        recommendation: 'Cannot connect to FastAPI backend at $_apiBaseUrl.\n'
+            'Ensure the Python server is running:\n'
+            'cd smriti-care-mri-dementia-module/backend\n'
+            'uvicorn main:app --host 0.0.0.0 --port 8000',
+        status: 'failed', timestamp: timestamp,
+        serverUrl: _apiBaseUrl, imageName: fileName,
+      );
 }
