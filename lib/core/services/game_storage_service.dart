@@ -299,6 +299,7 @@ class GameStorageService {
         streak++;
         checkDate = checkDate.subtract(const Duration(days: 1));
       } else {
+        // Allow streak to count if today has not been played yet but yesterday was
         if (streak == 0 &&
             checkDate.isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
           checkDate = checkDate.subtract(const Duration(days: 1));
@@ -380,7 +381,9 @@ class GameStorageService {
     }
   }
 
-  String getAdaptiveRecommendation(String gameId, int accuracy, int currentLevel) {
+  /// Gentle, non-clinical encouragement string based on score
+  String getAdaptiveRecommendation(
+      String gameId, int accuracy, int currentLevel) {
     final nextLevel = calculateNextLevel(accuracy, currentLevel);
     if (accuracy >= 80) {
       if (nextLevel > currentLevel) {

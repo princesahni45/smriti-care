@@ -118,10 +118,12 @@ class _RoutineSequenceScreenState extends State<RoutineSequenceScreen> {
 
   Future<void> _finishGame() async {
     final timeSeconds = _stopwatch.elapsed.inSeconds;
-    final accuracy = _mistakesCount == 0 ? 100 : (_mistakesCount == 1 ? 80 : 65);
+    final accuracy =
+        _mistakesCount == 0 ? 100 : (_mistakesCount == 1 ? 80 : 65);
     final score = accuracy;
-    final avgResponse =
-        _currentOrder.isNotEmpty ? (timeSeconds / _currentOrder.length).toStringAsFixed(1) : '0';
+    final avgResponse = _currentOrder.isNotEmpty
+        ? (timeSeconds / _currentOrder.length).toStringAsFixed(1)
+        : '0';
 
     final result = GameResult(
       id: 'routine_${DateTime.now().millisecondsSinceEpoch}',
@@ -270,7 +272,8 @@ class _RoutineSequenceScreenState extends State<RoutineSequenceScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.borderLight, width: 1.5),
+                        border: Border.all(
+                            color: AppColors.borderLight, width: 1.5),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.03),
@@ -324,7 +327,8 @@ class _RoutineSequenceScreenState extends State<RoutineSequenceScreen> {
                     ),
                     elevation: 0,
                   ),
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 24),
+                  icon:
+                      const Icon(Icons.check_circle_outline_rounded, size: 24),
                   label: const Text(
                     'Check Sequence',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),

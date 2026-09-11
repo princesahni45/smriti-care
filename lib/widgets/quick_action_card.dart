@@ -131,49 +131,56 @@ class QuickActionsGrid extends StatelessWidget {
   const QuickActionsGrid({super.key, required this.onActionTap});
 
   List<QuickActionItem> _getItems(BuildContext context) => [
-    QuickActionItem(
-      id: 'games',
-      title: context.tr('landing.cognitiveGames', defaultText: 'Cognitive Games'),
-      subtitle: context.tr('patient.trainMemory', defaultText: 'Gentle brain play'),
-      icon: Icons.psychology_rounded,
-      color: AppColors.teal,
-    ),
-    QuickActionItem(
-      id: 'assessment',
-      title: context.tr('landing.aiPersonalization', defaultText: 'Cognitive Check'),
-      subtitle: context.tr('landing.featAIDesc', defaultText: 'Gentle assessment'),
-      icon: Icons.assignment_turned_in_rounded,
-      color: AppColors.blue,
-    ),
-    const QuickActionItem(
-      id: 'mri',
-      title: 'MRI Screening',
-      subtitle: 'AI structural scan',
-      icon: Icons.document_scanner_rounded,
-      color: AppColors.violet,
-    ),
-    QuickActionItem(
-      id: 'emergency',
-      title: context.tr('sos.sosButton', defaultText: 'Emergency SOS'),
-      subtitle: context.tr('sos.takeMeHome', defaultText: 'Take me home'),
-      icon: Icons.emergency_rounded,
-      color: AppColors.coral,
-    ),
-    QuickActionItem(
-      id: 'reminders',
-      title: context.tr('reminders.title', defaultText: 'Reminders'),
-      subtitle: context.tr('reminders.routine', defaultText: 'Pills & routine'),
-      icon: Icons.access_time_filled_rounded,
-      color: AppColors.amber,
-    ),
-    QuickActionItem(
-      id: 'caregiver',
-      title: context.tr('caregiver.portal', defaultText: 'Caregiver Portal'),
-      subtitle: context.tr('landing.careCircle', defaultText: 'Family & insights'),
-      icon: Icons.family_restroom_rounded,
-      color: AppColors.navy,
-    ),
-  ];
+        QuickActionItem(
+          id: 'games',
+          title: context.tr('landing.cognitiveGames',
+              defaultText: 'Cognitive Games'),
+          subtitle: context.tr('patient.trainMemory',
+              defaultText: 'Gentle brain play'),
+          icon: Icons.psychology_rounded,
+          color: AppColors.teal,
+        ),
+        QuickActionItem(
+          id: 'assessment',
+          title: context.tr('landing.aiPersonalization',
+              defaultText: 'Cognitive Check'),
+          subtitle: context.tr('landing.featAIDesc',
+              defaultText: 'Gentle assessment'),
+          icon: Icons.assignment_turned_in_rounded,
+          color: AppColors.blue,
+        ),
+        const QuickActionItem(
+          id: 'mri',
+          title: 'MRI Screening',
+          subtitle: 'AI structural scan',
+          icon: Icons.document_scanner_rounded,
+          color: AppColors.violet,
+        ),
+        QuickActionItem(
+          id: 'emergency',
+          title: context.tr('sos.sosButton', defaultText: 'Emergency SOS'),
+          subtitle: context.tr('sos.takeMeHome', defaultText: 'Take me home'),
+          icon: Icons.emergency_rounded,
+          color: AppColors.coral,
+        ),
+        QuickActionItem(
+          id: 'reminders',
+          title: context.tr('reminders.title', defaultText: 'Reminders'),
+          subtitle:
+              context.tr('reminders.routine', defaultText: 'Pills & routine'),
+          icon: Icons.access_time_filled_rounded,
+          color: AppColors.amber,
+        ),
+        QuickActionItem(
+          id: 'caregiver',
+          title:
+              context.tr('caregiver.portal', defaultText: 'Caregiver Portal'),
+          subtitle: context.tr('landing.careCircle',
+              defaultText: 'Family & insights'),
+          icon: Icons.family_restroom_rounded,
+          color: AppColors.navy,
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -186,10 +193,12 @@ class QuickActionsGrid extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              const Icon(Icons.touch_app_rounded, size: 22, color: AppColors.teal),
+              const Icon(Icons.touch_app_rounded,
+                  size: 22, color: AppColors.teal),
               const SizedBox(width: 8),
               Text(
-                context.tr('patient.todayActivities', defaultText: 'Quick Actions'),
+                context.tr('patient.todayActivities',
+                    defaultText: 'Quick Actions'),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,

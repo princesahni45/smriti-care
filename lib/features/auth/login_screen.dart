@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // ── Caregiver Email & Password Login ──────────────────────────────────────
+  // ── Caregiver & Doctor Email & Password Login ─────────────────────────────
 
   Future<void> _handleCaregiverLogin() async {
     if (!_formKey.currentState!.validate()) return;
@@ -101,6 +101,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
     await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
+
+    if (widget.role.toLowerCase() == 'doctor') {
+      final result = AuthService.authenticateDoctor(
+        _emailController.text,
+        _passwordController.text,
+      );
+      if (result.success) {
+        UserSessionService.instance.setActiveRole(UserRole.doctor);
+        setState(() => _isLoading = false);
+        context.go('/doctor');
+      } else {
+        setState(() {
+          _errorMessage = result.error;
+          _isLoading = false;
+        });
+      }
+      return;
+    }
 
     final result = AuthService.authenticateCaregiver(
       _emailController.text,

@@ -18,9 +18,11 @@ import '../../core/theme/app_theme.dart';
 import '../../core/models/user_model.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/services/caregiver_service.dart';
+import '../../core/services/step_counter_service.dart';
 import '../../shared/widgets/app_logo.dart';
 import '../../shared/widgets/smriti_button.dart';
 import '../../widgets/sos_button.dart';
+import 'widgets/daily_steps_card.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -32,6 +34,13 @@ class PatientDashboardScreen extends StatefulWidget {
 class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
   // Medication reminder state
   bool _reminderAcknowledged = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final patient = CaregiverService.instance.getPatientProfile();
+    StepCounterService.instance.init(patientId: patient.id);
+  }
 
   // ── Greeting helpers with multilingual support
   String _getGreeting(BuildContext context) {
@@ -319,6 +328,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
 
                   // ── High-Priority Medication / Reminder Card (Rule 3 & 5)
                   _buildMedicationReminderCard(),
+
+                  const SizedBox(height: 16),
+                  const DailyStepsCard(),
 
                   const SizedBox(height: 24),
 

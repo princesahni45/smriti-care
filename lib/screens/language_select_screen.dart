@@ -53,7 +53,8 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink, size: 28),
+          icon: const Icon(Icons.arrow_back_rounded,
+              color: AppColors.ink, size: 28),
           onPressed: () {
             if (widget.onBack != null) {
               widget.onBack!();
@@ -89,7 +90,8 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.language_rounded, color: AppColors.teal, size: 28),
+                    child: const Icon(Icons.language_rounded,
+                        color: AppColors.teal, size: 28),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -108,7 +110,8 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                         const SizedBox(height: 2),
                         const Text(
                           '10 Northeast & Indian Languages Supported',
-                          style: TextStyle(fontSize: 12, color: AppColors.muted),
+                          style:
+                              TextStyle(fontSize: 12, color: AppColors.muted),
                         ),
                       ],
                     ),
@@ -129,12 +132,17 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                     onTap: () => _handleSelect(lang.code),
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 16),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.tealLight : AppColors.surface,
+                        color: isSelected
+                            ? AppColors.tealLight
+                            : AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isSelected ? AppColors.teal : AppColors.borderLight,
+                          color: isSelected
+                              ? AppColors.teal
+                              : AppColors.borderLight,
                           width: isSelected ? 2.5 : 1.2,
                         ),
                         boxShadow: [
@@ -152,7 +160,9 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                             height: 38,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: isSelected ? AppColors.teal : AppColors.softSection,
+                              color: isSelected
+                                  ? AppColors.teal
+                                  : AppColors.softSection,
                               shape: BoxShape.circle,
                             ),
                             child: Text(
@@ -160,7 +170,9 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
-                                color: isSelected ? Colors.white : AppColors.inkSoft,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.inkSoft,
                               ),
                             ),
                           ),
@@ -183,7 +195,9 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
-                                    color: isSelected ? AppColors.tealDark : AppColors.muted,
+                                    color: isSelected
+                                        ? AppColors.tealDark
+                                        : AppColors.muted,
                                   ),
                                 ),
                               ],
@@ -226,7 +240,8 @@ class _LanguageSelectScreenState extends State<LanguageSelectScreen> {
                   label: Text(
                     context.tr('languageSelector.save',
                         defaultText: 'Continue in this Language'),
-                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.w700),
                   ),
                   onPressed: _handleConfirm,
                 ),

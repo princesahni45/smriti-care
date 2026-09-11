@@ -40,9 +40,10 @@ class MriUploadedFile {
   final DateTime uploadedAt;
   final String caregiverId;
   final bool isMriCompatible;
-  final String predictionStatus; // 'not_analyzed', 'analyzing', 'completed', 'failed', 'unsupported'
+  final String
+      predictionStatus; // 'not_analyzed', 'analyzing', 'completed', 'failed', 'unsupported'
   final String? scanResultId;
-  final String? hdrFilePath;     // For Analyze 7.5 .img — path to paired .hdr file
+  final String? hdrFilePath; // For Analyze 7.5 .img — path to paired .hdr file
 
   const MriUploadedFile({
     required this.id,
@@ -60,19 +61,19 @@ class MriUploadedFile {
   });
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'originalFileName': originalFileName,
-    'localFilePath': localFilePath,
-    'category': category.name,
-    'fileExtension': fileExtension,
-    'fileSizeBytes': fileSizeBytes,
-    'uploadedAt': uploadedAt.toIso8601String(),
-    'caregiverId': caregiverId,
-    'isMriCompatible': isMriCompatible,
-    'predictionStatus': predictionStatus,
-    'scanResultId': scanResultId,
-    'hdrFilePath': hdrFilePath,
-  };
+        'id': id,
+        'originalFileName': originalFileName,
+        'localFilePath': localFilePath,
+        'category': category.name,
+        'fileExtension': fileExtension,
+        'fileSizeBytes': fileSizeBytes,
+        'uploadedAt': uploadedAt.toIso8601String(),
+        'caregiverId': caregiverId,
+        'isMriCompatible': isMriCompatible,
+        'predictionStatus': predictionStatus,
+        'scanResultId': scanResultId,
+        'hdrFilePath': hdrFilePath,
+      };
 
   factory MriUploadedFile.fromMap(Map<String, dynamic> map) {
     MriFileCategory cat = MriFileCategory.other;
@@ -113,20 +114,29 @@ class MriUploadedFile {
     String? predictionStatus,
     String? scanResultId,
     String? hdrFilePath,
-  }) => MriUploadedFile(
-    id: id, originalFileName: originalFileName,
-    localFilePath: localFilePath, category: category,
-    fileExtension: fileExtension, fileSizeBytes: fileSizeBytes,
-    uploadedAt: uploadedAt, caregiverId: caregiverId,
-    isMriCompatible: isMriCompatible,
-    predictionStatus: predictionStatus ?? this.predictionStatus,
-    scanResultId: scanResultId ?? this.scanResultId,
-    hdrFilePath: hdrFilePath ?? this.hdrFilePath,
-  );
+  }) =>
+      MriUploadedFile(
+        id: id,
+        originalFileName: originalFileName,
+        localFilePath: localFilePath,
+        category: category,
+        fileExtension: fileExtension,
+        fileSizeBytes: fileSizeBytes,
+        uploadedAt: uploadedAt,
+        caregiverId: caregiverId,
+        isMriCompatible: isMriCompatible,
+        predictionStatus: predictionStatus ?? this.predictionStatus,
+        scanResultId: scanResultId ?? this.scanResultId,
+        hdrFilePath: hdrFilePath ?? this.hdrFilePath,
+      );
 
   String get formattedSize {
-    if (fileSizeBytes < 1024) return '${fileSizeBytes}B';
-    if (fileSizeBytes < 1024 * 1024) return '${(fileSizeBytes / 1024).toStringAsFixed(1)}KB';
+    if (fileSizeBytes < 1024) {
+      return '${fileSizeBytes}B';
+    }
+    if (fileSizeBytes < 1024 * 1024) {
+      return '${(fileSizeBytes / 1024).toStringAsFixed(1)}KB';
+    }
     return '${(fileSizeBytes / (1024 * 1024)).toStringAsFixed(1)}MB';
   }
 }
@@ -138,26 +148,32 @@ class MriUploadedFile {
 // FIX: MRI result model derived from real backend output fields
 class MriScanResult {
   final String scanId;
-  final String patientId;       // caregiverId used here for record-keeping
-  final String prediction;      // e.g. "Normal", "Very Mild Dementia", "Dementia (Mild/Moderate)"
+  final String patientId; // caregiverId used here for record-keeping
+  final String
+      prediction; // e.g. "Normal", "Very Mild Dementia", "Dementia (Mild/Moderate)"
   final MriPredictionClass predictionClass;
-  final int classId;            // 0=Normal, 1=Very Mild, 2=Dementia
+  final int classId; // 0=Normal, 1=Very Mild, 2=Dementia
   final double confidenceScore; // 0.0–1.0 (from backend 'confidence' field)
 
   // Probabilities from backend — key=class_key (normal/very_mild/dementia), value=probability
-  final Map<String, double>? probabilities;         // internal key form
-  final Map<String, double>? displayProbabilities;  // human-readable labels
+  final Map<String, double>? probabilities; // internal key form
+  final Map<String, double>? displayProbabilities; // human-readable labels
 
   final bool isLowConfidence;
-  final String clinicalNote;    // threshold warning from backend
-  final String recommendation;  // our Flutter-side summary
+  final String clinicalNote; // threshold warning from backend
+  final String recommendation; // our Flutter-side summary
   final String disclaimer;
-  final String status;          // 'completed', 'failed'
+  final String status; // 'completed', 'failed'
   final DateTime timestamp;
   final String serverUrl;
   final String? imageName;
   final String? localFilePath;
   final Map<String, dynamic>? modelInfo; // architecture, checkpoint, device
+  // FIX: Added doctor review fields for Doctor Dashboard MRI screening
+  final String? reviewedByDoctorId;
+  final DateTime? reviewedAt;
+
+  bool get isReviewed => reviewedByDoctorId != null;
 
   const MriScanResult({
     required this.scanId,
@@ -171,13 +187,16 @@ class MriScanResult {
     this.isLowConfidence = false,
     this.clinicalNote = '',
     required this.recommendation,
-    this.disclaimer = 'AI-generated MRI screening results are for research and decision-support purposes only and are not a medical diagnosis. Clinical interpretation must be performed by a qualified healthcare professional.',
+    this.disclaimer =
+        'AI-generated MRI screening results are for research and decision-support purposes only and are not a medical diagnosis. Clinical interpretation must be performed by a qualified healthcare professional.',
     required this.status,
     required this.timestamp,
     required this.serverUrl,
     this.imageName,
     this.localFilePath,
     this.modelInfo,
+    this.reviewedByDoctorId,
+    this.reviewedAt,
   });
 
   /// Parse directly from the backend /predict JSON response.
@@ -212,19 +231,21 @@ class MriScanResult {
     Map<String, double>? probs;
     final rawProbs = data['probabilities'];
     if (rawProbs is Map) {
-      probs = rawProbs.map((k, v) => MapEntry(k.toString(), (v as num).toDouble()));
+      probs =
+          rawProbs.map((k, v) => MapEntry(k.toString(), (v as num).toDouble()));
     }
 
     Map<String, double>? displayProbs;
     final rawDisplay = data['display_probabilities'];
     if (rawDisplay is Map) {
-      displayProbs = rawDisplay.map((k, v) => MapEntry(k.toString(), (v as num).toDouble()));
+      displayProbs = rawDisplay
+          .map((k, v) => MapEntry(k.toString(), (v as num).toDouble()));
     }
 
     final isLow = data['is_low_confidence'] == true;
     final clinNote = (data['clinical_note'] ?? '').toString();
     final disclaimer = (data['disclaimer'] ??
-        'AI-generated MRI screening results are for research and decision-support purposes only and are not a medical diagnosis. Clinical interpretation must be performed by a qualified healthcare professional.')
+            'AI-generated MRI screening results are for research and decision-support purposes only and are not a medical diagnosis. Clinical interpretation must be performed by a qualified healthcare professional.')
         .toString();
 
     // Build Flutter-facing recommendation from clinical_note + prediction
@@ -234,16 +255,21 @@ class MriScanResult {
     } else {
       switch (classIdRaw) {
         case 0:
-          rec = 'No significant dementia markers detected. Continue routine cognitive monitoring.';
+          rec =
+              'No significant dementia markers detected. Continue routine cognitive monitoring.';
           break;
         case 1:
-          rec = 'Very mild dementia patterns detected. Clinical follow-up evaluation recommended.';
+          rec =
+              'Very mild dementia patterns detected. Clinical follow-up evaluation recommended.';
           break;
         case 2:
-          rec = 'Dementia markers detected. Urgent consultation with a neurologist is strongly recommended.';
+          rec =
+              'Dementia markers detected. Urgent consultation with a neurologist is strongly recommended.';
           break;
         default:
-          rec = clinNote.isNotEmpty ? clinNote : 'Consult a healthcare professional for clinical interpretation.';
+          rec = clinNote.isNotEmpty
+              ? clinNote
+              : 'Consult a healthcare professional for clinical interpretation.';
       }
     }
 
@@ -274,26 +300,57 @@ class MriScanResult {
     );
   }
 
+  // FIX: Added copyWith for updating MRI review status
+  MriScanResult copyWith({
+    String? reviewedByDoctorId,
+    DateTime? reviewedAt,
+    String? status,
+  }) =>
+      MriScanResult(
+        scanId: scanId,
+        patientId: patientId,
+        prediction: prediction,
+        predictionClass: predictionClass,
+        classId: classId,
+        confidenceScore: confidenceScore,
+        probabilities: probabilities,
+        displayProbabilities: displayProbabilities,
+        isLowConfidence: isLowConfidence,
+        clinicalNote: clinicalNote,
+        recommendation: recommendation,
+        disclaimer: disclaimer,
+        status: status ?? this.status,
+        timestamp: timestamp,
+        serverUrl: serverUrl,
+        imageName: imageName,
+        localFilePath: localFilePath,
+        modelInfo: modelInfo,
+        reviewedByDoctorId: reviewedByDoctorId ?? this.reviewedByDoctorId,
+        reviewedAt: reviewedAt ?? this.reviewedAt,
+      );
+
   Map<String, dynamic> toMap() => {
-    'scanId': scanId,
-    'patientId': patientId,
-    'prediction': prediction,
-    'predictionClass': predictionClass.name,
-    'classId': classId,
-    'confidenceScore': confidenceScore,
-    'probabilities': probabilities,
-    'displayProbabilities': displayProbabilities,
-    'isLowConfidence': isLowConfidence,
-    'clinicalNote': clinicalNote,
-    'recommendation': recommendation,
-    'disclaimer': disclaimer,
-    'status': status,
-    'timestamp': timestamp.toIso8601String(),
-    'serverUrl': serverUrl,
-    'imageName': imageName,
-    'localFilePath': localFilePath,
-    'modelInfo': modelInfo,
-  };
+        'scanId': scanId,
+        'patientId': patientId,
+        'prediction': prediction,
+        'predictionClass': predictionClass.name,
+        'classId': classId,
+        'confidenceScore': confidenceScore,
+        'probabilities': probabilities,
+        'displayProbabilities': displayProbabilities,
+        'isLowConfidence': isLowConfidence,
+        'clinicalNote': clinicalNote,
+        'recommendation': recommendation,
+        'disclaimer': disclaimer,
+        'status': status,
+        'timestamp': timestamp.toIso8601String(),
+        'serverUrl': serverUrl,
+        'imageName': imageName,
+        'localFilePath': localFilePath,
+        'modelInfo': modelInfo,
+        'reviewedByDoctorId': reviewedByDoctorId,
+        'reviewedAt': reviewedAt?.toIso8601String(),
+      };
 
   factory MriScanResult.fromMap(Map<String, dynamic> map) {
     MriPredictionClass pClass = MriPredictionClass.inconclusive;
@@ -308,13 +365,13 @@ class MriScanResult {
 
     Map<String, double>? probs;
     if (map['probabilities'] is Map) {
-      probs = (map['probabilities'] as Map).map(
-          (k, v) => MapEntry(k.toString(), (v as num).toDouble()));
+      probs = (map['probabilities'] as Map)
+          .map((k, v) => MapEntry(k.toString(), (v as num).toDouble()));
     }
     Map<String, double>? displayProbs;
     if (map['displayProbabilities'] is Map) {
-      displayProbs = (map['displayProbabilities'] as Map).map(
-          (k, v) => MapEntry(k.toString(), (v as num).toDouble()));
+      displayProbs = (map['displayProbabilities'] as Map)
+          .map((k, v) => MapEntry(k.toString(), (v as num).toDouble()));
     }
 
     return MriScanResult(
@@ -337,7 +394,13 @@ class MriScanResult {
       serverUrl: map['serverUrl'] ?? '',
       imageName: map['imageName'],
       localFilePath: map['localFilePath'],
-      modelInfo: map['modelInfo'] is Map ? Map<String, dynamic>.from(map['modelInfo'] as Map) : null,
+      modelInfo: map['modelInfo'] is Map
+          ? Map<String, dynamic>.from(map['modelInfo'] as Map)
+          : null,
+      reviewedByDoctorId: map['reviewedByDoctorId'] as String?,
+      reviewedAt: map['reviewedAt'] != null
+          ? DateTime.tryParse(map['reviewedAt'].toString())
+          : null,
     );
   }
 

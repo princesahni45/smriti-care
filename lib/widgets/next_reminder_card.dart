@@ -27,8 +27,12 @@ class NextReminderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayTitle = title ?? context.tr('reminders.morningMedicine', defaultText: 'Morning Medicine');
-    final displayNote = note ?? context.tr('reminders.morningMedicineNote', defaultText: 'Take with a glass of water after breakfast');
+    final displayTitle = title ??
+        context.tr('reminders.morningMedicine',
+            defaultText: 'Morning Medicine');
+    final displayNote = note ??
+        context.tr('reminders.morningMedicineNote',
+            defaultText: 'Take with a glass of water after breakfast');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,10 +41,12 @@ class NextReminderCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              const Icon(Icons.alarm_on_rounded, size: 20, color: AppColors.amber),
+              const Icon(Icons.alarm_on_rounded,
+                  size: 20, color: AppColors.amber),
               const SizedBox(width: 8),
               Text(
-                context.tr('reminders.nextReminder', defaultText: 'Next Reminder'),
+                context.tr('reminders.nextReminder',
+                    defaultText: 'Next Reminder'),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,

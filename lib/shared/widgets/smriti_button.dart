@@ -44,7 +44,9 @@ class SmritiButton extends StatelessWidget {
             height: 20,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: kind == SmritiButtonKind.primary ? Colors.white : AppColors.teal,
+              color: kind == SmritiButtonKind.primary
+                  ? Colors.white
+                  : AppColors.teal,
             ),
           )
         : Row(
@@ -55,7 +57,8 @@ class SmritiButton extends StatelessWidget {
             ],
           );
 
-    final textStyle = GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700);
+    final textStyle =
+        GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700);
     final minSize = Size(width ?? 0, 52);
 
     Widget button;
@@ -67,7 +70,8 @@ class SmritiButton extends StatelessWidget {
           foregroundColor: Colors.white,
           minimumSize: minSize,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           textStyle: textStyle,
           elevation: 0,
         ),
@@ -82,7 +86,8 @@ class SmritiButton extends StatelessWidget {
           minimumSize: minSize,
           backgroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           textStyle: textStyle,
         ),
         child: child,
@@ -124,8 +129,10 @@ class PatientActionButton extends StatelessWidget {
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          textStyle: GoogleFonts.dmSans(fontSize: 18, fontWeight: FontWeight.w700),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          textStyle:
+              GoogleFonts.dmSans(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,45 +161,55 @@ class IconBubble extends StatelessWidget {
     this.size = 44,
   });
 
-  factory IconBubble.teal({required IconData icon, double size = 44, Key? key}) => IconBubble(
-    key: key,
-    backgroundColor: AppColors.tealLight,
-    foregroundColor: AppColors.tealDark,
-    size: size,
-    child: Icon(icon, size: size * 0.48),
-  );
+  factory IconBubble.teal(
+          {required IconData icon, double size = 44, Key? key}) =>
+      IconBubble(
+        key: key,
+        backgroundColor: AppColors.tealLight,
+        foregroundColor: AppColors.tealDark,
+        size: size,
+        child: Icon(icon, size: size * 0.48),
+      );
 
-  factory IconBubble.blue({required IconData icon, double size = 44, Key? key}) => IconBubble(
-    key: key,
-    backgroundColor: AppColors.bluePale,
-    foregroundColor: AppColors.blueDeep,
-    size: size,
-    child: Icon(icon, size: size * 0.48),
-  );
+  factory IconBubble.blue(
+          {required IconData icon, double size = 44, Key? key}) =>
+      IconBubble(
+        key: key,
+        backgroundColor: AppColors.bluePale,
+        foregroundColor: AppColors.blueDeep,
+        size: size,
+        child: Icon(icon, size: size * 0.48),
+      );
 
-  factory IconBubble.violet({required IconData icon, double size = 44, Key? key}) => IconBubble(
-    key: key,
-    backgroundColor: AppColors.violetPale,
-    foregroundColor: AppColors.violetDeep,
-    size: size,
-    child: Icon(icon, size: size * 0.48),
-  );
+  factory IconBubble.violet(
+          {required IconData icon, double size = 44, Key? key}) =>
+      IconBubble(
+        key: key,
+        backgroundColor: AppColors.violetPale,
+        foregroundColor: AppColors.violetDeep,
+        size: size,
+        child: Icon(icon, size: size * 0.48),
+      );
 
-  factory IconBubble.coral({required IconData icon, double size = 44, Key? key}) => IconBubble(
-    key: key,
-    backgroundColor: AppColors.coralPale,
-    foregroundColor: AppColors.coralDeep,
-    size: size,
-    child: Icon(icon, size: size * 0.48),
-  );
+  factory IconBubble.coral(
+          {required IconData icon, double size = 44, Key? key}) =>
+      IconBubble(
+        key: key,
+        backgroundColor: AppColors.coralPale,
+        foregroundColor: AppColors.coralDeep,
+        size: size,
+        child: Icon(icon, size: size * 0.48),
+      );
 
-  factory IconBubble.amber({required IconData icon, double size = 44, Key? key}) => IconBubble(
-    key: key,
-    backgroundColor: AppColors.amberPale,
-    foregroundColor: AppColors.amberDeep,
-    size: size,
-    child: Icon(icon, size: size * 0.48),
-  );
+  factory IconBubble.amber(
+          {required IconData icon, double size = 44, Key? key}) =>
+      IconBubble(
+        key: key,
+        backgroundColor: AppColors.amberPale,
+        foregroundColor: AppColors.amberDeep,
+        size: size,
+        child: Icon(icon, size: size * 0.48),
+      );
 
   @override
   Widget build(BuildContext context) {

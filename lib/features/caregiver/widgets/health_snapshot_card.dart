@@ -30,15 +30,21 @@ class HealthSnapshotCard extends StatelessWidget {
             children: [
               Text(
                 'HEALTH SNAPSHOT',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDark, letterSpacing: 0.8),
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tealDark,
+                    letterSpacing: 0.8),
               ),
-              Icon(Icons.health_and_safety_outlined, size: 20, color: AppColors.teal),
+              Icon(Icons.health_and_safety_outlined,
+                  size: 20, color: AppColors.teal),
             ],
           ),
           const SizedBox(height: 12),
           _buildRow('Blood group', patient.bloodGroup),
           _buildRow('Primary language', patient.primaryLanguage),
-          _buildRow('Emergency contact', '${emergencyContact.name} (${emergencyContact.relationship})'),
+          _buildRow('Emergency contact',
+              '${emergencyContact.name} (${emergencyContact.relationship})'),
           _buildRow('Care physician', patient.physician),
         ],
       ),
@@ -51,8 +57,13 @@ class HealthSnapshotCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-          Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.ink)),
+          Text(label,
+              style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink)),
         ],
       ),
     );
@@ -76,33 +87,44 @@ class CareInsightCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.auto_awesome_rounded, size: 18, color: AppColors.violetDeep),
+              Icon(Icons.auto_awesome_rounded,
+                  size: 18, color: AppColors.violetDeep),
               SizedBox(width: 8),
               Text(
                 "Today's care note",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink),
               ),
             ],
           ),
           const SizedBox(height: 10),
           const Text(
             'Ramesh showed strong recognition during the family-photo activity and responded well to voice prompts.',
-            style: TextStyle(fontSize: 14, color: AppColors.inkSoft, height: 1.45),
+            style:
+                TextStyle(fontSize: 14, color: AppColors.inkSoft, height: 1.45),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: AppColors.coralPale,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.favorite_rounded, size: 14, color: AppColors.coralDeep),
+                    Icon(Icons.favorite_rounded,
+                        size: 14, color: AppColors.coralDeep),
                     SizedBox(width: 6),
-                    Text('Mood: Calm & engaged', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.coralDeep)),
+                    Text('Mood: Calm & engaged',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.coralDeep)),
                   ],
                 ),
               ),

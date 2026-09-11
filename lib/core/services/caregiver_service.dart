@@ -86,18 +86,20 @@ class CaregiverService {
             _selectedPatientId = decoded['selectedPatientId'] as String;
           }
           if (decoded['caregiver'] is Map) {
-            _caregiver = CaregiverProfile.fromMap(decoded['caregiver'] as Map<String, dynamic>);
+            _caregiver = CaregiverProfile.fromMap(
+                decoded['caregiver'] as Map<String, dynamic>);
           }
           if (decoded['emergencyContact'] is Map) {
-            _emergencyContact =
-                EmergencyContact.fromMap(decoded['emergencyContact'] as Map<String, dynamic>);
+            _emergencyContact = EmergencyContact.fromMap(
+                decoded['emergencyContact'] as Map<String, dynamic>);
           }
           if (decoded['homeLocation'] is Map) {
-            _homeLocation = HomeLocation.fromMap(decoded['homeLocation'] as Map<String, dynamic>);
+            _homeLocation = HomeLocation.fromMap(
+                decoded['homeLocation'] as Map<String, dynamic>);
           }
           if (decoded['emergencyConfig'] is Map) {
-            _emergencyConfig =
-                EmergencyConfig.fromMap(decoded['emergencyConfig'] as Map<String, dynamic>);
+            _emergencyConfig = EmergencyConfig.fromMap(
+                decoded['emergencyConfig'] as Map<String, dynamic>);
           }
           if (decoded['reminders'] is List) {
             _reminders.clear();
@@ -288,7 +290,8 @@ class CaregiverService {
           patientId: 'MC-2048',
           name: 'Rahul Das',
           relationship: 'Son',
-          notes: 'Lives in Guwahati, visits on weekends, loves tea time with father.',
+          notes:
+              'Lives in Guwahati, visits on weekends, loves tea time with father.',
           avatarEmoji: '👨',
           createdAt: DateTime.now().subtract(const Duration(days: 30)),
         ),
@@ -297,7 +300,8 @@ class CaregiverService {
           patientId: 'MC-2048',
           name: 'Priya Das',
           relationship: 'Granddaughter',
-          notes: 'Studies in 8th grade, plays chess and does drawing with grandfather.',
+          notes:
+              'Studies in 8th grade, plays chess and does drawing with grandfather.',
           avatarEmoji: '👧',
           createdAt: DateTime.now().subtract(const Duration(days: 28)),
         ),
@@ -306,7 +310,8 @@ class CaregiverService {
           patientId: 'MC-2048',
           name: 'Sunita Das',
           relationship: 'Daughter-in-law',
-          notes: 'Prepares morning meals, manages daily medicines and evening walk.',
+          notes:
+              'Prepares morning meals, manages daily medicines and evening walk.',
           avatarEmoji: '👩',
           createdAt: DateTime.now().subtract(const Duration(days: 25)),
         ),
@@ -315,7 +320,8 @@ class CaregiverService {
           patientId: 'MC-2048',
           name: 'Aarav Das',
           relationship: 'Grandson',
-          notes: 'Loves listening to stories about Assam and old train journeys.',
+          notes:
+              'Loves listening to stories about Assam and old train journeys.',
           avatarEmoji: '👦',
           createdAt: DateTime.now().subtract(const Duration(days: 20)),
         ),
@@ -336,7 +342,8 @@ class CaregiverService {
           id: 'alt-002',
           type: 'score_drop',
           title: 'Cognitive Score Note',
-          message: 'Delayed Recall score had a 6% variance compared to 7-day baseline.',
+          message:
+              'Delayed Recall score had a 6% variance compared to 7-day baseline.',
           timestamp: DateTime.now().subtract(const Duration(hours: 5)),
           acknowledged: false,
         ),
@@ -358,14 +365,16 @@ class CaregiverService {
           timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 3)),
           triggerType: 'Safe Zone Boundary Check',
           resolved: true,
-          notes: 'Patient walked out towards garden gate. Returned comfortably with family assistance within 5 mins.',
+          notes:
+              'Patient walked out towards garden gate. Returned comfortably with family assistance within 5 mins.',
         ),
         SosAlertLog(
           id: 'sos-002',
           timestamp: DateTime.now().subtract(const Duration(days: 9, hours: 6)),
           triggerType: 'Emergency Help Button (Test)',
           resolved: true,
-          notes: 'Caregiver test verification of emergency notification sounds and call trigger.',
+          notes:
+              'Caregiver test verification of emergency notification sounds and call trigger.',
         ),
       ]);
     }
@@ -407,7 +416,8 @@ class CaregiverService {
   PatientProfile getPatientProfile() {
     return _patients.firstWhere(
       (p) => p.id == _selectedPatientId,
-      orElse: () => _patients.isNotEmpty ? _patients.first : _createFallbackPatient(),
+      orElse: () =>
+          _patients.isNotEmpty ? _patients.first : _createFallbackPatient(),
     );
   }
 
@@ -720,6 +730,51 @@ class CaregiverService {
   String _monthName(int month) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return (month >= 1 && month <= 12) ? months[month - 1] : '';
+=======
+  List<Map<String, dynamic>> getWeeklyEngagement() =>
+      List.unmodifiable(_weeklyEngagement);
+  List<Map<String, dynamic>> getMonthlyEngagement() =>
+      List.unmodifiable(_monthlyEngagement);
+
+  List<Map<String, dynamic>> getAssessmentHistory() {
+    return [
+      {
+        'date': 'Today',
+        'time': '10:45 AM',
+        'score': 78,
+        'type': 'Daily Session',
+        'status': 'Stable'
+      },
+      {
+        'date': 'Yesterday',
+        'time': '11:15 AM',
+        'score': 82,
+        'type': 'Daily Session',
+        'status': 'Improved'
+      },
+      {
+        'date': '08 Sep',
+        'time': '10:30 AM',
+        'score': 74,
+        'type': 'Weekly Review',
+        'status': 'Stable'
+      },
+      {
+        'date': '06 Sep',
+        'time': '04:00 PM',
+        'score': 79,
+        'type': 'Daily Session',
+        'status': 'Stable'
+      },
+      {
+        'date': '04 Sep',
+        'time': '09:50 AM',
+        'score': 76,
+        'type': 'Daily Session',
+        'status': 'Normal'
+      },
+    ];
+>>>>>>> origin/main
   }
 
   // ── Cognitive Risk Screening Assessment ──────────────────────────
@@ -959,7 +1014,8 @@ class CaregiverService {
     await _persist();
   }
 
-  Future<void> addSosAlertLog({required String triggerType, required String notes}) =>
+  Future<void> addSosAlertLog(
+          {required String triggerType, required String notes}) =>
       triggerSosAlert(triggerType, notes: notes);
 
   Future<void> resolveSosAlert(String id) async {
@@ -990,7 +1046,8 @@ class CaregiverService {
       items.add(
         CaregiverActivityItem(
           title: 'Completed ${g.gameName}',
-          subtitle: 'Score: ${g.score}% • Accuracy: ${g.accuracy}% (${g.difficulty})',
+          subtitle:
+              'Score: ${g.score}% • Accuracy: ${g.accuracy}% (${g.difficulty})',
           timeAgo: 'Today',
           iconType: 'game',
           isCompleted: true,
@@ -999,7 +1056,8 @@ class CaregiverService {
     }
 
     // Include completed & upcoming care tasks
-    final completedReminders = _reminders.where((r) => r.status == 'acknowledged').take(2);
+    final completedReminders =
+        _reminders.where((r) => r.status == 'acknowledged').take(2);
     for (final r in completedReminders) {
       items.add(
         CaregiverActivityItem(

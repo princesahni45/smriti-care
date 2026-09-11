@@ -20,20 +20,36 @@ import '../widgets/next_reminder_card.dart';
 import '../widgets/quick_action_card.dart';
 import '../widgets/progress_summary_card.dart';
 import '../widgets/sos_button.dart';
+// FIX: Import offline-first step counter service and daily steps widget
+import '../core/services/step_counter_service.dart';
+import '../features/patient/widgets/daily_steps_card.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   final void Function(String moduleId)? onNavigateModule;
 
   const DashboardScreen({super.key, this.onNavigateModule});
 
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // FIX: Initialize offline step tracking on the main patient home screen
+    StepCounterService.instance.init();
+  }
+
   void _handleNavigate(BuildContext context, String moduleId) {
-    if (onNavigateModule != null) {
-      onNavigateModule!(moduleId);
+    if (widget.onNavigateModule != null) {
+      widget.onNavigateModule!(moduleId);
     } else if (moduleId.toLowerCase() == 'games') {
       context.push('/games');
     } else if (moduleId.toLowerCase() == 'caregiver') {
       context.push('/caregiver-dashboard');
-    } else if (moduleId.toLowerCase() == 'emergency' || moduleId.toLowerCase() == 'sos') {
+    } else if (moduleId.toLowerCase() == 'emergency' ||
+        moduleId.toLowerCase() == 'sos') {
       context.push('/take-me-home');
     } else {
       context.push('/placeholder/$moduleId');
@@ -71,6 +87,11 @@ class DashboardScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
+                    // FIX: Real Daily Step Counter (Target: 10,000 steps/day)
+                    const DailyStepsCard(),
+
+                    const SizedBox(height: 18),
+
                     // ── Prominent Emergency SOS Button for elderly patients ──
                     const SosButton(),
 
@@ -78,8 +99,10 @@ class DashboardScreen extends StatelessWidget {
 
                     // Today's Activity Metrics (live from offline game storage)
                     TodayActivitySection(
-                      gamesCompleted: GameStorageService.instance.getTotalGamesCompleted(),
-                      streakDays: GameStorageService.instance.getCurrentStreakDays(),
+                      gamesCompleted:
+                          GameStorageService.instance.getTotalGamesCompleted(),
+                      streakDays:
+                          GameStorageService.instance.getCurrentStreakDays(),
                       todayScore: GameStorageService.instance.getTodayScore(),
                     ),
 
@@ -87,7 +110,8 @@ class DashboardScreen extends StatelessWidget {
 
                     // Quick Actions (6 large touch-target cards)
                     QuickActionsGrid(
-                      onActionTap: (moduleId) => _handleNavigate(context, moduleId),
+                      onActionTap: (moduleId) =>
+                          _handleNavigate(context, moduleId),
                     ),
 
                     const SizedBox(height: 24),

@@ -17,16 +17,16 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey              = GlobalKey<FormState>();
-  final _nameController       = TextEditingController();
-  final _emailController      = TextEditingController();
-  final _passwordController   = TextEditingController();
-  final _confirmController    = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
-  String _selectedRole        = 'patient';
-  bool _obscurePassword       = true;
-  bool _obscureConfirm        = true;
-  bool _isLoading             = false;
+  String _selectedRole = 'patient';
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -53,7 +53,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           backgroundColor: AppColors.teal,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     });
@@ -107,8 +108,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Text(
                         'Create an account to get started.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.muted,
-                        ),
+                              color: AppColors.muted,
+                            ),
                       ),
                     ],
                   ),
@@ -149,7 +150,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Please enter your name.';
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Please enter your name.';
+                    }
                     return null;
                   },
                 ),
@@ -168,8 +171,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Please enter your email.';
-                    if (!v.contains('@')) return 'Please enter a valid email.';
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Please enter your email.';
+                    }
+                    if (!v.contains('@')) {
+                      return 'Please enter a valid email.';
+                    }
                     return null;
                   },
                 ),
@@ -191,11 +198,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.length < 6) return 'Password must be at least 6 characters.';
+                    if (v == null || v.length < 6) {
+                      return 'Password must be at least 6 characters.';
+                    }
                     return null;
                   },
                 ),
@@ -218,11 +228,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                       ),
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                      onPressed: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
                   ),
                   validator: (v) {
-                    if (v != _passwordController.text) return 'Passwords do not match.';
+                    if (v != _passwordController.text) {
+                      return 'Passwords do not match.';
+                    }
                     return null;
                   },
                 ),
@@ -234,7 +247,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: _handleRegister,
                   isLoading: _isLoading,
                   width: double.infinity,
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
+                  icon:
+                      const Icon(Icons.check_circle_outline_rounded, size: 18),
                 ),
                 const SizedBox(height: 20),
 
@@ -243,17 +257,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account? ', style: Theme.of(context).textTheme.bodyMedium),
+                      Text('Already have an account? ',
+                          style: Theme.of(context).textTheme.bodyMedium),
                       GestureDetector(
                         onTap: () => context.go('/role-select'),
                         child: Text(
                           'Sign in',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.teal,
-                            fontWeight: FontWeight.w700,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.teal,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.teal,
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppColors.teal,
+                                  ),
                         ),
                       ),
                     ],
@@ -267,19 +283,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.amberPale,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.amber.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: AppColors.amber.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline_rounded, size: 18, color: AppColors.amberDeep),
+                      const Icon(Icons.info_outline_rounded,
+                          size: 18, color: AppColors.amberDeep),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'Registration will be connected to Firebase Auth in Task 2. This is a UI placeholder.',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.amberDeep,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.amberDeep,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                       ),
                     ],
@@ -335,7 +354,8 @@ class _RoleChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: isSelected ? AppColors.teal : AppColors.muted),
+            Icon(icon,
+                size: 18, color: isSelected ? AppColors.teal : AppColors.muted),
             const SizedBox(width: 8),
             Text(
               label,

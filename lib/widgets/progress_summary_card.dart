@@ -83,10 +83,12 @@ class ProgressSummaryCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              const Icon(Icons.trending_up_rounded, size: 20, color: AppColors.violet),
+              const Icon(Icons.trending_up_rounded,
+                  size: 20, color: AppColors.violet),
               const SizedBox(width: 8),
               Text(
-                context.tr('progress.yourProgress', defaultText: 'Your Progress'),
+                context.tr('progress.yourProgress',
+                    defaultText: 'Your Progress'),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -129,14 +131,16 @@ class ProgressSummaryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   _buildProgressRow(
-                    title: context.tr('progress.attention', defaultText: 'Attention'),
+                    title: context.tr('progress.attention',
+                        defaultText: 'Attention'),
                     percentage: attentionScore,
                     icon: Icons.center_focus_strong_rounded,
                     color: AppColors.blue,
                   ),
                   const SizedBox(height: 18),
                   _buildProgressRow(
-                    title: context.tr('progress.pattern', defaultText: 'Pattern'),
+                    title:
+                        context.tr('progress.pattern', defaultText: 'Pattern'),
                     percentage: patternScore,
                     icon: Icons.grid_view_rounded,
                     color: AppColors.violet,
@@ -148,7 +152,8 @@ class ProgressSummaryCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        context.tr('progress.weeklySummary', defaultText: 'Weekly cognitive summary'),
+                        context.tr('progress.weeklySummary',
+                            defaultText: 'Weekly cognitive summary'),
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -158,7 +163,8 @@ class ProgressSummaryCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            context.tr('progress.viewDetails', defaultText: 'View Details'),
+                            context.tr('progress.viewDetails',
+                                defaultText: 'View Details'),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,

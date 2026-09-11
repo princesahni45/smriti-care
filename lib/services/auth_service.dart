@@ -1,4 +1,4 @@
-﻿// lib/services/auth_service.dart
+// lib/services/auth_service.dart
 //
 // SmritiCare — Centralized Firebase Authentication Service
 //
@@ -156,7 +156,73 @@ class AuthService {
       return AuthResult.failure(_mapFirebaseError(e));
     } catch (e) {
       debugPrint("[AuthService] Unexpected login error: $e");
-      return AuthResult.failure("An unexpected error occurred. Please try again.");
+      return AuthResult.failure(
+          "An unexpected error occurred. Please try again.");
+    }
+  }
+
+  // ── Doctor Login ────────────────────────────────────────────────────────────
+
+  // FIX: Added doctor role support - centralized Firebase Auth doctor login
+  Future<AuthResult> loginDoctor({
+    required String email,
+    required String password,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPassword = password.trim();
+
+    if (cleanEmail.isEmpty || cleanPassword.isEmpty) {
+      return AuthResult.failure("Please enter both email and password.");
+    }
+
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: cleanEmail,
+        password: cleanPassword,
+      );
+
+      final user = credential.user;
+      if (user == null) {
+        return AuthResult.failure("Authentication failed. Please try again.");
+      }
+
+      // Firestore role verification — users/{uid}
+      String? role;
+      String? name;
+      try {
+        final doc = await _db.collection("users").doc(user.uid).get();
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
+          role = (data["role"] as String?)?.trim().toLowerCase();
+          name = data["name"] as String?;
+        }
+      } catch (firestoreError) {
+        debugPrint("[AuthService] Firestore role check error: $firestoreError");
+        await _auth.signOut();
+        return AuthResult.failure(
+          "Could not verify doctor permissions. Please check your connection.",
+        );
+      }
+
+      if (role == null || role != "doctor") {
+        await _auth.signOut();
+        return AuthResult.failure(
+          "This account does not have doctor access. Please use your medical credentials.",
+        );
+      }
+
+      debugPrint("[AuthService] Doctor login success: ${user.uid}");
+      return AuthResult.success(
+        uid: user.uid,
+        email: user.email ?? cleanEmail,
+        displayName: name ?? user.displayName ?? "Doctor",
+      );
+    } on FirebaseAuthException catch (e) {
+      return AuthResult.failure(_mapFirebaseError(e));
+    } catch (e) {
+      debugPrint("[AuthService] Unexpected doctor login error: $e");
+      return AuthResult.failure(
+          "An unexpected error occurred. Please try again.");
     }
   }
 
@@ -198,7 +264,8 @@ class AuthService {
       case "email-already-in-use":
         return "This email is already registered.";
       default:
-        debugPrint("[AuthService] Unhandled Firebase error code: ${e.code} — ${e.message}");
+        debugPrint(
+            "[AuthService] Unhandled Firebase error code: ${e.code} — ${e.message}");
         return e.message ?? "Authentication failed. Please try again.";
     }
   }

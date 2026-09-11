@@ -90,7 +90,8 @@ class GameResultScreen extends StatelessWidget {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 28, color: AppColors.ink),
+          icon: const Icon(Icons.arrow_back_rounded,
+              size: 28, color: AppColors.ink),
           onPressed: onBackToGames ?? () => context.go('/games'),
         ),
         title: Text(
@@ -210,7 +211,8 @@ class GameResultScreen extends StatelessWidget {
                 children: [
                   _buildMetricCard(
                     label: 'Answers',
-                    value: '${result.correctAnswers} / ${result.attempts > 0 ? result.attempts : result.correctAnswers}',
+                    value:
+                        '${result.correctAnswers} / ${result.attempts > 0 ? result.attempts : result.correctAnswers}',
                     icon: Icons.check_circle_rounded,
                     color: AppColors.teal,
                     bgColor: AppColors.tealPale,
@@ -304,10 +306,14 @@ class GameResultScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  icon: const Icon(Icons.grid_view_rounded, size: 22, color: AppColors.ink),
+                  icon: const Icon(Icons.grid_view_rounded,
+                      size: 22, color: AppColors.ink),
                   label: const Text(
                     'Back to Games',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink),
                   ),
                   onPressed: onBackToGames ?? () => context.go('/games'),
                 ),
