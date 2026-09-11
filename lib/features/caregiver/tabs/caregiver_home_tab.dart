@@ -42,8 +42,8 @@ class CaregiverHomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final patient = CaregiverService.instance.getPatientProfile();
     final caregiver = CaregiverService.instance.getCaregiverProfile();
-    final metrics = CaregiverService.instance.getOverviewMetrics();
-    final risk = CaregiverService.instance.getRiskAssessment();
+    final metrics = CaregiverService.instance.getOverviewMetrics(patientId: patient.id);
+    final risk = CaregiverService.instance.getRiskAssessment(patientId: patient.id);
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),

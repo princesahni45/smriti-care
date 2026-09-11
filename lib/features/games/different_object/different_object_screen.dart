@@ -12,6 +12,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../game_result_screen.dart';
 import '../../../shared/widgets/smriti_button.dart';
 import 'categories_data.dart';
@@ -196,6 +197,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     // Save game result to local storage (Step 11 & 14)
     final gameResult = GameResult(
       id: 'do_${DateTime.now().millisecondsSinceEpoch}',
+      patientId: CaregiverService.instance.selectedPatientId,
       gameId: 'different-object',
       gameName: 'Find the Different Object',
       score: accuracy,
@@ -218,7 +220,13 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
             Navigator.of(context).pop();
             _initLevel(GameStorageService.instance.getRecommendedLevel('different-object'));
           },
-          onBackToGames: () => context.go('/games'),
+          onBackToGames: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/games');
+            }
+          },
         ),
       ),
     );
@@ -238,7 +246,13 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => context.go('/games'),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/games');
+            }
+          },
           tooltip: 'All Games',
         ),
         title: Row(

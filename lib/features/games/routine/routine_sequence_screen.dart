@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../game_result_screen.dart';
 
 class _RoutineStep {
@@ -124,7 +125,7 @@ class _RoutineSequenceScreenState extends State<RoutineSequenceScreen> {
 
     final result = GameResult(
       id: 'routine_${DateTime.now().millisecondsSinceEpoch}',
-      patientId: 'MC-2048',
+      patientId: CaregiverService.instance.selectedPatientId,
       gameId: 'routine-sequence',
       gameName: 'Routine Sequence',
       score: score,

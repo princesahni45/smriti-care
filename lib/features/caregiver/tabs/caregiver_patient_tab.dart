@@ -29,6 +29,7 @@ class CaregiverPatientTab extends StatefulWidget {
 class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
   late TextEditingController _notesController;
   bool _isNotesSaved = false;
+  PatientAccessCode? _currentAccessCode;
 
   @override
   void initState() {
@@ -37,6 +38,17 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
       text:
           'Patient responded very well to morning memory match. Prefers listening to old Assamese folk songs before bed. Ensure afternoon hydration reminder is acknowledged.',
     );
+    _loadCurrentPatientAccessCode();
+  }
+
+  Future<void> _loadCurrentPatientAccessCode() async {
+    final currentPatient = CaregiverService.instance.getPatientProfile();
+    final code = await PatientCodeService.instance.getActiveCodeForPatient(currentPatient.id);
+    if (mounted) {
+      setState(() {
+        _currentAccessCode = code;
+      });
+    }
   }
 
   @override
@@ -112,7 +124,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               isSelected: p.id == currentPatient.id,
               onSelect: () async {
                 await CaregiverService.instance.selectPatient(p.id);
-                setState(() {});
+                await _loadCurrentPatientAccessCode();
                 widget.onPatientChanged();
               },
             ),
@@ -340,135 +352,130 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
   // ── Patient Access Code Section Widget ─────────────────────────────────────
 
   Widget _buildPatientAccessCodeSection(PatientProfile patient) {
-    return FutureBuilder<PatientAccessCode?>(
-      future: PatientCodeService.instance.getActiveCodeForPatient(patient.id),
-      builder: (context, snapshot) {
-        final codeObj = snapshot.data;
-        final code = codeObj?.formattedCode ?? patient.activeAccessCode;
-        final hasCode = code != null && code.isNotEmpty && (codeObj?.isActive ?? true);
+    final codeObj = _currentAccessCode;
+    final code = codeObj?.formattedCode ?? patient.activeAccessCode;
+    final hasCode = code != null && code.isNotEmpty && (codeObj?.isActive ?? true);
 
-        return Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.tealPale.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.tealPale.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.key_rounded, size: 18, color: AppColors.tealDark),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'Patient Access Code',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.tealDark,
-                      ),
-                    ),
+              const Icon(Icons.key_rounded, size: 18, color: AppColors.tealDark),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Patient Access Code',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.tealDark,
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: hasCode ? AppColors.teal : AppColors.muted,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      hasCode ? 'ACTIVE' : 'NO CODE',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: 10),
-              if (hasCode) ...[
-                // Big code banner
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  decoration: BoxDecoration(
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: hasCode ? AppColors.teal : AppColors.muted,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  hasCode ? 'ACTIVE' : 'NO CODE',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.4), width: 1.5),
-                  ),
-                  child: Center(
-                    child: SelectableText(
-                      code,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 3,
-                        color: AppColors.ink,
-                      ),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Give this code to the patient. They can enter it on their login screen to connect directly without email or password.',
-                  style: TextStyle(fontSize: 11, color: AppColors.muted, height: 1.3),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (hasCode) ...[
+            // Big code banner
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.teal.withValues(alpha: 0.4), width: 1.5),
+              ),
+              child: Center(
+                child: SelectableText(
+                  code,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 3,
+                    color: AppColors.ink,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                // Action Buttons: Copy, Share, Regenerate
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () => _copyCode(code),
-                      icon: const Icon(Icons.copy_rounded, size: 15, color: Colors.white),
-                      label: const Text('Copy Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.teal,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () => _shareCode(code, patient.fullName),
-                      icon: const Icon(Icons.share_rounded, size: 15, color: AppColors.tealDark),
-                      label: const Text('Share Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.teal.withValues(alpha: 0.5)),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: () => _confirmRegenerateCode(patient),
-                      icon: const Icon(Icons.refresh_rounded, size: 15, color: AppColors.inkSoft),
-                      label: const Text('Regenerate', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.inkSoft)),
-                    ),
-                  ],
-                ),
-              ] else ...[
-                const Text(
-                  'No active login code exists for this patient. Generate one to allow simple code-based login.',
-                  style: TextStyle(fontSize: 12, color: AppColors.muted),
-                ),
-                const SizedBox(height: 10),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Give this code to the patient. They can enter it on their login screen to connect directly without email or password.',
+              style: TextStyle(fontSize: 11, color: AppColors.muted, height: 1.3),
+            ),
+            const SizedBox(height: 12),
+            // Action Buttons: Copy, Share, Regenerate
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
                 ElevatedButton.icon(
-                  onPressed: () => _generateCodeForPatient(patient),
-                  icon: const Icon(Icons.add_moderator_rounded, size: 16, color: Colors.white),
-                  label: const Text('Generate Patient Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
+                  onPressed: () => _copyCode(code),
+                  icon: const Icon(Icons.copy_rounded, size: 15, color: Colors.white),
+                  label: const Text('Copy Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.teal,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
+                OutlinedButton.icon(
+                  onPressed: () => _shareCode(code, patient.fullName),
+                  icon: const Icon(Icons.share_rounded, size: 15, color: AppColors.tealDark),
+                  label: const Text('Share Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.teal.withValues(alpha: 0.5)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () => _confirmRegenerateCode(patient),
+                  icon: const Icon(Icons.refresh_rounded, size: 15, color: AppColors.inkSoft),
+                  label: const Text('Regenerate', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.inkSoft)),
+                ),
               ],
-            ],
-          ),
-        );
-      },
+            ),
+          ] else ...[
+            const Text(
+              'No active login code exists for this patient. Generate one to allow simple code-based login.',
+              style: TextStyle(fontSize: 12, color: AppColors.muted),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () => _generateCodeForPatient(patient),
+              icon: const Icon(Icons.add_moderator_rounded, size: 16, color: Colors.white),
+              label: const Text('Generate Patient Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.teal,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -516,7 +523,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
 
     await CaregiverService.instance.updatePatientAccessCode(patient.id, newCode.code);
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _currentAccessCode = newCode;
+      });
       widget.onPatientChanged();
       _showCodeGeneratedDialog(patient.fullName, newCode.code);
     }

@@ -30,6 +30,9 @@ import 'features/games/family_memories/family_memories_game_screen.dart';
 import 'features/mri/mri_screening_screen.dart';
 import 'features/emergency/take_me_home_screen.dart';
 import 'features/assessment/cognitive_assessment_screen.dart';
+import 'features/patient/patient_profile_screen.dart';
+import 'features/patient/patient_reminders_screen.dart';
+import 'features/patient/patient_progress_screen.dart';
 
 GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
   initialLocation: initialLocation,
@@ -209,6 +212,32 @@ GoRouter createAppRouter({String initialLocation = '/'}) => GoRouter(
       path: '/assessment',
       name: 'assessment',
       builder: (context, state) => const CognitiveAssessmentScreen(),
+    ),
+
+    // ── Patient Profile
+    GoRoute(
+      path: '/patient-profile',
+      name: 'patientProfile',
+      builder: (context, state) => const PatientProfileScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      name: 'profile',
+      builder: (context, state) => const PatientProfileScreen(),
+    ),
+
+    // ── Patient Reminders
+    GoRoute(
+      path: '/reminders',
+      name: 'reminders',
+      builder: (context, state) => const PatientRemindersScreen(),
+    ),
+
+    // ── Patient Progress
+    GoRoute(
+      path: '/progress',
+      name: 'progress',
+      builder: (context, state) => const PatientProgressScreen(),
     ),
 
     // ── Language Selection

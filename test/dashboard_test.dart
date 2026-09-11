@@ -60,13 +60,11 @@ void main() {
     await tester.tap(find.text('Reminders').last);
     await tester.pumpAndSettle();
 
-    // Should display the Coming Soon placeholder for Reminders
-    expect(find.text('COMING SOON'), findsOneWidget);
-    expect(find.text('Smart Reminders'), findsWidgets);
-    expect(find.text('Back to Dashboard'), findsOneWidget);
+    // Should display the real Daily Schedule & Reminders screen
+    expect(find.text('Daily Schedule & Reminders'), findsOneWidget);
 
     // Tap back button
-    await tester.tap(find.text('Back to Dashboard'));
+    await tester.tap(find.byTooltip('Back to Home'));
     await tester.pumpAndSettle();
 
     // Should be back on the dashboard

@@ -66,38 +66,42 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
     switch (actionId) {
       case 'games':
       case 'brain-games':
-        context.go('/games');
+        context.push('/games');
         break;
       case 'home':
       case 'take-me-home':
-        context.go('/take-me-home');
+        context.push('/take-me-home');
         break;
       case 'family':
       case 'family-memories':
-        context.go('/games/family-memories');
+        context.push('/games/family-memories');
         break;
       case 'routine':
       case 'routine-sequence':
-        context.go('/games/routine');
+        context.push('/games/routine');
         break;
       case 'memory-match':
-        context.go('/games/memory-match');
+        context.push('/games/memory-match');
         break;
       case 'word-recall':
-        context.go('/games/word-recall');
+        context.push('/games/word-recall');
         break;
       case 'different-object':
-        context.go('/games/different-object');
+        context.push('/games/different-object');
         break;
       case 'orientation':
-        context.go('/games/orientation');
+        context.push('/games/orientation');
         break;
       case 'emergency':
       case 'sos':
-        context.go('/take-me-home');
+        context.push('/take-me-home');
+        break;
+      case 'profile':
+      case 'patient-profile':
+        context.push('/patient-profile');
         break;
       default:
-        context.go('/games');
+        context.push('/games');
     }
   }
 
@@ -623,15 +627,21 @@ class _PatientHeader extends StatelessWidget {
             const AppLogo(iconSize: 32, fontSize: 20),
             const Spacer(),
             _CtrlBtn(
+              icon: Icons.account_circle_rounded,
+              label: context.tr('common.profile', defaultText: 'Profile'),
+              onTap: () => context.push('/patient-profile'),
+              color: AppColors.teal,
+            ),
+            _CtrlBtn(
               icon: Icons.phone_rounded,
               label: context.tr('common.help', defaultText: 'Help'),
-              onTap: () => context.go('/take-me-home'),
+              onTap: () => context.push('/take-me-home'),
               color: AppColors.coralDeep,
             ),
             _CtrlBtn(
               icon: Icons.language_rounded,
               label: context.tr('common.language', defaultText: 'Lang'),
-              onTap: () => context.go('/language-select'),
+              onTap: () => context.push('/language-select'),
             ),
             const SizedBox(width: 4),
             // Caregiver exit gate

@@ -342,11 +342,13 @@ class PatientCodeService {
       }
     }
 
-    // Fall back to local store
-    for (final code in _localCodes.values) {
-      if (code.patientId == patientId && code.isValid) {
-        return code;
-      }
+    // Fall back to local store — return the newest active code
+    final activeCodes = _localCodes.values
+        .where((code) => code.patientId == patientId && code.isValid)
+        .toList();
+    if (activeCodes.isNotEmpty) {
+      activeCodes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return activeCodes.first;
     }
     return null;
   }

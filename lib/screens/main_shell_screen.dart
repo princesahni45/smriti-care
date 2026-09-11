@@ -20,6 +20,9 @@ import '../features/games/games_hub_screen.dart';
 import '../features/emergency/take_me_home_screen.dart';
 import '../features/mri/mri_screening_screen.dart';
 import '../features/assessment/cognitive_assessment_screen.dart';
+import '../features/patient/patient_profile_screen.dart';
+import '../features/patient/patient_reminders_screen.dart';
+import '../features/patient/patient_progress_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
@@ -134,16 +137,13 @@ class _MainShellScreenState extends State<MainShellScreen> {
       GamesHubScreen(
         onBack: () => _onTabTapped(0),
       ),
-      PlaceholderScreen.forModule(
-        'reminders',
+      PatientRemindersScreen(
         onBack: () => _onTabTapped(0),
       ),
-      PlaceholderScreen.forModule(
-        'progress',
+      PatientProgressScreen(
         onBack: () => _onTabTapped(0),
       ),
-      PlaceholderScreen.forModule(
-        'profile',
+      PatientProfileScreen(
         onBack: () => _onTabTapped(0),
       ),
     ];

@@ -92,11 +92,23 @@ class DashboardScreen extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
-                    // Your Progress (Cognitive indicators)
+                    // Your Progress (Real cognitive indicators from gameplay)
                     ProgressSummaryCard(
-                      memoryScore: 75,
-                      attentionScore: 60,
-                      patternScore: 80,
+                      memoryScore: GameStorageService.instance.getStatsForGame('memory-match').gamesPlayed > 0
+                          ? GameStorageService.instance.getStatsForGame('memory-match').avgAccuracy.round()
+                          : (GameStorageService.instance.getTotalGamesCompleted() > 0
+                              ? GameStorageService.instance.getAverageAccuracy().round()
+                              : 75),
+                      attentionScore: GameStorageService.instance.getStatsForGame('different-object').gamesPlayed > 0
+                          ? GameStorageService.instance.getStatsForGame('different-object').avgAccuracy.round()
+                          : (GameStorageService.instance.getTotalGamesCompleted() > 0
+                              ? GameStorageService.instance.getAverageAccuracy().round()
+                              : 60),
+                      patternScore: GameStorageService.instance.getStatsForGame('routine-sequence').gamesPlayed > 0
+                          ? GameStorageService.instance.getStatsForGame('routine-sequence').avgAccuracy.round()
+                          : (GameStorageService.instance.getTotalGamesCompleted() > 0
+                              ? GameStorageService.instance.getAverageAccuracy().round()
+                              : 80),
                       onTap: () => _handleNavigate(context, 'progress'),
                     ),
 

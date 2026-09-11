@@ -16,6 +16,9 @@ class PatientProfile {
   final String avatarInitials;
   final DateTime lastUpdated;
   final String? activeAccessCode;
+  final String? caregiverId;
+  final String? caregiverName;
+  final bool isConnected;
 
   const PatientProfile({
     required this.id,
@@ -29,6 +32,9 @@ class PatientProfile {
     required this.avatarInitials,
     required this.lastUpdated,
     this.activeAccessCode,
+    this.caregiverId,
+    this.caregiverName,
+    this.isConnected = false,
   });
 
   PatientProfile copyWith({
@@ -43,6 +49,9 @@ class PatientProfile {
     String? avatarInitials,
     DateTime? lastUpdated,
     String? activeAccessCode,
+    String? caregiverId,
+    String? caregiverName,
+    bool? isConnected,
   }) {
     return PatientProfile(
       id: id ?? this.id,
@@ -56,6 +65,9 @@ class PatientProfile {
       avatarInitials: avatarInitials ?? this.avatarInitials,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       activeAccessCode: activeAccessCode ?? this.activeAccessCode,
+      caregiverId: caregiverId ?? this.caregiverId,
+      caregiverName: caregiverName ?? this.caregiverName,
+      isConnected: isConnected ?? this.isConnected,
     );
   }
 
@@ -72,10 +84,16 @@ class PatientProfile {
       'avatarInitials': avatarInitials,
       'lastUpdated': lastUpdated.toIso8601String(),
       'activeAccessCode': activeAccessCode,
+      'caregiverId': caregiverId,
+      'caregiverName': caregiverName,
+      'isConnected': isConnected,
     };
   }
 
   factory PatientProfile.fromMap(Map<String, dynamic> map) {
+    final cgName = map['caregiverName'] as String?;
+    final isConn = map['isConnected'] as bool? ?? (cgName != null && cgName.isNotEmpty);
+
     return PatientProfile(
       id: map['id'] ?? 'MC-2048',
       fullName: map['fullName'] ?? 'Mr. Ramesh Das',
@@ -90,6 +108,9 @@ class PatientProfile {
           ? DateTime.tryParse(map['lastUpdated']) ?? DateTime.now()
           : DateTime.now(),
       activeAccessCode: map['activeAccessCode'] as String?,
+      caregiverId: map['caregiverId'] as String?,
+      caregiverName: cgName,
+      isConnected: isConn,
     );
   }
 }
@@ -101,6 +122,7 @@ class CaregiverProfile {
   final String initials;
   final String role;
   final String connectedPatientId;
+  final String caregiverCode;
 
   const CaregiverProfile({
     required this.name,
@@ -108,6 +130,7 @@ class CaregiverProfile {
     required this.initials,
     required this.role,
     required this.connectedPatientId,
+    this.caregiverCode = 'CG-4827-MS',
   });
 
   Map<String, dynamic> toMap() {
@@ -117,6 +140,7 @@ class CaregiverProfile {
       'initials': initials,
       'role': role,
       'connectedPatientId': connectedPatientId,
+      'caregiverCode': caregiverCode,
     };
   }
 
@@ -127,6 +151,7 @@ class CaregiverProfile {
       initials: map['initials'] ?? 'MS',
       role: map['role'] ?? 'Caregiver',
       connectedPatientId: map['connectedPatientId'] ?? 'MC-2048',
+      caregiverCode: map['caregiverCode'] ?? 'CG-4827-MS',
     );
   }
 }

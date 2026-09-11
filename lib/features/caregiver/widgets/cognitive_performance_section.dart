@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 
 class CognitivePerformanceSection extends StatelessWidget {
   const CognitivePerformanceSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final recentResults = GameStorageService.instance.getRecentResults(limit: 6);
-    final totalGames = GameStorageService.instance.getTotalGamesCompleted();
-    final streak = GameStorageService.instance.getCurrentStreakDays();
-    final avgScore = GameStorageService.instance.getTodayScore();
+    final patientId = CaregiverService.instance.selectedPatientId;
+    final recentResults = GameStorageService.instance.getRecentResults(limit: 6, patientId: patientId);
+    final totalGames = GameStorageService.instance.getTotalGamesCompleted(patientId: patientId);
+    final streak = GameStorageService.instance.getCurrentStreakDays(patientId: patientId);
+    final avgScore = GameStorageService.instance.getTodayScore(patientId: patientId);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
