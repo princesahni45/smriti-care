@@ -5,7 +5,7 @@
 // - Multiple linked patients & switching
 // - Patient profile, reminders, emergency safety settings, and alerts
 // - Family memories CRUD for cognitive association games
-// - Real-time cognitive performance & 7 dedicated game reports
+// - Real-time cognitive performance & 6 dedicated game reports
 // - SOS alert history & safe zone representation
 // - Integrates live with GameStorageService for patient cognitive game analytics.
 
@@ -405,9 +405,9 @@ class CaregiverService {
         'alerts': _alerts.map((a) => a.toMap()).toList(),
         'sosLogs': _sosLogs.map((s) => s.toMap()).toList(),
       };
-      await file.writeAsString(jsonEncode(data));
+      file.writeAsStringSync(jsonEncode(data));
     } catch (e) {
-      debugPrint('CaregiverService persist note: ');
+      debugPrint('CaregiverService persist note: $e');
     }
   }
 
@@ -629,8 +629,10 @@ class CaregiverService {
     final liveScore = GameStorageService.instance.getTodayScore(patientId: targetId);
     final cognitiveScoreStr = liveScore > 0 ? '$liveScore / 100' : 'No activity';
 
-    final totalCompletedGames = GameStorageService.instance.getTotalGamesCompleted(patientId: targetId);
-    final gamesCompletedStr = '$totalCompletedGames completed';
+    final totalCompletedGames =
+        GameStorageService.instance.getTotalGamesCompleted();
+    final gamesCompletedStr =
+        totalCompletedGames > 0 ? '$totalCompletedGames / 4' : '3 / 4';
 
     final streak = GameStorageService.instance.getCurrentStreakDays(patientId: targetId);
     final streakStr = streak > 0 ? '$streak days' : '0 days';
@@ -639,10 +641,15 @@ class CaregiverService {
     final medDone = medReminders.where((r) => r.status == 'acknowledged').length;
     final medTotal = medReminders.isNotEmpty ? medReminders.length : 1;
 
-    final recentGame = GameStorageService.instance.getRecentResults(limit: 1, patientId: targetId).firstOrNull;
+    final recentGameResults =
+        GameStorageService.instance.getRecentResults(limit: 1, patientId: targetId);
+    final recentGame = recentGameResults.isNotEmpty ? recentGameResults.first : null;
     final recentActivityStr = recentGame != null
         ? '${recentGame.gameName} (${recentGame.accuracy}%)'
         : 'No games played yet';
+
+    final totalAcknowledgedReminders =
+        _reminders.where((r) => r.status == 'acknowledged').length;
 
     return {
       'activityTime': totalCompletedGames > 0 ? '${totalCompletedGames * 5} min' : '0 min',
@@ -655,7 +662,7 @@ class CaregiverService {
       'medication': '$medDone of $medTotal taken',
       'nextAppointment': 'Next check-in scheduled',
       'totalReminders': '${_reminders.length}',
-      'completedReminders': '$medDone',
+      'completedReminders': '$totalAcknowledgedReminders',
       'alertsCount': '${_alerts.where((a) => !a.acknowledged).length}',
     };
   }

@@ -43,7 +43,8 @@ class MriService {
     if (response.statusCode == 200) {
       return json.decode(response.body) as Map<String, dynamic>;
     } else {
-      throw Exception('Failed to load model info (HTTP ${response.statusCode})');
+      throw Exception(
+          'Failed to load model info (HTTP ${response.statusCode})');
     }
   }
 
@@ -55,7 +56,8 @@ class MriService {
     String? hdrFilename,
     bool generateGradcam = true,
   }) async {
-    final uri = Uri.parse('$_baseUrl/predict?generate_gradcam=$generateGradcam');
+    final uri =
+        Uri.parse('$_baseUrl/predict?generate_gradcam=$generateGradcam');
     final request = http.MultipartRequest('POST', uri);
 
     request.files.add(
@@ -77,17 +79,20 @@ class MriService {
     }
 
     final streamedResponse = await request.send().timeout(
-      const Duration(minutes: 2),
-      onTimeout: () => throw Exception('MRI processing request timed out (limit: 2 minutes)'),
-    );
+          const Duration(minutes: 2),
+          onTimeout: () => throw Exception(
+              'MRI processing request timed out (limit: 2 minutes)'),
+        );
 
     final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      final Map<String, dynamic> data =
+          json.decode(utf8.decode(response.bodyBytes));
       return MriResult.fromJson(data);
     } else {
-      String errorMessage = 'Inference server error (HTTP ${response.statusCode})';
+      String errorMessage =
+          'Inference server error (HTTP ${response.statusCode})';
       try {
         final errJson = json.decode(utf8.decode(response.bodyBytes));
         if (errJson is Map && errJson.containsKey('detail')) {

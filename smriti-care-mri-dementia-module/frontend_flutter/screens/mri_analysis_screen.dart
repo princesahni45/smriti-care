@@ -64,7 +64,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           final dev = health['device'] ?? 'Active';
           _apiStatusMessage = 'Inference Service Online ($dev)';
         } else {
-          _apiStatusMessage = 'Inference Service Offline (${health['error'] ?? 'Check backend'})';
+          _apiStatusMessage =
+              'Inference Service Offline (${health['error'] ?? 'Check backend'})';
         }
       });
     }
@@ -107,9 +108,12 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
 
     try {
       // If service is online and we have bytes, execute real API call
-      if (_isApiOnline && _selectedFileBytes != null && _selectedFileBytes!.length > 1024) {
+      if (_isApiOnline &&
+          _selectedFileBytes != null &&
+          _selectedFileBytes!.length > 1024) {
         setState(() {
-          _processingStage = 'Standardizing spatial orientation (LAS) and extracting brain voxels...';
+          _processingStage =
+              'Standardizing spatial orientation (LAS) and extracting brain voxels...';
         });
 
         final result = await MriService.instance.predictBytes(
@@ -135,13 +139,15 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
         await Future.delayed(const Duration(milliseconds: 700));
         if (mounted) {
           setState(() {
-            _processingStage = 'Cropping non-zero brain bounding box to 96x96x96...';
+            _processingStage =
+                'Cropping non-zero brain bounding box to 96x96x96...';
           });
         }
         await Future.delayed(const Duration(milliseconds: 800));
         if (mounted) {
           setState(() {
-            _processingStage = 'Executing 3D ResNet-10 forward inference pass...';
+            _processingStage =
+                'Executing 3D ResNet-10 forward inference pass...';
           });
         }
         await Future.delayed(const Duration(milliseconds: 600));
@@ -154,12 +160,22 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
             prediction: 'Very Mild Dementia',
             classId: 1,
             confidence: 0.9200,
-            probabilities: {'normal': 0.0450, 'very_mild': 0.9200, 'dementia': 0.0350},
-            displayProbabilities: {'Normal': 0.0450, 'Very Mild Dementia': 0.9200, 'Dementia (Mild/Moderate)': 0.0350},
+            probabilities: {
+              'normal': 0.0450,
+              'very_mild': 0.9200,
+              'dementia': 0.0350
+            },
+            displayProbabilities: {
+              'Normal': 0.0450,
+              'Very Mild Dementia': 0.9200,
+              'Dementia (Mild/Moderate)': 0.0350
+            },
             isLowConfidence: false,
             clinicalNote: 'Confidence meets threshold.',
-            disclaimer: 'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.',
-            gradcamDisclaimer: 'Model Attention Visualization — Not a Clinical Interpretation',
+            disclaimer:
+                'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.',
+            gradcamDisclaimer:
+                'Model Attention Visualization — Not a Clinical Interpretation',
           );
         } else if (_selectedFileName!.contains('0031')) {
           simulatedResult = const MriResult(
@@ -167,12 +183,22 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
             prediction: 'Dementia (Mild/Moderate)',
             classId: 2,
             confidence: 0.9989,
-            probabilities: {'normal': 0.0010, 'very_mild': 0.0001, 'dementia': 0.9989},
-            displayProbabilities: {'Normal': 0.0010, 'Very Mild Dementia': 0.0001, 'Dementia (Mild/Moderate)': 0.9989},
+            probabilities: {
+              'normal': 0.0010,
+              'very_mild': 0.0001,
+              'dementia': 0.9989
+            },
+            displayProbabilities: {
+              'Normal': 0.0010,
+              'Very Mild Dementia': 0.0001,
+              'Dementia (Mild/Moderate)': 0.9989
+            },
             isLowConfidence: false,
             clinicalNote: 'Confidence meets threshold.',
-            disclaimer: 'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.',
-            gradcamDisclaimer: 'Model Attention Visualization — Not a Clinical Interpretation',
+            disclaimer:
+                'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.',
+            gradcamDisclaimer:
+                'Model Attention Visualization — Not a Clinical Interpretation',
           );
         } else {
           // Default: OAS1_0001 Normal
@@ -181,12 +207,23 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
             prediction: 'Normal',
             classId: 0,
             confidence: 0.5318,
-            probabilities: {'normal': 0.5318, 'very_mild': 0.2966, 'dementia': 0.1716},
-            displayProbabilities: {'Normal': 0.5318, 'Very Mild Dementia': 0.2966, 'Dementia (Mild/Moderate)': 0.1716},
+            probabilities: {
+              'normal': 0.5318,
+              'very_mild': 0.2966,
+              'dementia': 0.1716
+            },
+            displayProbabilities: {
+              'Normal': 0.5318,
+              'Very Mild Dementia': 0.2966,
+              'Dementia (Mild/Moderate)': 0.1716
+            },
             isLowConfidence: true,
-            clinicalNote: 'Low-confidence prediction — further clinical assessment recommended.',
-            disclaimer: 'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.',
-            gradcamDisclaimer: 'Model Attention Visualization — Not a Clinical Interpretation',
+            clinicalNote:
+                'Low-confidence prediction — further clinical assessment recommended.',
+            disclaimer:
+                'This system provides AI-assisted estimation based on MRI patterns for research and educational purposes only. It is not a medical diagnosis and must not replace clinical assessment, cognitive testing, or radiological evaluation by a qualified healthcare professional.',
+            gradcamDisclaimer:
+                'Model Attention Visualization — Not a Clinical Interpretation',
           );
         }
 
@@ -319,7 +356,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: AppColors.tealPale,
                   borderRadius: BorderRadius.circular(10),
@@ -327,7 +365,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.biotech_rounded, size: 16, color: AppColors.teal),
+                    Icon(Icons.biotech_rounded,
+                        size: 16, color: AppColors.teal),
                     SizedBox(width: 6),
                     Text(
                       'AI Diagnostic Assistance',
@@ -358,7 +397,9 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: _isApiOnline ? Colors.green.shade800 : Colors.orange.shade800,
+                      color: _isApiOnline
+                          ? Colors.green.shade800
+                          : Colors.orange.shade800,
                     ),
                   ),
                 ],
@@ -401,7 +442,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.warning_amber_rounded, size: 22, color: AppColors.amberDeep),
+          Icon(Icons.warning_amber_rounded,
+              size: 22, color: AppColors.amberDeep),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -464,7 +506,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           InkWell(
             onTap: () {
               // Pre-fill with sample 1 for instant evaluation
-              _loadPresetScan('OAS1_0001_MR1_t1', 'Normal CDR 0.0', 'OAS1_0001_MR1_t1.nii.gz');
+              _loadPresetScan('OAS1_0001_MR1_t1', 'Normal CDR 0.0',
+                  'OAS1_0001_MR1_t1.nii.gz');
             },
             borderRadius: BorderRadius.circular(14),
             child: Container(
@@ -472,7 +515,9 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
               decoration: BoxDecoration(
                 color: AppColors.tealBg,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.teal.withOpacity(0.4), style: BorderStyle.solid),
+                border: Border.all(
+                    color: AppColors.teal.withOpacity(0.4),
+                    style: BorderStyle.solid),
               ),
               child: Row(
                 children: [
@@ -483,7 +528,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                       color: AppColors.tealPale,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.file_upload_outlined, color: AppColors.teal),
+                    child: const Icon(Icons.file_upload_outlined,
+                        color: AppColors.teal),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -495,7 +541,9 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: _selectedFileName != null ? AppColors.tealDark : AppColors.ink,
+                            color: _selectedFileName != null
+                                ? AppColors.tealDark
+                                : AppColors.ink,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -505,13 +553,15 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                           _selectedFileSize != null
                               ? '${(_selectedFileSize! / (1024 * 1024)).toStringAsFixed(1)} MB • T1 Volumetric'
                               : 'Select local .nii.gz file',
-                          style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                          style: const TextStyle(
+                              fontSize: 12, color: AppColors.muted),
                         ),
                       ],
                     ),
                   ),
                   if (_selectedFileName != null)
-                    const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 20),
+                    const Icon(Icons.check_circle_rounded,
+                        color: AppColors.teal, size: 20),
                 ],
               ),
             ),
@@ -520,7 +570,10 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           const SizedBox(height: 14),
           const Text(
             'Quick Benchmark Scans (OASIS Validation):',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.inkSoft),
           ),
           const SizedBox(height: 8),
 
@@ -532,20 +585,35 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
               ActionChip(
                 backgroundColor: AppColors.tealLight,
                 side: BorderSide(color: AppColors.teal.withOpacity(0.3)),
-                label: const Text('OAS1_0001 (Normal)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.tealDark)),
-                onPressed: () => _loadPresetScan('OAS1_0001_MR1_t1', 'Normal (CDR 0.0)', 'OAS1_0001'),
+                label: const Text('OAS1_0001 (Normal)',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.tealDark)),
+                onPressed: () => _loadPresetScan(
+                    'OAS1_0001_MR1_t1', 'Normal (CDR 0.0)', 'OAS1_0001'),
               ),
               ActionChip(
                 backgroundColor: AppColors.amberPale,
                 side: BorderSide(color: AppColors.amber.withOpacity(0.3)),
-                label: const Text('OAS1_0003 (Very Mild)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.amberDeep)),
-                onPressed: () => _loadPresetScan('OAS1_0003_MR1_t1', 'Very Mild (CDR 0.5)', 'OAS1_0003'),
+                label: const Text('OAS1_0003 (Very Mild)',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.amberDeep)),
+                onPressed: () => _loadPresetScan(
+                    'OAS1_0003_MR1_t1', 'Very Mild (CDR 0.5)', 'OAS1_0003'),
               ),
               ActionChip(
                 backgroundColor: AppColors.coralPale,
                 side: BorderSide(color: AppColors.coral.withOpacity(0.3)),
-                label: const Text('OAS1_0031 (Dementia)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.coralDeep)),
-                onPressed: () => _loadPresetScan('OAS1_0031_MR1_t1', 'Dementia (CDR 1.0)', 'OAS1_0031'),
+                label: const Text('OAS1_0031 (Dementia)',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.coralDeep)),
+                onPressed: () => _loadPresetScan(
+                    'OAS1_0031_MR1_t1', 'Dementia (CDR 1.0)', 'OAS1_0031'),
               ),
             ],
           ),
@@ -577,12 +645,14 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                       SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.2, color: Colors.white),
                       ),
                       SizedBox(width: 12),
                       Text(
                         'Processing MRI...',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700),
                       ),
                     ],
                   )
@@ -593,7 +663,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                       SizedBox(width: 10),
                       Text(
                         'Analyze Brain Volume',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -603,7 +674,10 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           const SizedBox(height: 10),
           Text(
             _processingStage,
-            style: const TextStyle(fontSize: 12, color: AppColors.muted, fontStyle: FontStyle.italic),
+            style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.muted,
+                fontStyle: FontStyle.italic),
             textAlign: TextAlign.center,
           ),
         ],
@@ -623,12 +697,16 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.error, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               error,
-              style: const TextStyle(fontSize: 13, color: AppColors.error, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -660,7 +738,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           // ── Header Title ─────────────────────────────────────────
           Row(
             children: [
-              const Icon(Icons.assessment_rounded, color: AppColors.teal, size: 24),
+              const Icon(Icons.assessment_rounded,
+                  color: AppColors.teal, size: 24),
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
@@ -684,14 +763,18 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
             decoration: BoxDecoration(
               color: severityColor.withOpacity(0.12),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: severityColor.withOpacity(0.4), width: 1.5),
+              border:
+                  Border.all(color: severityColor.withOpacity(0.4), width: 1.5),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Estimated Severity Class:',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.muted),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.muted),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -728,7 +811,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.info_outline_rounded, color: AppColors.amberDeep, size: 18),
+                  Icon(Icons.info_outline_rounded,
+                      color: AppColors.amberDeep, size: 18),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -758,11 +842,14 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           ),
           const SizedBox(height: 12),
 
-          _buildProbBar('Normal', result.probabilities['normal'] ?? 0.0, AppColors.teal),
+          _buildProbBar(
+              'Normal', result.probabilities['normal'] ?? 0.0, AppColors.teal),
           const SizedBox(height: 8),
-          _buildProbBar('Very Mild Dementia', result.probabilities['very_mild'] ?? 0.0, AppColors.amber),
+          _buildProbBar('Very Mild Dementia',
+              result.probabilities['very_mild'] ?? 0.0, AppColors.amber),
           const SizedBox(height: 8),
-          _buildProbBar('Dementia (Mild/Moderate)', result.probabilities['dementia'] ?? 0.0, AppColors.coral),
+          _buildProbBar('Dementia (Mild/Moderate)',
+              result.probabilities['dementia'] ?? 0.0, AppColors.coral),
 
           const SizedBox(height: 22),
 
@@ -783,11 +870,15 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink),
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink),
             ),
             Text(
               '$pct%',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: color),
+              style: TextStyle(
+                  fontSize: 13, fontWeight: FontWeight.w800, color: color),
             ),
           ],
         ),
@@ -841,7 +932,9 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                   ],
                 ),
                 Icon(
-                  _showGradCam ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                  _showGradCam
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
                   color: AppColors.muted,
                 ),
               ],
@@ -858,7 +951,8 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
               ),
               child: const Text(
                 'Model Attention Visualization — Not a Clinical Interpretation. Highlights 3D axial, coronal, and sagittal regions influencing network decision.',
-                style: TextStyle(fontSize: 11, color: AppColors.muted, height: 1.3),
+                style: TextStyle(
+                    fontSize: 11, color: AppColors.muted, height: 1.3),
               ),
             ),
             const SizedBox(height: 10),
@@ -873,13 +967,15 @@ class _MriAnalysisScreenState extends State<MriAnalysisScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.heat_pump_rounded, color: Colors.amberAccent, size: 28),
+                    const Icon(Icons.heat_pump_rounded,
+                        color: Colors.amberAccent, size: 28),
                     const SizedBox(height: 4),
                     Text(
                       result.gradcamUrl != null
                           ? 'Saliency Rendered: ${result.gradcamUrl}'
                           : 'Attention Heatmap: Axial • Coronal • Sagittal Slices',
-                      style: const TextStyle(color: Colors.white70, fontSize: 11),
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 11),
                       textAlign: TextAlign.center,
                     ),
                   ],

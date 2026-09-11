@@ -1,3 +1,4 @@
+```dart
 // lib/features/games/different_object/different_object_screen.dart
 //
 // Find the Different Object cognitive game for Flutter.
@@ -5,20 +6,22 @@
 // feedback banners, and level completion summary.
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_theme.dart';
+
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
-import '../../../core/services/game_storage_service.dart';
 import '../../../core/services/caregiver_service.dart';
-import '../game_result_screen.dart';
+import '../../../core/services/game_storage_service.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/smriti_button.dart';
+import '../game_result_screen.dart';
 import 'categories_data.dart';
 
 class GameFeedback {
-  final String type; // 'correct', 'wrong', 'hint'
+  final String type;
   final String title;
   final String text;
 
@@ -33,7 +36,8 @@ class DifferentObjectScreen extends StatefulWidget {
   const DifferentObjectScreen({super.key});
 
   @override
-  State<DifferentObjectScreen> createState() => _DifferentObjectScreenState();
+  State<DifferentObjectScreen> createState() =>
+      _DifferentObjectScreenState();
 }
 
 class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
@@ -44,6 +48,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
   String? _selectedId;
   int _wrongAttempts = 0;
   int _totalWrongAttempts = 0;
+
   bool _isAnswered = false;
   GameFeedback? _feedback;
   bool _showHint = false;
@@ -52,13 +57,16 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
   int _seconds = 0;
   bool _running = false;
   bool _finished = false;
+
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _currentLevel =
-        GameStorageService.instance.getRecommendedLevel('different-object');
+
+    _currentLevel = GameStorageService.instance
+        .getRecommendedLevel('different-object');
+
     _initLevel(_currentLevel);
   }
 
@@ -68,22 +76,31 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     super.dispose();
   }
 
-  void _initLevel(int lvl) {
+  void _initLevel(int level) {
     _timer?.cancel();
-    final config = kDifferentObjectLevels[lvl]!;
-    final generated = <DifferentObjectQuestion>[];
+
+    final config = kDifferentObjectLevels[level];
+
+    if (config == null) {
+      return;
+    }
+
+    final generatedQuestions = <DifferentObjectQuestion>[];
     String? lastCategory;
 
     for (int i = 0; i < config.questionsCount; i++) {
-      final q =
-          generateDifferentObjectQuestion(config.totalItems, lastCategory);
-      generated.add(q);
-      lastCategory = q.commonCategory;
+      final question = generateDifferentObjectQuestion(
+        config.totalItems,
+        lastCategory,
+      );
+
+      generatedQuestions.add(question);
+      lastCategory = question.commonCategory;
     }
 
     setState(() {
-      _currentLevel = lvl;
-      _questions = generated;
+      _currentLevel = level;
+      _questions = generatedQuestions;
       _currentIndex = 0;
       _selectedId = null;
       _wrongAttempts = 0;
@@ -100,61 +117,80 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
 
   void _startTimer() {
     _timer?.cancel();
-    _running = true;
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted && _running && !_finished) {
+
+    setState(() {
+      _running = true;
+    });
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) {
+        if (!mounted || !_running || _finished) {
+          return;
+        }
+
         setState(() {
           _seconds++;
         });
-      }
-    });
+      },
+    );
   }
 
   void _handleObjectTap(GameObjectChoice item) {
-    if (_isAnswered) return;
-    if (!_running) _startTimer();
+    if (_isAnswered || _finished) {
+      return;
+    }
+
+    if (!_running) {
+      _startTimer();
+    }
+
+    final currentQuestion = _questions[_currentIndex];
 
     setState(() {
       _selectedId = item.id;
     });
 
-    final currentQ = _questions[_currentIndex];
-
     if (item.isOdd) {
-      // Correct answer!
       setState(() {
         _isAnswered = true;
         _score++;
+
         _feedback = GameFeedback(
           type: 'correct',
-          title: 'Correct! 🎉 Well Done',
+          title: 'Correct! Well Done',
           text:
-              "That's right! ${item.emoji} ${item.name} is a ${item.categoryName.toLowerCase()}, while all other items are ${currentQ.commonCategory.toLowerCase()}.",
+              "That's right! ${item.emoji} ${item.name} is a "
+              '${item.categoryName.toLowerCase()}, while all other items '
+              'are ${currentQuestion.commonCategory.toLowerCase()}.',
         );
       });
     } else {
-      // Wrong answer
-      final nextWrong = _wrongAttempts + 1;
-      final nextTotalWrong = _totalWrongAttempts + 1;
+      final nextWrongAttempts = _wrongAttempts + 1;
+      final nextTotalWrongAttempts = _totalWrongAttempts + 1;
 
       setState(() {
-        _wrongAttempts = nextWrong;
-        _totalWrongAttempts = nextTotalWrong;
+        _wrongAttempts = nextWrongAttempts;
+        _totalWrongAttempts = nextTotalWrongAttempts;
 
-        if (nextWrong >= 3) {
+        if (nextWrongAttempts >= 3) {
           _showHint = true;
           _feedback = GameFeedback(
             type: 'hint',
-            title: 'Here is a gentle hint 💡',
+            title: 'Here is a gentle hint',
             text:
-                'Most of these items are ${currentQ.commonCategory.toLowerCase()}. Look for the ${currentQ.oddItem.name} ${currentQ.oddItem.emoji}!',
+                'Most of these items are '
+                '${currentQuestion.commonCategory.toLowerCase()}. '
+                'Look for the ${currentQuestion.oddItem.name} '
+                '${currentQuestion.oddItem.emoji}!',
           );
         } else {
           _feedback = const GameFeedback(
             type: 'wrong',
-            title: 'Try Again 😊',
+            title: 'Try Again',
             text:
-                'Take another look at the items and see which one belongs to a different group.',
+                'Take another look at the items and see which one '
+                'belongs to a different group.',
           );
         }
       });
@@ -173,29 +209,47 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
       });
     } else {
       _timer?.cancel();
+
       setState(() {
         _running = false;
         _finished = true;
       });
-      _showResultsDialog();
+
+      _showResults();
     }
   }
 
   String _formatTime(int totalSeconds) {
-    final m = totalSeconds ~/ 60;
-    final s = totalSeconds % 60;
-    return '$m:${s.toString().padLeft(2, '0')}';
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 
-  void _showResultsDialog() {
-    final totalAttempts = _score + _totalWrongAttempts;
-    final accuracy =
-        totalAttempts > 0 ? ((_score / totalAttempts) * 100).round() : 100;
-    final config = kDifferentObjectLevels[_currentLevel]!;
-    final recommendation = GameStorageService.instance
-        .getAdaptiveRecommendation('different-object', accuracy, _currentLevel);
+  void _showResults() {
+    if (!mounted || _questions.isEmpty) {
+      return;
+    }
 
-    // Save game result to local storage (Step 11 & 14)
+    final totalAttempts = _score + _totalWrongAttempts;
+
+    final accuracy = totalAttempts > 0
+        ? ((_score / totalAttempts) * 100).round()
+        : 100;
+
+    final config = kDifferentObjectLevels[_currentLevel];
+
+    if (config == null) {
+      return;
+    }
+
+    final recommendation = GameStorageService.instance
+        .getAdaptiveRecommendation(
+      'different-object',
+      accuracy,
+      _currentLevel,
+    );
+
     final gameResult = GameResult(
       id: 'do_${DateTime.now().millisecondsSinceEpoch}',
       patientId: CaregiverService.instance.selectedPatientId,
@@ -211,35 +265,51 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
       timestamp: DateTime.now(),
       recommendation: recommendation,
     );
+
     GameStorageService.instance.saveResult(gameResult);
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => GameResultScreen(
-          result: gameResult,
-          onPlayAgain: () {
-            Navigator.of(context).pop();
-            _initLevel(GameStorageService.instance
-                .getRecommendedLevel('different-object'));
-          },
-          onBackToGames: () {
-            if (Navigator.of(context).canPop()) {
+        builder: (_) {
+          return GameResultScreen(
+            result: gameResult,
+            onPlayAgain: () {
               Navigator.of(context).pop();
-            } else {
-              context.go('/games');
-            }
-          },
-        ),
+
+              final recommendedLevel = GameStorageService.instance
+                  .getRecommendedLevel('different-object');
+
+              _initLevel(recommendedLevel);
+            },
+            onBackToGames: () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/games');
+              }
+            },
+          );
+        },
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentQ = _questions.isNotEmpty && _currentIndex < _questions.length
-        ? _questions[_currentIndex]
-        : null;
-    final config = kDifferentObjectLevels[_currentLevel]!;
+    final currentQuestion =
+        _questions.isNotEmpty && _currentIndex < _questions.length
+            ? _questions[_currentIndex]
+            : null;
+
+    final config = kDifferentObjectLevels[_currentLevel];
+
+    if (config == null) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -248,6 +318,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          tooltip: 'All Games',
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -255,198 +326,85 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
               context.go('/games');
             }
           },
-          tooltip: 'All Games',
         ),
         title: Row(
           children: [
-            IconBubble.amber(icon: Icons.auto_awesome_rounded, size: 34),
+            IconBubble.amber(
+              icon: Icons.auto_awesome_rounded,
+              size: 34,
+            ),
             const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.tr('games.findDifferentTitle',
-                      defaultText: 'Find the Different Object'),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Text(
-                  context.tr('games.findDifferentSubtitle',
-                      defaultText: 'Gentle category recognition'),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: AppColors.muted),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.tr(
+                      'games.findDifferentTitle',
+                      defaultText: 'Find the Different Object',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    context.tr(
+                      'games.findDifferentSubtitle',
+                      defaultText: 'Gentle category recognition',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.muted,
+                        ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: AppColors.borderLight, height: 1),
+          child: Container(
+            height: 1,
+            color: AppColors.borderLight,
+          ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 20,
+        ),
         child: Column(
           children: [
-            // ── Controls: Level selector + Restart
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [1, 2, 3].map((lvl) {
-                    final selected = _currentLevel == lvl;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => _initLevel(lvl),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? AppColors.amberDeep
-                                : AppColors.surface,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: selected
-                                  ? AppColors.amberDeep
-                                  : AppColors.border,
-                            ),
-                          ),
-                          child: Text(
-                            kDifferentObjectLevels[lvl]!
-                                .label
-                                .split('—')[0]
-                                .trim(),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color:
-                                  selected ? Colors.white : AppColors.inkSoft,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                IconButton(
-                  onPressed: () => _initLevel(_currentLevel),
-                  icon: const Icon(Icons.refresh_rounded,
-                      color: AppColors.inkSoft),
-                  tooltip: 'Restart',
-                ),
-              ],
-            ),
+            _buildLevelControls(),
             const SizedBox(height: 18),
-
-            // ── Stats Strip
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.borderLight),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _StatItem(
-                    icon: Icons.track_changes_rounded,
-                    color: AppColors.violetDeep,
-                    bgColor: AppColors.violetPale,
-                    label: 'Question',
-                    value: '${_currentIndex + 1} / ${config.questionsCount}',
-                  ),
-                  Container(width: 1, height: 32, color: AppColors.borderLight),
-                  _StatItem(
-                    icon: Icons.check_circle_outline_rounded,
-                    color: AppColors.tealDark,
-                    bgColor: AppColors.tealLight,
-                    label: 'Correct',
-                    value: '$_score',
-                  ),
-                  Container(width: 1, height: 32, color: AppColors.borderLight),
-                  _StatItem(
-                    icon: Icons.timer_outlined,
-                    color: AppColors.amberDeep,
-                    bgColor: AppColors.amberPale,
-                    label: 'Time',
-                    value: _formatTime(_seconds),
-                  ),
-                ],
-              ),
-            ),
+            _buildStatsStrip(config),
             const SizedBox(height: 16),
-
-            // ── Instruction card + Read Aloud
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.softSection,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.borderLight),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.tr('games.findDifferentInstruction',
-                          defaultText:
-                              'Find the object that is different from the others.'),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
-                          ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.volume_up_rounded,
-                        color: AppColors.teal),
-                    tooltip: context.tr('games.readAloud',
-                        defaultText: 'Read Aloud'),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            context.tr('games.findDifferentInstruction',
-                                defaultText:
-                                    'Find the object that is different from the others.'),
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          backgroundColor: AppColors.teal,
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
+            _buildInstructionCard(context),
             const SizedBox(height: 20),
-
-            // ── Objects Grid
-            if (currentQ != null) _buildObjectsGrid(currentQ),
+            if (currentQuestion != null)
+              _buildObjectsGrid(currentQuestion),
             const SizedBox(height: 20),
-
-            // ── Feedback Banner
             if (_feedback != null) _buildFeedbackBanner(_feedback!),
             const SizedBox(height: 18),
-
-            // ── Next Question / Results Button
             if (_isAnswered)
               SmritiButton(
                 label: _currentIndex + 1 < _questions.length
-                    ? context.tr('games.next', defaultText: 'Next Question')
-                    : context.tr('progress.viewDetails',
-                        defaultText: 'View Results'),
+                    ? context.tr(
+                        'games.next',
+                        defaultText: 'Next Question',
+                      )
+                    : context.tr(
+                        'progress.viewDetails',
+                        defaultText: 'View Results',
+                      ),
                 width: double.infinity,
-                icon: const Icon(Icons.arrow_forward_rounded, size: 20),
+                icon: const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 20,
+                ),
                 onPressed: _handleNextQuestion,
               ),
             const SizedBox(height: 16),
@@ -456,39 +414,209 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     );
   }
 
-  Widget _buildObjectsGrid(DifferentObjectQuestion q) {
+  Widget _buildLevelControls() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [1, 2, 3].map((level) {
+              final selected = _currentLevel == level;
+
+              return GestureDetector(
+                onTap: () => _initLevel(level),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.amberDeep
+                        : AppColors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.amberDeep
+                          : AppColors.borderLight,
+                    ),
+                  ),
+                  child: Text(
+                    kDifferentObjectLevels[level]!.label
+                        .split('—')
+                        .first
+                        .trim(),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: selected
+                          ? Colors.white
+                          : AppColors.inkSoft,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        IconButton(
+          onPressed: () => _initLevel(_currentLevel),
+          icon: const Icon(
+            Icons.refresh_rounded,
+            color: AppColors.inkSoft,
+          ),
+          tooltip: 'Restart',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatsStrip(DifferentObjectLevelConfig config) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.borderLight,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _StatItem(
+            icon: Icons.track_changes_rounded,
+            color: AppColors.violetDeep,
+            bgColor: AppColors.violetPale,
+            label: 'Question',
+            value: '${_currentIndex + 1} / ${config.questionsCount}',
+          ),
+          Container(
+            width: 1,
+            height: 32,
+            color: AppColors.borderLight,
+          ),
+          _StatItem(
+            icon: Icons.check_circle_outline_rounded,
+            color: AppColors.tealDark,
+            bgColor: AppColors.tealLight,
+            label: 'Correct',
+            value: '$_score',
+          ),
+          Container(
+            width: 1,
+            height: 32,
+            color: AppColors.borderLight,
+          ),
+          _StatItem(
+            icon: Icons.timer_outlined,
+            color: AppColors.amberDeep,
+            bgColor: AppColors.amberPale,
+            label: 'Time',
+            value: _formatTime(_seconds),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructionCard(BuildContext context) {
+    final instruction = context.tr(
+      'games.findDifferentInstruction',
+      defaultText: 'Find the object that is different from the others.',
+    );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.softSection,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.borderLight,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              instruction,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.volume_up_rounded,
+              color: AppColors.teal,
+            ),
+            tooltip: context.tr(
+              'games.readAloud',
+              defaultText: 'Read Aloud',
+            ),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(instruction),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor: AppColors.teal,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildObjectsGrid(DifferentObjectQuestion question) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Responsive 2 or 3 columns
         final isWide = constraints.maxWidth > 400;
-        final cols = isWide ? 3 : 2;
+        final columns = isWide ? 3 : 2;
         const spacing = 12.0;
-        final itemWidth = (constraints.maxWidth - (cols - 1) * spacing) / cols;
+
+        final itemWidth =
+            (constraints.maxWidth - (columns - 1) * spacing) / columns;
 
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
-          children: q.objects.map((item) {
+          children: question.objects.map((item) {
             final isSelected = _selectedId == item.id;
             final isHintItem = _showHint && item.isOdd;
             final isCorrectRevealed = _isAnswered && item.isOdd;
 
-            Color bgColor = AppColors.surface;
+            Color backgroundColor = AppColors.surface;
             Color borderColor = AppColors.borderLight;
             double borderWidth = 1.5;
 
             if (isCorrectRevealed) {
-              bgColor = const Color(0xFFE8F9F5);
+              backgroundColor = const Color(0xFFE8F9F5);
               borderColor = const Color(0xFF157F7A);
               borderWidth = 2.5;
             } else if (isHintItem) {
-              bgColor = AppColors.amberPale;
+              backgroundColor = AppColors.amberPale;
               borderColor = AppColors.amber;
-              borderWidth = 2.0;
+              borderWidth = 2;
             } else if (isSelected) {
-              bgColor = AppColors.softSection;
+              backgroundColor = AppColors.softSection;
               borderColor = AppColors.coral;
-              borderWidth = 2.0;
+              borderWidth = 2;
             }
 
             return GestureDetector(
@@ -496,12 +624,17 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 width: itemWidth,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
-                  color: bgColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: borderColor, width: borderWidth),
+                  border: Border.all(
+                    color: borderColor,
+                    width: borderWidth,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.03),
@@ -537,26 +670,26 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     );
   }
 
-  Widget _buildFeedbackBanner(GameFeedback fb) {
-    Color bg;
-    Color borderC;
-    Color iconC;
-    IconData icon;
+  Widget _buildFeedbackBanner(GameFeedback feedback) {
+    late Color backgroundColor;
+    late Color borderColor;
+    late Color iconColor;
+    late IconData icon;
 
-    if (fb.type == 'correct') {
-      bg = const Color(0xFFE8F9F5);
-      borderC = const Color(0xFF157F7A);
-      iconC = AppColors.tealDark;
+    if (feedback.type == 'correct') {
+      backgroundColor = const Color(0xFFE8F9F5);
+      borderColor = const Color(0xFF157F7A);
+      iconColor = AppColors.tealDark;
       icon = Icons.check_circle_rounded;
-    } else if (fb.type == 'hint') {
-      bg = AppColors.amberPale;
-      borderC = AppColors.amber;
-      iconC = AppColors.amberDeep;
+    } else if (feedback.type == 'hint') {
+      backgroundColor = AppColors.amberPale;
+      borderColor = AppColors.amber;
+      iconColor = AppColors.amberDeep;
       icon = Icons.lightbulb_rounded;
     } else {
-      bg = AppColors.coralPale;
-      borderC = AppColors.coral;
-      iconC = AppColors.coralDeep;
+      backgroundColor = AppColors.coralPale;
+      borderColor = AppColors.coral;
+      iconColor = AppColors.coralDeep;
       icon = Icons.info_outline_rounded;
     }
 
@@ -564,30 +697,37 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bg,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderC, width: 1.5),
+        border: Border.all(
+          color: borderColor,
+          width: 1.5,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: iconC, size: 24),
+          Icon(
+            icon,
+            color: iconColor,
+            size: 24,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  fb.title,
+                  feedback.title,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: iconC,
+                    color: iconColor,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  fb.text,
+                  feedback.text,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.ink,
                         height: 1.45,
@@ -619,34 +759,53 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: color, size: 18),
-        ),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: const TextStyle(fontSize: 11, color: AppColors.muted)),
-            Text(
-              value,
-              style: GoogleFonts.dmSans(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-                color: AppColors.ink,
-              ),
+    return Flexible(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
-        ),
-      ],
+            child: Icon(
+              icon,
+              color: color,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.muted,
+                  ),
+                ),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.dmSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
+```

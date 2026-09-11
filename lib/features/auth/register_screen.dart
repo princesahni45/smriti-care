@@ -1,3 +1,4 @@
+```dart
 // lib/features/auth/register_screen.dart
 //
 // Registration screen — placeholder UI (no backend yet).
@@ -6,6 +7,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/smriti_button.dart';
 
@@ -18,12 +21,14 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
 
   String _selectedRole = 'patient';
+
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _isLoading = false;
@@ -38,14 +43,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleRegister() {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     setState(() => _isLoading = true);
 
-    // TODO: Integrate with Firebase Auth / FastAPI /api/v1/auth/register
+    // TODO: Integrate with Firebase Auth / FastAPI /api/v1/auth/register.
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
+
       setState(() => _isLoading = false);
-      // Show placeholder success message
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
@@ -53,8 +64,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           backgroundColor: AppColors.teal,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     });
@@ -76,13 +88,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 8,
+          ),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Header
                 Center(
                   child: Column(
                     children: [
@@ -110,37 +124,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.muted,
                             ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 32),
 
-                // ── Role selector (matching React role context)
-                Text('I am a', style: Theme.of(context).textTheme.labelLarge),
+                Text(
+                  'I am a',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
                 const SizedBox(height: 10),
+
                 Row(
                   children: [
                     _RoleChip(
                       label: 'Patient',
                       icon: Icons.psychology_rounded,
                       isSelected: _selectedRole == 'patient',
-                      onTap: () => setState(() => _selectedRole = 'patient'),
+                      onTap: () {
+                        setState(() => _selectedRole = 'patient');
+                      },
                     ),
                     const SizedBox(width: 12),
                     _RoleChip(
                       label: 'Caregiver',
                       icon: Icons.favorite_rounded,
                       isSelected: _selectedRole == 'caregiver',
-                      onTap: () => setState(() => _selectedRole = 'caregiver'),
+                      onTap: () {
+                        setState(() => _selectedRole = 'caregiver');
+                      },
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
 
-                // ── Full name
                 const _FieldLabel('Full name'),
                 const SizedBox(height: 8),
+
                 TextFormField(
                   controller: _nameController,
                   textCapitalization: TextCapitalization.words,
@@ -149,18 +171,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintText: 'Your full name',
                     prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
                       return 'Please enter your name.';
                     }
+
                     return null;
                   },
                 ),
                 const SizedBox(height: 18),
 
-                // ── Email
                 const _FieldLabel('Email address'),
                 const SizedBox(height: 8),
+
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -170,21 +193,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintText: 'you@example.com',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
                       return 'Please enter your email.';
                     }
-                    if (!v.contains('@')) {
+
+                    if (!value.contains('@')) {
                       return 'Please enter a valid email.';
                     }
+
                     return null;
                   },
                 ),
                 const SizedBox(height: 18),
 
-                // ── Password
                 const _FieldLabel('Password'),
                 const SizedBox(height: 8),
+
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -198,22 +223,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                       ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
                   ),
-                  validator: (v) {
-                    if (v == null || v.length < 6) {
+                  validator: (value) {
+                    if (value == null || value.length < 6) {
                       return 'Password must be at least 6 characters.';
                     }
+
                     return null;
                   },
                 ),
                 const SizedBox(height: 18),
 
-                // ── Confirm password
                 const _FieldLabel('Confirm password'),
                 const SizedBox(height: 8),
+
                 TextFormField(
                   controller: _confirmController,
                   obscureText: _obscureConfirm,
@@ -228,37 +257,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                       ),
-                      onPressed: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirm = !_obscureConfirm;
+                        });
+                      },
                     ),
                   ),
-                  validator: (v) {
-                    if (v != _passwordController.text) {
+                  validator: (value) {
+                    if (value != _passwordController.text) {
                       return 'Passwords do not match.';
                     }
+
                     return null;
                   },
                 ),
                 const SizedBox(height: 28),
 
-                // ── Register button
                 SmritiButton(
                   label: 'Create Account',
                   onPressed: _handleRegister,
                   isLoading: _isLoading,
                   width: double.infinity,
-                  icon:
-                      const Icon(Icons.check_circle_outline_rounded, size: 18),
+                  icon: const Icon(
+                    Icons.check_circle_outline_rounded,
+                    size: 18,
+                  ),
                 ),
                 const SizedBox(height: 20),
 
-                // ── Sign in link
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account? ',
-                          style: Theme.of(context).textTheme.bodyMedium),
+                      Text(
+                        'Already have an account? ',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                       GestureDetector(
                         onTap: () => context.go('/role-select'),
                         child: Text(
@@ -276,20 +311,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-                // ── Backend notice
                 const SizedBox(height: 24),
+
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.amberPale,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: AppColors.amber.withValues(alpha: 0.3)),
+                      color: AppColors.amber.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline_rounded,
-                          size: 18, color: AppColors.amberDeep),
+                      const Icon(
+                        Icons.info_outline_rounded,
+                        size: 18,
+                        color: AppColors.amberDeep,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -316,11 +355,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 class _FieldLabel extends StatelessWidget {
   final String text;
+
   const _FieldLabel(this.text);
 
   @override
-  Widget build(BuildContext context) =>
-      Text(text, style: Theme.of(context).textTheme.labelLarge);
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.labelLarge,
+    );
+  }
 }
 
 class _RoleChip extends StatelessWidget {
@@ -342,7 +386,10 @@ class _RoleChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 12,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.tealLight : AppColors.surface,
           borderRadius: BorderRadius.circular(12),
@@ -354,15 +401,20 @@ class _RoleChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon,
-                size: 18, color: isSelected ? AppColors.teal : AppColors.muted),
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? AppColors.teal : AppColors.muted,
+            ),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? AppColors.tealDark : AppColors.inkSoft,
+                color: isSelected
+                    ? AppColors.tealDark
+                    : AppColors.inkSoft,
               ),
             ),
           ],
@@ -371,3 +423,13 @@ class _RoleChip extends StatelessWidget {
     );
   }
 }
+```
+
+After replacing the file, run:
+
+```powershell
+dart format lib/features/auth/register_screen.dart
+flutter analyze
+```
+
+The unused `app_constants.dart` import was removed because this screen does not currently use `AppConstants`.

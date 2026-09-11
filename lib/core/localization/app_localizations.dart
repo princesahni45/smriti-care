@@ -41,6 +41,19 @@ class AppLocalizations {
 
   AppLocalizations(this.locale);
 
+  /// Test and offline constructor allowing manual map injection.
+  AppLocalizations.fromMap(
+    this.locale,
+    this._localizedStrings, [
+    this._fallbackStrings = const {},
+  ]) {
+    LocalizationService.instance.updateCurrentLocalizations(this);
+  }
+
+  /// Global synchronous reference to current active localizations
+  static AppLocalizations? get current =>
+      LocalizationService.instance.currentLocalizations;
+
   static const List<SupportedLanguage> supportedLanguages = [
     SupportedLanguage(
       code: 'en',
@@ -156,6 +169,7 @@ class AppLocalizations {
       }
     }
 
+    LocalizationService.instance.updateCurrentLocalizations(this);
     return true;
   }
 
@@ -266,6 +280,26 @@ class LocalizationService {
       ValueNotifier<Locale>(const Locale('en'));
 
   Locale get currentLocale => currentLocaleNotifier.value;
+  String get currentLanguageCode => currentLocale.languageCode;
+
+  AppLocalizations? _currentLocalizations;
+  AppLocalizations? get currentLocalizations => _currentLocalizations;
+
+  void updateCurrentLocalizations(AppLocalizations loc) {
+    _currentLocalizations = loc;
+  }
+
+  /// Synchronously translate a key with fallback to English and defaultText
+  String translate(String key, {String? defaultText}) {
+    if (_currentLocalizations != null) {
+      return _currentLocalizations!.translate(key, defaultText: defaultText);
+    }
+    return defaultText ?? key;
+  }
+
+  /// Convenience alias for translate
+  String tr(String key, {String? defaultText}) =>
+      translate(key, defaultText: defaultText);
 
   /// Load persisted language choice on app launch
   Future<void> init() async {
@@ -284,18 +318,45 @@ class LocalizationService {
     }
   }
 
-  /// Switch active language and persist choice across restarts
-  Future<void> setLocale(String languageCode) async {
+  /// Switch active language.
+  ///
+  /// The locale notifier is updated synchronously.
+  /// File persistence is skipped in test environments to prevent platform
+  /// channel calls from blocking [pumpAndSettle].
+  void setLocale(String languageCode) {
     if (AppLocalizations.supportedLocales
         .any((l) => l.languageCode == languageCode)) {
       currentLocaleNotifier.value = Locale(languageCode);
-      try {
-        final dir = await getApplicationDocumentsDirectory();
-        final file = File('${dir.path}/$_storageFileName');
-        await file.writeAsString(languageCode);
-      } catch (e) {
-        debugPrint('[LocalizationService] Failed to save locale: $e');
-      }
+      _persistLocale(languageCode);
+    }
+  }
+
+  Future<void> _persistLocale(String languageCode) async {
+    // Skip persistence during tests — platform channels are unavailable
+    // in headless runners and any pending Future blocks pumpAndSettle.
+    if (_isTestEnvironment) return;
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_storageFileName');
+      await file.writeAsString(languageCode);
+    } catch (e) {
+      debugPrint('[LocalizationService] Failed to save locale: $e');
+    }
+  }
+
+  /// True when running inside a Flutter test binding.
+  static bool get _isTestEnvironment {
+    // WidgetsBinding may not be initialised in pure-Dart unit tests;
+    // treat that as a safe non-test environment (persistence runs normally).
+    try {
+      // In widget tests, WidgetsBinding.instance is TestWidgetsFlutterBinding.
+      // In production, it is WidgetsFlutterBinding.
+      // We detect this by checking the runtimeType name to avoid a hard
+      // dependency on flutter_test in production code.
+      final binding = WidgetsBinding.instance;
+      return binding.runtimeType.toString().contains('Test');
+    } catch (_) {
+      return false;
     }
   }
 }
@@ -303,7 +364,8 @@ class LocalizationService {
 /// Extension helper on BuildContext
 extension LocalizationX on BuildContext {
   String tr(String key, {String? defaultText}) {
-    final loc = AppLocalizations.of(this);
+    final loc = AppLocalizations.of(this) ??
+        LocalizationService.instance.currentLocalizations;
     if (loc == null) return defaultText ?? key;
     return loc.translate(key, defaultText: defaultText);
   }

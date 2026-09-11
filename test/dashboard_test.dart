@@ -15,7 +15,8 @@ import 'package:smriti_care/widgets/quick_action_card.dart';
 import 'package:smriti_care/features/patient/widgets/daily_steps_card.dart';
 
 void main() {
-  testWidgets('SmritiCare Mobile Dashboard smoke test', (WidgetTester tester) async {
+  testWidgets('SmritiCare Mobile Dashboard smoke test',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmritiCareApp());
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
@@ -38,14 +39,33 @@ void main() {
 
     // Verify bottom navigation bar destinations
     expect(find.byType(BottomNavigationBar), findsOneWidget);
-    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Home')), findsOneWidget);
-    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Games')), findsOneWidget);
-    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Reminders')), findsOneWidget);
-    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Progress')), findsOneWidget);
-    expect(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Profile')), findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(BottomNavigationBar), matching: find.text('Home')),
+        findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(BottomNavigationBar), matching: find.text('Games')),
+        findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(BottomNavigationBar),
+            matching: find.text('Reminders')),
+        findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(BottomNavigationBar),
+            matching: find.text('Progress')),
+        findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(BottomNavigationBar),
+            matching: find.text('Profile')),
+        findsOneWidget);
   });
 
-  testWidgets('Dashboard navigation to games and placeholders', (WidgetTester tester) async {
+  testWidgets('Dashboard navigation to games and placeholders',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmritiCareApp());
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();

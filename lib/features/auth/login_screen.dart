@@ -1,27 +1,35 @@
+```dart
 // lib/features/auth/login_screen.dart
 //
-// Accessible Login Screen with dedicated Patient Code Login & Caregiver Login.
-// For Patients:
-// - Zero password / email entry.
-// - Prominent "Ask your caregiver for your code." prompt.
-// - Large, auto-formatting code input: SMR-____-__
-// - Single large Continue action.
+// Accessible Login Screen with dedicated Patient Code Login and Caregiver Login.
+//
+// Patients:
+// - Patient code login.
+// - Large code input.
 // - Elderly-friendly error handling.
-// For Caregivers:
-// - Standard email & password authentication with test credentials.
+//
+// Caregivers:
+// - Email and password authentication.
+// - Demo credentials.
+// - Caregiver dashboard navigation.
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_theme.dart';
+
 import '../../core/constants/app_constants.dart';
 import '../../core/models/user_model.dart';
-import '../../core/services/patient_code_service.dart';
 import '../../core/services/caregiver_service.dart';
+import '../../core/services/patient_code_service.dart';
+import '../../core/theme/app_theme.dart';
 import 'widgets/patient_code_formatter.dart';
 
 class LoginScreen extends StatefulWidget {
-  final String role; // 'patient' or 'caregiver'
-  const LoginScreen({super.key, required this.role});
+  final String role;
+
+  const LoginScreen({
+    super.key,
+    required this.role,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -29,18 +37,22 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _codeController = TextEditingController();
 
   late bool _isPatient;
+
   bool _obscurePassword = true;
   bool _isLoading = false;
+
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
+
     _isPatient = widget.role.toLowerCase() == 'patient';
   }
 
@@ -49,17 +61,22 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _codeController.dispose();
+
     super.dispose();
   }
 
-  // ── Patient Code Verification & Login ─────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Patient Code Login
+  // ---------------------------------------------------------------------------
 
   Future<void> _handlePatientCodeLogin() async {
     final rawCode = _codeController.text.trim();
+
     if (rawCode.isEmpty) {
       setState(() {
         _errorMessage = 'Please enter your SmritiCare code.';
       });
+
       return;
     }
 
@@ -68,74 +85,131 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
 
-    final result = await PatientCodeService.instance.verifyPatientCode(rawCode);
+    try {
+      final result =
+          await PatientCodeService.instance.verifyPatientCode(rawCode);
 
-    if (!mounted) return;
-
-    if (result.isSuccess) {
-      // Set active role and select verified patient
-      UserSessionService.instance.setActiveRole(UserRole.patient);
-      if (result.patientId != null) {
-        await CaregiverService.instance.selectPatient(result.patientId!);
+      if (!mounted) {
+        return;
       }
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      context.go('/dashboard');
-    } else {
+
+      if (result.isSuccess) {
+        UserSessionService.instance.setActiveRole(
+          UserRole.patient,
+        );
+
+        if (result.patientId != null &&
+            result.patientId!.trim().isNotEmpty) {
+          await CaregiverService.instance.selectPatient(
+            result.patientId!,
+          );
+        }
+
+        if (!mounted) {
+          return;
+        }
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        context.go('/dashboard');
+      } else {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = result.errorMessage ??
+              'That code is not correct. Please ask your caregiver to check it.';
+        });
+      }
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
       setState(() {
         _isLoading = false;
-        _errorMessage = result.errorMessage ??
-            'That code is not correct. Please ask your caregiver to check it.';
+        _errorMessage =
+            'Unable to verify the code. Please try again.';
       });
     }
   }
 
-  // ── Caregiver & Doctor Email & Password Login ─────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Caregiver and Doctor Login
+  // ---------------------------------------------------------------------------
 
   Future<void> _handleCaregiverLogin() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (!mounted) return;
+    await Future.delayed(
+      const Duration(milliseconds: 300),
+    );
 
-    if (widget.role.toLowerCase() == 'doctor') {
+    if (!mounted) {
+      return;
+    }
+
+    final role = widget.role.toLowerCase();
+
+    if (role == 'doctor') {
       final result = AuthService.authenticateDoctor(
-        _emailController.text,
+        _emailController.text.trim(),
         _passwordController.text,
       );
+
       if (result.success) {
-        UserSessionService.instance.setActiveRole(UserRole.doctor);
-        setState(() => _isLoading = false);
+        UserSessionService.instance.setActiveRole(
+          UserRole.doctor,
+        );
+
+        setState(() {
+          _isLoading = false;
+        });
+
         context.go('/doctor');
       } else {
         setState(() {
-          _errorMessage = result.error;
           _isLoading = false;
+          _errorMessage = result.error;
         });
       }
+
       return;
     }
 
     final result = AuthService.authenticateCaregiver(
-      _emailController.text,
+      _emailController.text.trim(),
       _passwordController.text,
     );
 
     if (result.success) {
-      UserSessionService.instance.setActiveRole(UserRole.caregiver);
-      setState(() => _isLoading = false);
+      UserSessionService.instance.setActiveRole(
+        UserRole.caregiver,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
       context.go('/caregiver-dashboard');
     } else {
       setState(() {
-        _errorMessage = result.error;
         _isLoading = false;
+        _errorMessage = result.error;
       });
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -145,35 +219,49 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24, color: AppColors.ink),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 24,
+            color: AppColors.ink,
+          ),
           onPressed: () => context.go('/role-select'),
           tooltip: 'Back to role selection',
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: _isPatient ? _buildPatientCodeView() : _buildCaregiverView(),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 8,
+          ),
+          child: _isPatient
+              ? _buildPatientCodeView()
+              : _buildCaregiverView(),
         ),
       ),
     );
   }
 
-  // ── Accessible Patient Code View (Feature 1 & Feature 2) ───────────────────
+  // ---------------------------------------------------------------------------
+  // Patient Login View
+  // ---------------------------------------------------------------------------
 
   Widget _buildPatientCodeView() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 12),
-        // Friendly brand illustration / icon
+
         Container(
           width: 88,
           height: 88,
           decoration: BoxDecoration(
             color: AppColors.tealPale,
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: AppColors.teal.withValues(alpha: 0.3), width: 2),
+            border: Border.all(
+              color: AppColors.teal.withValues(alpha: 0.3),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.teal.withValues(alpha: 0.12),
@@ -188,41 +276,43 @@ class _LoginScreenState extends State<LoginScreen> {
             size: 46,
           ),
         ),
+
         const SizedBox(height: 20),
 
-        // Screen title
         const Text(
           'Patient Login',
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w900,
             color: AppColors.ink,
             letterSpacing: -0.5,
           ),
-          textAlign: TextAlign.center,
         ),
+
         const SizedBox(height: 8),
 
-        // Elderly-friendly instruction
         const Text(
           'Ask your caregiver\nfor your SmritiCare code.',
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: AppColors.muted,
             height: 1.35,
           ),
-          textAlign: TextAlign.center,
         ),
+
         const SizedBox(height: 36),
 
-        // Extra-large, high-contrast code input
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: _errorMessage != null ? AppColors.error : AppColors.teal,
+              color: _errorMessage != null
+                  ? AppColors.error
+                  : AppColors.teal,
               width: 2.2,
             ),
             boxShadow: [
@@ -233,11 +323,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 6,
+          ),
           child: TextField(
             controller: _codeController,
             textCapitalization: TextCapitalization.characters,
             textAlign: TextAlign.center,
+            textInputAction: TextInputAction.done,
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w900,
@@ -259,26 +353,37 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
             onChanged: (_) {
               if (_errorMessage != null) {
-                setState(() => _errorMessage = null);
+                setState(() {
+                  _errorMessage = null;
+                });
               }
             },
             onSubmitted: (_) => _handlePatientCodeLogin(),
           ),
         ),
 
-        // Error message (elderly-friendly)
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
+
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             decoration: BoxDecoration(
               color: AppColors.errorLight,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppColors.error.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline_rounded, color: AppColors.error, size: 22),
+                const Icon(
+                  Icons.info_outline_rounded,
+                  color: AppColors.error,
+                  size: 22,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -298,12 +403,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 28),
 
-        // Large Continue Button (58px tall)
         SizedBox(
           width: double.infinity,
           height: 58,
           child: ElevatedButton(
-            onPressed: _isLoading ? null : _handlePatientCodeLogin,
+            onPressed:
+                _isLoading ? null : _handlePatientCodeLogin,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
@@ -316,7 +421,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ? const SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.5,
+                    ),
                   )
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -330,7 +438,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(width: 10),
-                      Icon(Icons.arrow_forward_rounded, size: 22),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 22,
+                      ),
                     ],
                   ),
           ),
@@ -338,30 +449,45 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 28),
 
-        // Sample code auto-fill helper (great for evaluation/testing)
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 10,
+          ),
           decoration: BoxDecoration(
             color: AppColors.softSection,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderLight),
+            border: Border.all(
+              color: AppColors.borderLight,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 'Demo Code: ',
-                style: TextStyle(fontSize: 13, color: AppColors.muted, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.muted,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Text(
                 'SMR-4827-KP',
-                style: TextStyle(fontSize: 13, color: AppColors.ink, fontWeight: FontWeight.w800),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.ink,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(width: 12),
               GestureDetector(
                 onTap: () {
                   _codeController.text = 'SMR-4827-KP';
-                  setState(() => _errorMessage = null);
+
+                  setState(() {
+                    _errorMessage = null;
+                  });
                 },
                 child: const Text(
                   'Tap to fill',
@@ -379,14 +505,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
         const SizedBox(height: 32),
 
-        // Role switcher
         TextButton(
-          onPressed: () => setState(() {
-            _isPatient = false;
-            _errorMessage = null;
-          }),
+          onPressed: () {
+            setState(() {
+              _isPatient = false;
+              _errorMessage = null;
+            });
+          },
           child: const Text(
-            'Caregiver? Sign in with email →',
+            'Caregiver? Sign in with email',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -398,7 +525,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ── Caregiver View (Email & Password) ──────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Caregiver Login View
+  // ---------------------------------------------------------------------------
 
   Widget _buildCaregiverView() {
     return Form(
@@ -422,25 +551,46 @@ class _LoginScreenState extends State<LoginScreen> {
                     size: 32,
                   ),
                 ),
+
                 const SizedBox(height: 16),
+
                 const Text(
                   'Caregiver Login',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                  ),
                 ),
+
                 const SizedBox(height: 6),
+
                 const Text(
                   'Sign in to monitor your patient\'s care overview.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.muted, fontSize: 13),
+                  style: TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
           ),
+
           const SizedBox(height: 28),
 
-          // Email field
-          const Text('Email address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.inkSoft)),
+          const Text(
+            'Email address',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.inkSoft,
+            ),
+          ),
+
           const SizedBox(height: 6),
+
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
@@ -448,19 +598,37 @@ class _LoginScreenState extends State<LoginScreen> {
             autocorrect: false,
             decoration: const InputDecoration(
               hintText: 'you@example.com',
-              prefixIcon: Icon(Icons.email_outlined),
+              prefixIcon: Icon(
+                Icons.email_outlined,
+              ),
             ),
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Please enter your email.';
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your email.';
+              }
+
               return null;
             },
-            onChanged: (_) => setState(() => _errorMessage = null),
+            onChanged: (_) {
+              setState(() {
+                _errorMessage = null;
+              });
+            },
           ),
+
           const SizedBox(height: 18),
 
-          // Password field
-          const Text('Password', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.inkSoft)),
+          const Text(
+            'Password',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.inkSoft,
+            ),
+          ),
+
           const SizedBox(height: 6),
+
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
@@ -468,37 +636,70 @@ class _LoginScreenState extends State<LoginScreen> {
             onFieldSubmitted: (_) => _handleCaregiverLogin(),
             decoration: InputDecoration(
               hintText: 'Enter password',
-              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              prefixIcon: const Icon(
+                Icons.lock_outline_rounded,
+              ),
               suffixIcon: IconButton(
-                icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                icon: Icon(
+                  _obscurePassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+                tooltip: _obscurePassword
+                    ? 'Show password'
+                    : 'Hide password',
               ),
             ),
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Please enter your password.';
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your password.';
+              }
+
               return null;
             },
-            onChanged: (_) => setState(() => _errorMessage = null),
+            onChanged: (_) {
+              setState(() {
+                _errorMessage = null;
+              });
+            },
           ),
 
-          // Error message
           if (_errorMessage != null) ...[
             const SizedBox(height: 14),
+
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.errorLight,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.error.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 18),
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    color: AppColors.error,
+                    size: 18,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       _errorMessage!,
-                      style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.w600, fontSize: 13),
+                      style: const TextStyle(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
@@ -508,54 +709,97 @@ class _LoginScreenState extends State<LoginScreen> {
 
           const SizedBox(height: 24),
 
-          // Sign In button
           SizedBox(
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: _isLoading ? null : _handleCaregiverLogin,
+              onPressed:
+                  _isLoading ? null : _handleCaregiverLogin,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.blueDeep,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: _isLoading
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Sign In to Care Portal', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Sign In to Care Portal',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
             ),
           ),
 
           const SizedBox(height: 20),
 
-          // Demo credentials hint
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: AppColors.softSection,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.borderLight),
+              border: Border.all(
+                color: AppColors.borderLight,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Sample credentials',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.inkSoft),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: AppColors.inkSoft,
+                  ),
                 ),
+
                 const SizedBox(height: 6),
-                const _CredRow(label: 'Email', value: AppConstants.caregiverEmail),
+
+                const _CredRow(
+                  label: 'Email',
+                  value: AppConstants.caregiverEmail,
+                ),
+
                 const SizedBox(height: 3),
-                const _CredRow(label: 'Password', value: AppConstants.caregiverPassword),
+
+                const _CredRow(
+                  label: 'Password',
+                  value: AppConstants.caregiverPassword,
+                ),
+
                 const SizedBox(height: 8),
+
                 GestureDetector(
                   onTap: () {
-                    _emailController.text = AppConstants.caregiverEmail;
-                    _passwordController.text = AppConstants.caregiverPassword;
-                    setState(() => _errorMessage = null);
+                    _emailController.text =
+                        AppConstants.caregiverEmail;
+
+                    _passwordController.text =
+                        AppConstants.caregiverPassword;
+
+                    setState(() {
+                      _errorMessage = null;
+                    });
                   },
                   child: const Text(
                     'Tap to auto-fill',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.teal),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.teal,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],
@@ -564,16 +808,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
           const SizedBox(height: 24),
 
-          // Switch back to patient code login
           Center(
             child: TextButton(
-              onPressed: () => setState(() {
-                _isPatient = true;
-                _errorMessage = null;
-              }),
+              onPressed: () {
+                setState(() {
+                  _isPatient = true;
+                  _errorMessage = null;
+                });
+              },
               child: const Text(
-                '← Patient? Enter patient code',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.teal),
+                'Patient? Enter patient code',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.teal,
+                ),
               ),
             ),
           ),
@@ -583,10 +832,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Demo Credentials Row
+// -----------------------------------------------------------------------------
+
 class _CredRow extends StatelessWidget {
   final String label;
   final String value;
-  const _CredRow({required this.label, required this.value});
+
+  const _CredRow({
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -596,14 +853,25 @@ class _CredRow extends StatelessWidget {
           width: 64,
           child: Text(
             '$label:',
-            style: const TextStyle(fontSize: 11, color: AppColors.muted),
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.muted,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+        Expanded(
+          child: Text(
+            value,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.inkSoft,
+            ),
+          ),
         ),
       ],
     );
   }
 }
+```
