@@ -28,7 +28,7 @@ class GameStorageService {
         final content = await file.readAsString();
         if (content.isNotEmpty) {
           final decoded = jsonDecode(content) as Map<String, dynamic>;
-          
+
           if (decoded['history'] is List) {
             _history.clear();
             for (final item in decoded['history'] as List) {
@@ -119,7 +119,7 @@ class GameStorageService {
   /// Current active streak in days
   int getCurrentStreakDays() {
     if (_history.isEmpty) return 0;
-    
+
     final uniqueDays = <String>{};
     for (final r in _history) {
       final key = '${r.timestamp.year}-${r.timestamp.month}-${r.timestamp.day}';
@@ -137,7 +137,9 @@ class GameStorageService {
         checkDate = checkDate.subtract(const Duration(days: 1));
       } else {
         // Allow streak to count if today has not been played yet but yesterday was
-        if (streak == 0 && checkDate.isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
+        if (streak == 0 &&
+            checkDate
+                .isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
           checkDate = checkDate.subtract(const Duration(days: 1));
           continue;
         }
@@ -178,7 +180,8 @@ class GameStorageService {
   }
 
   /// Gentle, non-clinical encouragement string based on score
-  String getAdaptiveRecommendation(String gameId, int accuracy, int currentLevel) {
+  String getAdaptiveRecommendation(
+      String gameId, int accuracy, int currentLevel) {
     final nextLevel = calculateNextLevel(accuracy, currentLevel);
     if (accuracy >= 80) {
       if (nextLevel > currentLevel) {
@@ -200,6 +203,13 @@ class GameStorageService {
     if (lower.contains('3') || lower.contains('hard')) return 3;
     if (lower.contains('2') || lower.contains('medium')) return 2;
     return 1;
+  }
+
+  /// Manually update adaptive difficulty level for a game (1 to 3).
+  Future<void> setAdaptiveLevel(String gameId, int level) async {
+    await init();
+    _adaptiveLevels[gameId] = level.clamp(1, 3);
+    await _persist();
   }
 
   /// Clear history (useful for reset or testing)

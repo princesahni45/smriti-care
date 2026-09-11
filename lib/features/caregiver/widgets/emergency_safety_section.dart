@@ -26,7 +26,8 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
       children: [
         const Text(
           'Emergency & Safety Settings',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 6),
         const Text(
@@ -53,18 +54,25 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: AppColors.tealPale, borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(Icons.phone_in_talk_rounded, color: AppColors.teal, size: 20),
+                        decoration: BoxDecoration(
+                            color: AppColors.tealPale,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Icon(Icons.phone_in_talk_rounded,
+                            color: AppColors.teal, size: 20),
                       ),
                       const SizedBox(width: 10),
                       const Text(
                         'Primary Caregiver Contact',
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.ink),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: AppColors.ink),
                       ),
                     ],
                   ),
                   IconButton(
-                    icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.teal),
+                    icon: const Icon(Icons.edit_outlined,
+                        size: 20, color: AppColors.teal),
                     onPressed: () => _openEditContactDialog(context, contact),
                     tooltip: 'Edit Contact',
                   ),
@@ -77,23 +85,31 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('${em.primaryName} (${em.primaryRelationship})',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.phone_rounded, size: 14, color: AppColors.teal),
+                          const Icon(Icons.phone_rounded,
+                              size: 14, color: AppColors.teal),
                           const SizedBox(width: 6),
                           Text('Primary: ${em.primaryNumber}',
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.inkSoft)),
+                              style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.inkSoft)),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.phone_forwarded_rounded, size: 14, color: AppColors.violet),
+                          const Icon(Icons.phone_forwarded_rounded,
+                              size: 14, color: AppColors.violet),
                           const SizedBox(width: 6),
-                          Text('Secondary: ${em.secondaryNumber} (${em.secondaryName})',
-                              style: const TextStyle(fontSize: 13, color: AppColors.muted)),
+                          Text(
+                              'Secondary: ${em.secondaryNumber} (${em.secondaryName})',
+                              style: const TextStyle(
+                                  fontSize: 13, color: AppColors.muted)),
                         ],
                       ),
                     ],
@@ -123,25 +139,34 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: AppColors.amberPale, borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(Icons.home_work_rounded, color: AppColors.amberDeep, size: 20),
+                        decoration: BoxDecoration(
+                            color: AppColors.amberPale,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Icon(Icons.home_work_rounded,
+                            color: AppColors.amberDeep, size: 20),
                       ),
                       const SizedBox(width: 10),
                       const Text(
                         'Safe Home Location',
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.ink),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: AppColors.ink),
                       ),
                     ],
                   ),
                   IconButton(
-                    icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.amberDeep),
+                    icon: const Icon(Icons.edit_outlined,
+                        size: 20, color: AppColors.amberDeep),
                     onPressed: () => _openEditHomeDialog(context, home),
                     tooltip: 'Edit Location',
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              Text(home.address, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+              Text(home.address,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700)),
               const SizedBox(height: 4),
               Text('Coordinates: ${home.latitude}° N, ${home.longitude}° E',
                   style: const TextStyle(fontSize: 12, color: AppColors.muted)),
@@ -156,14 +181,18 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
           decoration: BoxDecoration(
             color: AppColors.coralPale,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.coral.withValues(alpha: 0.35), width: 1.5),
+            border: Border.all(
+                color: AppColors.coral.withValues(alpha: 0.35), width: 1.5),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: AppColors.coral, borderRadius: BorderRadius.circular(12)),
-                child: const Icon(Icons.emergency_rounded, color: Colors.white, size: 24),
+                decoration: BoxDecoration(
+                    color: AppColors.coral,
+                    borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.emergency_rounded,
+                    color: Colors.white, size: 24),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -172,11 +201,15 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
                   children: [
                     Text(
                       'Emergency Hotline: ${config.emergencyNumber}',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.coralDeep),
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.coralDeep),
                     ),
                     Text(
                       '${config.label} (${config.country})',
-                      style: const TextStyle(fontSize: 12, color: AppColors.coralDeep),
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.coralDeep),
                     ),
                   ],
                 ),
@@ -206,14 +239,21 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(context.tr('caregiver.editHomeLocation', defaultText: 'Edit Safe Home Location')),
+        title: Text(context.tr('caregiver.editHomeLocation',
+            defaultText: 'Edit Safe Home Location')),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: addrCtrl, decoration: const InputDecoration(labelText: 'Home Address')),
-              TextField(controller: latCtrl, decoration: const InputDecoration(labelText: 'Latitude')),
-              TextField(controller: lngCtrl, decoration: const InputDecoration(labelText: 'Longitude')),
+              TextField(
+                  controller: addrCtrl,
+                  decoration: const InputDecoration(labelText: 'Home Address')),
+              TextField(
+                  controller: latCtrl,
+                  decoration: const InputDecoration(labelText: 'Latitude')),
+              TextField(
+                  controller: lngCtrl,
+                  decoration: const InputDecoration(labelText: 'Longitude')),
             ],
           ),
         ),
@@ -223,7 +263,8 @@ class _EmergencySafetySectionState extends State<EmergencySafetySection> {
             child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.amberDeep),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: AppColors.amberDeep),
             onPressed: () async {
               final updated = HomeLocation(
                 address: addrCtrl.text.trim(),

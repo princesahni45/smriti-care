@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../shared/widgets/app_logo.dart';
 
-
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
 
@@ -28,7 +27,8 @@ class RoleSelectionScreen extends StatelessWidget {
               const SizedBox(height: 16),
               // ── Eyebrow
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.tealLight,
                   borderRadius: BorderRadius.circular(20),
@@ -37,7 +37,8 @@ class RoleSelectionScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 8, height: 8,
+                      width: 8,
+                      height: 8,
                       decoration: const BoxDecoration(
                         color: Color(0xFF4BBCB0),
                         shape: BoxShape.circle,
@@ -47,9 +48,9 @@ class RoleSelectionScreen extends StatelessWidget {
                     Text(
                       'MADE WITH CARE FOR NORTH EAST INDIA',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.tealDark,
-                        letterSpacing: 0.09,
-                      ),
+                            color: AppColors.tealDark,
+                            letterSpacing: 0.09,
+                          ),
                     ),
                   ],
                 ),
@@ -65,8 +66,8 @@ class RoleSelectionScreen extends StatelessWidget {
               Text(
                 'Choose how you would like to continue.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.muted,
-                ),
+                      color: AppColors.muted,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
@@ -110,11 +111,11 @@ class RoleSelectionScreen extends StatelessWidget {
                     child: Text(
                       'Create account',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.teal,
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.teal,
-                      ),
+                            color: AppColors.teal,
+                            fontWeight: FontWeight.w700,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.teal,
+                          ),
                     ),
                   ),
                 ],
@@ -124,11 +125,13 @@ class RoleSelectionScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.shield_rounded, size: 16, color: AppColors.teal),
+                  const Icon(Icons.shield_rounded,
+                      size: 16, color: AppColors.teal),
                   const SizedBox(width: 6),
                   Text('Safe & accessible', style: _trustStyle(context)),
                   const SizedBox(width: 20),
-                  const Icon(Icons.handshake_rounded, size: 16, color: AppColors.teal),
+                  const Icon(Icons.handshake_rounded,
+                      size: 16, color: AppColors.teal),
                   const SizedBox(width: 6),
                   Text('Built for care', style: _trustStyle(context)),
                 ],
@@ -143,9 +146,9 @@ class RoleSelectionScreen extends StatelessWidget {
 
   TextStyle? _trustStyle(BuildContext context) =>
       Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: AppColors.inkSoft,
-        fontWeight: FontWeight.w600,
-      );
+            color: AppColors.inkSoft,
+            fontWeight: FontWeight.w600,
+          );
 }
 
 class _RoleCard extends StatelessWidget {
@@ -214,7 +217,8 @@ class _RoleCard extends StatelessWidget {
                         const SizedBox(width: 10),
                         // Badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: badgeBg,
                             borderRadius: BorderRadius.circular(6),
@@ -235,15 +239,16 @@ class _RoleCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.muted,
-                      ),
+                            color: AppColors.muted,
+                          ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
               // Arrow
-              Icon(Icons.arrow_forward_ios_rounded, size: 16, color: accentColor),
+              Icon(Icons.arrow_forward_ios_rounded,
+                  size: 16, color: accentColor),
             ],
           ),
         ),

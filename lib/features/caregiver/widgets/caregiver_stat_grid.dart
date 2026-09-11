@@ -102,14 +102,20 @@ class CaregiverStatGrid extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(fontSize: 12, color: AppColors.muted, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.muted,
+                      fontWeight: FontWeight.w600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 3),
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

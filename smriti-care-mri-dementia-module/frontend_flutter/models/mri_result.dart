@@ -40,14 +40,16 @@ class MriResult {
     });
 
     // Parse display probabilities if available
-    final rawDisplay = json['display_probabilities'] as Map<String, dynamic>? ?? {};
+    final rawDisplay =
+        json['display_probabilities'] as Map<String, dynamic>? ?? {};
     final displayProbs = <String, double>{};
     rawDisplay.forEach((key, value) {
       displayProbs[key] = (value as num).toDouble();
     });
 
     return MriResult(
-      labelHeader: json['label_header'] as String? ?? 'AI-Assisted Dementia Severity Estimation',
+      labelHeader: json['label_header'] as String? ??
+          'AI-Assisted Dementia Severity Estimation',
       prediction: json['prediction'] as String? ?? 'Unknown',
       classId: json['class_id'] as int? ?? 0,
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,

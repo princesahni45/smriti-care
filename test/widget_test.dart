@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:smriti_care/app.dart';
 
 void main() {
-  testWidgets('App smoke test — SmritiCare launches', (WidgetTester tester) async {
+  testWidgets('App smoke test — SmritiCare launches',
+      (WidgetTester tester) async {
     // Build app and trigger a frame
     await tester.pumpWidget(const SmritiCareApp());
     // App should load without crashing

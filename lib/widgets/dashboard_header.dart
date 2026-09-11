@@ -38,11 +38,27 @@ class DashboardHeader extends StatelessWidget {
   String _formattedDate(BuildContext context) {
     final now = DateTime.now();
     const weekdayKeys = [
-      'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday'
     ];
     const monthKeys = [
-      'january', 'february', 'march', 'april', 'may', 'june',
-      'july', 'august', 'september', 'october', 'november', 'december'
+      'january',
+      'february',
+      'march',
+      'april',
+      'may',
+      'june',
+      'july',
+      'august',
+      'september',
+      'october',
+      'november',
+      'december'
     ];
     final weekdayName = context.tr('dates.${weekdayKeys[now.weekday - 1]}');
     final monthName = context.tr('dates.${monthKeys[now.month - 1]}');
@@ -120,7 +136,8 @@ class DashboardHeader extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            context.tr('landing.footerTagline', defaultText: 'Cognitive Companion'),
+                            context.tr('landing.footerTagline',
+                                defaultText: 'Cognitive Companion'),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -150,7 +167,8 @@ class DashboardHeader extends StatelessWidget {
                     onTap: () => context.push('/language-select'),
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 9, vertical: 5),
                       decoration: BoxDecoration(
                         color: AppColors.softSection,
                         borderRadius: BorderRadius.circular(16),
@@ -159,11 +177,12 @@ class DashboardHeader extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.language_rounded, size: 16, color: AppColors.teal),
+                          const Icon(Icons.language_rounded,
+                              size: 16, color: AppColors.teal),
                           const SizedBox(width: 4),
                           ValueListenableBuilder<Locale>(
-                            valueListenable:
-                                LocalizationService.instance.currentLocaleNotifier,
+                            valueListenable: LocalizationService
+                                .instance.currentLocaleNotifier,
                             builder: (context, loc, _) {
                               return Text(
                                 loc.languageCode.toUpperCase(),

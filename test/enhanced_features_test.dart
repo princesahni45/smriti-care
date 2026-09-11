@@ -70,7 +70,8 @@ void main() {
 
   // FIX: Updated MRI tests to use real backend model enum names (veryMild, dementia)
   group('MRI Screening Models & Service Tests (Step 8)', () {
-    test('MriScanResult serializes and deserializes properly — Normal class', () {
+    test('MriScanResult serializes and deserializes properly — Normal class',
+        () {
       final now = DateTime.now();
       final scan = MriScanResult(
         scanId: 'mri_test_normal',
@@ -79,7 +80,8 @@ void main() {
         predictionClass: MriPredictionClass.normal,
         classId: 0,
         confidenceScore: 0.92,
-        recommendation: 'No dementia markers detected. Continue routine monitoring.',
+        recommendation:
+            'No dementia markers detected. Continue routine monitoring.',
         status: 'completed',
         timestamp: now,
         serverUrl: 'http://10.0.2.2:8000',
@@ -158,7 +160,8 @@ void main() {
       expect(scan.status, 'failed');
     });
 
-    test('MriScreeningService singleton is accessible and has correct base URL', () {
+    test('MriScreeningService singleton is accessible and has correct base URL',
+        () {
       final service = MriScreeningService.instance;
       expect(service.apiBaseUrl, contains('8000'));
     });
@@ -193,8 +196,22 @@ void main() {
   group('Multilingual i18n Architecture Tests (Step 10)', () {
     test('All 10 Northeast and Indian languages are registered', () {
       expect(AppLocalizations.supportedLanguages.length, 10);
-      final codes = AppLocalizations.supportedLanguages.map((l) => l.code).toList();
-      expect(codes, containsAll(['en', 'hi', 'as', 'bn', 'mni', 'kha', 'lus', 'grt', 'brx', 'trp']));
+      final codes =
+          AppLocalizations.supportedLanguages.map((l) => l.code).toList();
+      expect(
+          codes,
+          containsAll([
+            'en',
+            'hi',
+            'as',
+            'bn',
+            'mni',
+            'kha',
+            'lus',
+            'grt',
+            'brx',
+            'trp'
+          ]));
     });
 
     test('LocalizationService updates current locale', () {
@@ -248,7 +265,8 @@ void main() {
   });
 
   group('Widget Tests: Family Memories Game (Step 5)', () {
-    testWidgets('Renders FamilyMemoriesGameScreen with family association options',
+    testWidgets(
+        'Renders FamilyMemoriesGameScreen with family association options',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: FamilyMemoriesGameScreen()),

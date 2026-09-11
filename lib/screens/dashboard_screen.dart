@@ -33,7 +33,8 @@ class DashboardScreen extends StatelessWidget {
       context.push('/games');
     } else if (moduleId.toLowerCase() == 'caregiver') {
       context.push('/caregiver-dashboard');
-    } else if (moduleId.toLowerCase() == 'emergency' || moduleId.toLowerCase() == 'sos') {
+    } else if (moduleId.toLowerCase() == 'emergency' ||
+        moduleId.toLowerCase() == 'sos') {
       context.push('/take-me-home');
     } else {
       context.push('/placeholder/$moduleId');
@@ -78,8 +79,10 @@ class DashboardScreen extends StatelessWidget {
 
                     // Today's Activity Metrics (live from offline game storage)
                     TodayActivitySection(
-                      gamesCompleted: GameStorageService.instance.getTotalGamesCompleted(),
-                      streakDays: GameStorageService.instance.getCurrentStreakDays(),
+                      gamesCompleted:
+                          GameStorageService.instance.getTotalGamesCompleted(),
+                      streakDays:
+                          GameStorageService.instance.getCurrentStreakDays(),
                       todayScore: GameStorageService.instance.getTodayScore(),
                     ),
 
@@ -87,7 +90,8 @@ class DashboardScreen extends StatelessWidget {
 
                     // Quick Actions (6 large touch-target cards)
                     QuickActionsGrid(
-                      onActionTap: (moduleId) => _handleNavigate(context, moduleId),
+                      onActionTap: (moduleId) =>
+                          _handleNavigate(context, moduleId),
                     ),
 
                     const SizedBox(height: 24),

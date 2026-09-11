@@ -21,7 +21,8 @@ class CognitiveAssessmentScreen extends StatefulWidget {
 }
 
 class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
-  int _step = 0; // 0: intro, 1: orientation, 2: memory encode, 3: attention, 4: delayed recall, 5: result
+  int _step =
+      0; // 0: intro, 1: orientation, 2: memory encode, 3: attention, 4: delayed recall, 5: result
   int _orientationScore = 0;
   int _memoryScore = 0;
   int _attentionScore = 0;
@@ -40,7 +41,9 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
   ];
 
   void _finishAssessment() async {
-    final totalScore = ((_orientationScore + _memoryScore + _attentionScore) / 30 * 100).round();
+    final totalScore =
+        ((_orientationScore + _memoryScore + _attentionScore) / 30 * 100)
+            .round();
     final result = GameResult(
       id: 'assess_${DateTime.now().millisecondsSinceEpoch}',
       patientId: 'MC-2048',
@@ -49,8 +52,13 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
       score: totalScore,
       accuracy: totalScore,
       attempts: 3,
-      correctAnswers: (_orientationScore ~/ 10) + (_memoryScore ~/ 10) + (_attentionScore ~/ 10),
-      wrongAnswers: 3 - ((_orientationScore ~/ 10) + (_memoryScore ~/ 10) + (_attentionScore ~/ 10)),
+      correctAnswers: (_orientationScore ~/ 10) +
+          (_memoryScore ~/ 10) +
+          (_attentionScore ~/ 10),
+      wrongAnswers: 3 -
+          ((_orientationScore ~/ 10) +
+              (_memoryScore ~/ 10) +
+              (_attentionScore ~/ 10)),
       difficulty: 'Screening Battery',
       completionTimeSeconds: 90,
       timestamp: DateTime.now(),
@@ -74,7 +82,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.ink, size: 28),
+          icon: const Icon(Icons.arrow_back_rounded,
+              color: AppColors.ink, size: 28),
           onPressed: () {
             if (widget.onBack != null) {
               widget.onBack!();
@@ -87,7 +96,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
         ),
         title: const Text(
           'Cognitive Assessment',
-          style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.w800, fontSize: 19),
+          style: TextStyle(
+              color: AppColors.ink, fontWeight: FontWeight.w800, fontSize: 19),
         ),
         centerTitle: true,
       ),
@@ -132,13 +142,15 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.teal, width: 2),
           ),
-          child: const Icon(Icons.psychology_rounded, color: AppColors.tealDark, size: 44),
+          child: const Icon(Icons.psychology_rounded,
+              color: AppColors.tealDark, size: 44),
         ),
         const SizedBox(height: 24),
         Text(
           'Gentle Cognitive Assessment',
           textAlign: TextAlign.center,
-          style: GoogleFonts.dmSans(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: GoogleFonts.dmSans(
+              fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 10),
         const Text(
@@ -153,7 +165,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 0,
             ),
             onPressed: () => setState(() => _step = 1),
@@ -180,11 +193,15 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text('Section 1 of 3: Orientation',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.tealDark)),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.tealDark)),
         const SizedBox(height: 12),
         Text(
           'What time of day is it right now?',
-          style: GoogleFonts.dmSans(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: GoogleFonts.dmSans(
+              fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 24),
         ...options.map((opt) {
@@ -228,9 +245,11 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
-            onPressed: _selectedTime == null ? null : () => setState(() => _step = 2),
+            onPressed:
+                _selectedTime == null ? null : () => setState(() => _step = 2),
             child: const Text('Continue to Memory',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
           ),
@@ -244,14 +263,19 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text('Section 2 of 3: Memory Encoding',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.tealDark)),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.tealDark)),
         const SizedBox(height: 12),
         Text(
           'Please remember these 3 words:',
-          style: GoogleFonts.dmSans(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: GoogleFonts.dmSans(
+              fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 8),
-        const Text('Read them carefully. We will ask you to recall them shortly.',
+        const Text(
+            'Read them carefully. We will ask you to recall them shortly.',
             style: TextStyle(fontSize: 14, color: AppColors.muted)),
         const SizedBox(height: 28),
         ..._memoryWords.map(
@@ -286,7 +310,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
             onPressed: () => setState(() => _step = 3),
             child: const Text('I Have Remembered Them',
@@ -298,18 +323,23 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
   }
 
   Widget _buildAttentionStep() {
-    const question = 'Which of the following comes next in the sequence:\n2, 4, 6, 8, ... ?';
+    const question =
+        'Which of the following comes next in the sequence:\n2, 4, 6, 8, ... ?';
     const options = ['9', '10', '12', '14'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text('Section 3 of 3: Attention & Focus',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.tealDark)),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.tealDark)),
         const SizedBox(height: 12),
         Text(
           question,
-          style: GoogleFonts.dmSans(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: GoogleFonts.dmSans(
+              fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 24),
         ...options.map((opt) {
@@ -353,9 +383,12 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
-            onPressed: _selectedAttention == null ? null : () => setState(() => _step = 4),
+            onPressed: _selectedAttention == null
+                ? null
+                : () => setState(() => _step = 4),
             child: const Text('Proceed to Delayed Recall',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
           ),
@@ -369,11 +402,15 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text('Delayed Memory Recall',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.tealDark)),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.tealDark)),
         const SizedBox(height: 12),
         Text(
           'Select the 3 words you remembered earlier:',
-          style: GoogleFonts.dmSans(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: GoogleFonts.dmSans(
+              fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 20),
         Wrap(
@@ -392,7 +429,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
               selectedColor: AppColors.teal,
               backgroundColor: AppColors.surface,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
               onSelected: (selected) {
                 setState(() {
                   if (selected) {
@@ -418,9 +456,11 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
-            onPressed: _selectedRecallWords.length >= 2 ? _finishAssessment : null,
+            onPressed:
+                _selectedRecallWords.length >= 2 ? _finishAssessment : null,
             child: const Text('Complete Assessment',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
           ),
@@ -430,7 +470,9 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
   }
 
   Widget _buildResultStep() {
-    final overallScore = ((_orientationScore + _memoryScore + _attentionScore) / 30 * 100).round();
+    final overallScore =
+        ((_orientationScore + _memoryScore + _attentionScore) / 30 * 100)
+            .round();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -452,7 +494,10 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
           child: Column(
             children: [
               const Text('Overall Cognitive Index',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.muted)),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.muted)),
               const SizedBox(height: 8),
               Text(
                 '$overallScore%',
@@ -489,7 +534,10 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
               Expanded(
                 child: Text(
                   'Wonderful work! Consistent daily checkups support memory stability and caregiver awareness.',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.tealDark),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.tealDark),
                 ),
               ),
             ],
@@ -502,7 +550,8 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
             onPressed: () {
               if (widget.onBack != null) {
@@ -524,10 +573,14 @@ class _CognitiveAssessmentScreenState extends State<CognitiveAssessmentScreen> {
   Widget _metricTile(String label, String value) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+        Text(label,
+            style: const TextStyle(fontSize: 12, color: AppColors.muted)),
         const SizedBox(height: 4),
         Text(value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink)),
+            style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink)),
       ],
     );
   }

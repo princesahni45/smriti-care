@@ -103,7 +103,8 @@ class CaregiverProfile {
 class CaregiverReminder {
   final String id;
   final String patientId;
-  final String type; // medication, hydration, appointment, cognitive_activity, daily_routine
+  final String
+      type; // medication, hydration, appointment, cognitive_activity, daily_routine
   final String title;
   final String message;
   final String scheduledTime; // e.g. '09:00 AM'
@@ -522,4 +523,3 @@ class SosAlertLog {
     );
   }
 }
-

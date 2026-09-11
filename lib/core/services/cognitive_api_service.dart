@@ -77,14 +77,16 @@ class CognitiveApiService {
           syncedCount: pending.length,
           failedCount: 0,
           isBackendOnline: true,
-          statusMessage: 'Successfully synced ${pending.length} activity records to server.',
+          statusMessage:
+              'Successfully synced ${pending.length} activity records to server.',
         );
       } else {
         return SyncResult(
           syncedCount: 0,
           failedCount: pending.length,
           isBackendOnline: true,
-          statusMessage: 'Server returned HTTP ${response.statusCode}. Telemetry kept safe offline.',
+          statusMessage:
+              'Server returned HTTP ${response.statusCode}. Telemetry kept safe offline.',
         );
       }
     } catch (e) {
@@ -93,7 +95,8 @@ class CognitiveApiService {
         syncedCount: 0,
         failedCount: pending.length,
         isBackendOnline: false,
-        statusMessage: 'FastAPI server offline ($apiBaseUrl). Results stored securely on device.',
+        statusMessage:
+            'FastAPI server offline ($apiBaseUrl). Results stored securely on device.',
       );
     }
   }
@@ -102,7 +105,8 @@ class CognitiveApiService {
   /// GET /api/v1/cognitive/risk-analysis?patient_id={id}
   Future<RiskAssessment?> fetchBackendRiskAssessment(String patientId) async {
     try {
-      final uri = Uri.parse('$apiBaseUrl/api/v1/cognitive/risk-analysis?patient_id=$patientId');
+      final uri = Uri.parse(
+          '$apiBaseUrl/api/v1/cognitive/risk-analysis?patient_id=$patientId');
       final response = await http.get(uri).timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200) {
@@ -119,7 +123,8 @@ class CognitiveApiService {
           level: level,
           overallScore: (data['score'] as num?)?.toInt() ?? 75,
           label: data['label'] ?? 'Stable Cognitive Engagement',
-          summary: data['summary'] ?? 'Consistent response timing across memory and attention tasks.',
+          summary: data['summary'] ??
+              'Consistent response timing across memory and attention tasks.',
           lastAssessed: DateTime.now(),
         );
       }

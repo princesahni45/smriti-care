@@ -82,16 +82,19 @@ class CaregiverHomeTab extends StatelessWidget {
               GestureDetector(
                 onTap: onSwitchPatientTap,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.tealPale,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: AppColors.teal.withValues(alpha: 0.3)),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.swap_horiz_rounded, size: 16, color: AppColors.tealDark),
+                      Icon(Icons.swap_horiz_rounded,
+                          size: 16, color: AppColors.tealDark),
                       SizedBox(width: 4),
                       Text(
                         'Switch',
@@ -446,7 +449,8 @@ class CaregiverHomeTab extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.teal,
                   borderRadius: BorderRadius.circular(10),

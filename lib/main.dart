@@ -27,25 +27,31 @@ Future<void> main() async {
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
-    if (DefaultFirebaseOptions.currentPlatform.apiKey.startsWith('PLACEHOLDER')) {
-      debugPrint('[SmritiCare] Placeholder Firebase detected — running in offline test mode.');
+    if (DefaultFirebaseOptions.currentPlatform.apiKey
+        .startsWith('PLACEHOLDER')) {
+      debugPrint(
+          '[SmritiCare] Placeholder Firebase detected — running in offline test mode.');
     } else {
       firebaseReady = true;
       debugPrint('[SmritiCare] Firebase initialized successfully.');
     }
   } on FirebaseException catch (e) {
     if (e.code == 'duplicate-app') {
-      if (!DefaultFirebaseOptions.currentPlatform.apiKey.startsWith('PLACEHOLDER')) {
+      if (!DefaultFirebaseOptions.currentPlatform.apiKey
+          .startsWith('PLACEHOLDER')) {
         firebaseReady = true;
-        debugPrint('[SmritiCare] Firebase [DEFAULT] app already initialized natively.');
+        debugPrint(
+            '[SmritiCare] Firebase [DEFAULT] app already initialized natively.');
       } else {
-        debugPrint('[SmritiCare] Native Firebase placeholder detected — running in offline test mode.');
+        debugPrint(
+            '[SmritiCare] Native Firebase placeholder detected — running in offline test mode.');
       }
     } else {
       debugPrint('[SmritiCare] Firebase initialization notice: $e');
     }
   } catch (e) {
-    debugPrint('[SmritiCare] Firebase not configured — using offline test mode. ($e)');
+    debugPrint(
+        '[SmritiCare] Firebase not configured — using offline test mode. ($e)');
   }
 
   // FIX: Tell CaregiverAuthService whether Firebase is available.
@@ -60,4 +66,3 @@ Future<void> main() async {
 
   runApp(const SmritiCareApp());
 }
-

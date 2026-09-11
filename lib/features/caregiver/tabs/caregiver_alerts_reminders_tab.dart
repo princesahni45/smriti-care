@@ -18,17 +18,20 @@ class CaregiverAlertsRemindersTab extends StatefulWidget {
   const CaregiverAlertsRemindersTab({super.key});
 
   @override
-  State<CaregiverAlertsRemindersTab> createState() => _CaregiverAlertsRemindersTabState();
+  State<CaregiverAlertsRemindersTab> createState() =>
+      _CaregiverAlertsRemindersTabState();
 }
 
-class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTab> {
+class _CaregiverAlertsRemindersTabState
+    extends State<CaregiverAlertsRemindersTab> {
   String _selectedCategory = 'all';
 
   @override
   Widget build(BuildContext context) {
     final risk = CaregiverService.instance.getRiskAssessment();
     final alerts = CaregiverService.instance.getAlerts();
-    final reminders = CaregiverService.instance.getReminders(type: _selectedCategory);
+    final reminders =
+        CaregiverService.instance.getReminders(type: _selectedCategory);
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -38,7 +41,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
         children: [
           // Header
           Text(
-            context.tr('caregiver.riskAndRemindersTitle', defaultText: 'Risk Screening & Reminders'),
+            context.tr('caregiver.riskAndRemindersTitle',
+                defaultText: 'Risk Screening & Reminders'),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
@@ -48,7 +52,9 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
           ),
           const SizedBox(height: 4),
           Text(
-            context.tr('caregiver.riskAndRemindersSubtitle', defaultText: 'Real-time cognitive safety screening and patient routine scheduling.'),
+            context.tr('caregiver.riskAndRemindersSubtitle',
+                defaultText:
+                    'Real-time cognitive safety screening and patient routine scheduling.'),
             style: const TextStyle(fontSize: 13, color: AppColors.muted),
           ),
           const SizedBox(height: 18),
@@ -64,7 +70,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
             children: [
               Row(
                 children: [
-                  const Icon(Icons.notifications_active_outlined, color: AppColors.coral, size: 20),
+                  const Icon(Icons.notifications_active_outlined,
+                      color: AppColors.coral, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     '${context.tr('caregiver.intelligentAlerts', defaultText: 'Intelligent Care Alerts')} (${alerts.length})',
@@ -90,7 +97,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
               ),
               child: Center(
                 child: Text(
-                  context.tr('caregiver.noAlerts', defaultText: 'No active care alerts.'),
+                  context.tr('caregiver.noAlerts',
+                      defaultText: 'No active care alerts.'),
                   style: const TextStyle(color: AppColors.muted),
                 ),
               ),
@@ -106,10 +114,12 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
             children: [
               Row(
                 children: [
-                  const Icon(Icons.alarm_rounded, color: AppColors.teal, size: 20),
+                  const Icon(Icons.alarm_rounded,
+                      color: AppColors.teal, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    context.tr('caregiver.manageReminders', defaultText: 'Manage Reminders'),
+                    context.tr('caregiver.manageReminders',
+                        defaultText: 'Manage Reminders'),
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
@@ -120,15 +130,21 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
               ),
               ElevatedButton.icon(
                 onPressed: () => _openAddReminderDialog(context),
-                icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+                icon: const Icon(Icons.add_rounded,
+                    size: 16, color: Colors.white),
                 label: Text(
                   context.tr('caregiver.add', defaultText: 'Add'),
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.teal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ],
@@ -140,15 +156,30 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip('all', context.tr('caregiver.allReminders', defaultText: 'All Reminders')),
+                _buildFilterChip(
+                    'all',
+                    context.tr('caregiver.allReminders',
+                        defaultText: 'All Reminders')),
                 const SizedBox(width: 8),
-                _buildFilterChip('medication', context.tr('reminders.morningMedicine', defaultText: 'Medicine')),
+                _buildFilterChip(
+                    'medication',
+                    context.tr('reminders.morningMedicine',
+                        defaultText: 'Medicine')),
                 const SizedBox(width: 8),
-                _buildFilterChip('appointment', context.tr('caregiver.appointments', defaultText: 'Appointments')),
+                _buildFilterChip(
+                    'appointment',
+                    context.tr('caregiver.appointments',
+                        defaultText: 'Appointments')),
                 const SizedBox(width: 8),
-                _buildFilterChip('daily_routine', context.tr('landing.dailyActivities', defaultText: 'Routine')),
+                _buildFilterChip(
+                    'daily_routine',
+                    context.tr('landing.dailyActivities',
+                        defaultText: 'Routine')),
                 const SizedBox(width: 8),
-                _buildFilterChip('hydration', context.tr('reminders.hydration', defaultText: 'Hydration')),
+                _buildFilterChip(
+                    'hydration',
+                    context.tr('reminders.hydration',
+                        defaultText: 'Hydration')),
               ],
             ),
           ),
@@ -221,8 +252,11 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: badgeBg, borderRadius: BorderRadius.circular(10)),
-                    child: Icon(Icons.shield_rounded, color: badgeColor, size: 20),
+                    decoration: BoxDecoration(
+                        color: badgeBg,
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                        Icon(Icons.shield_rounded, color: badgeColor, size: 20),
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -237,14 +271,18 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
               ),
               const Text(
                 'Score:  / 100',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.ink),
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             risk.summary,
-            style: const TextStyle(fontSize: 13, color: AppColors.inkSoft, height: 1.4),
+            style: const TextStyle(
+                fontSize: 13, color: AppColors.inkSoft, height: 1.4),
           ),
           const SizedBox(height: 12),
           // Disclaimer alert box
@@ -258,7 +296,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.muted),
+                const Icon(Icons.info_outline_rounded,
+                    size: 16, color: AppColors.muted),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -304,7 +343,9 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
         color: alert.acknowledged ? AppColors.softSection : AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: alert.acknowledged ? AppColors.borderLight : iconColor.withValues(alpha: 0.4),
+          color: alert.acknowledged
+              ? AppColors.borderLight
+              : iconColor.withValues(alpha: 0.4),
           width: alert.acknowledged ? 1 : 1.5,
         ),
       ),
@@ -313,9 +354,12 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+                color: bgColor, borderRadius: BorderRadius.circular(8)),
             child: Icon(
-              alert.type == 'emergency_sos' ? Icons.emergency_rounded : Icons.notifications_rounded,
+              alert.type == 'emergency_sos'
+                  ? Icons.emergency_rounded
+                  : Icons.notifications_rounded,
               color: iconColor,
               size: 18,
             ),
@@ -330,20 +374,23 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: alert.acknowledged ? AppColors.inkSoft : AppColors.ink,
+                    color:
+                        alert.acknowledged ? AppColors.inkSoft : AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   alert.message,
-                  style: const TextStyle(fontSize: 12, color: AppColors.muted, height: 1.3),
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.muted, height: 1.3),
                 ),
               ],
             ),
           ),
           if (!alert.acknowledged)
             IconButton(
-              icon: const Icon(Icons.check_rounded, size: 18, color: AppColors.teal),
+              icon: const Icon(Icons.check_rounded,
+                  size: 18, color: AppColors.teal),
               onPressed: () async {
                 await CaregiverService.instance.dismissAlert(alert.id);
                 setState(() {});
@@ -391,7 +438,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: reminder.enabled ? AppColors.tealPale : AppColors.softSection,
+              color:
+                  reminder.enabled ? AppColors.tealPale : AppColors.softSection,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -438,7 +486,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert_rounded, size: 18, color: AppColors.muted),
+            icon: const Icon(Icons.more_vert_rounded,
+                size: 18, color: AppColors.muted),
             onSelected: (action) async {
               if (action == 'delete') {
                 await CaregiverService.instance.deleteReminder(reminder.id);
@@ -449,7 +498,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
               PopupMenuItem(
                 value: 'delete',
                 child: Text(
-                  context.tr('caregiver.deleteReminder', defaultText: 'Delete Reminder'),
+                  context.tr('caregiver.deleteReminder',
+                      defaultText: 'Delete Reminder'),
                   style: const TextStyle(color: AppColors.coralDeep),
                 ),
               ),
@@ -471,7 +521,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
             context.tr('reminders.addReminder', defaultText: 'Add Reminder'),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
@@ -483,7 +534,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                 TextField(
                   controller: titleCtrl,
                   decoration: InputDecoration(
-                    labelText: context.tr('reminders.title', defaultText: 'Title / Medication Name'),
+                    labelText: context.tr('reminders.title',
+                        defaultText: 'Title / Medication Name'),
                     hintText: 'e.g. Afternoon Medicine',
                   ),
                 ),
@@ -492,27 +544,46 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                   initialValue: type,
                   decoration: const InputDecoration(labelText: 'Category'),
                   items: [
-                    DropdownMenuItem(value: 'medication', child: Text(context.tr('reminders.morningMedicine', defaultText: 'Medicine'))),
-                    DropdownMenuItem(value: 'appointment', child: Text(context.tr('reminders.appointment', defaultText: 'Doctor Appointment'))),
-                    DropdownMenuItem(value: 'daily_routine', child: Text(context.tr('reminders.routine', defaultText: 'Daily Routine'))),
-                    DropdownMenuItem(value: 'hydration', child: Text(context.tr('reminders.hydration', defaultText: 'Hydration'))),
-                    DropdownMenuItem(value: 'cognitive_activity', child: Text(context.tr('reminders.activity', defaultText: 'Cognitive Exercise'))),
+                    DropdownMenuItem(
+                        value: 'medication',
+                        child: Text(context.tr('reminders.morningMedicine',
+                            defaultText: 'Medicine'))),
+                    DropdownMenuItem(
+                        value: 'appointment',
+                        child: Text(context.tr('reminders.appointment',
+                            defaultText: 'Doctor Appointment'))),
+                    DropdownMenuItem(
+                        value: 'daily_routine',
+                        child: Text(context.tr('reminders.routine',
+                            defaultText: 'Daily Routine'))),
+                    DropdownMenuItem(
+                        value: 'hydration',
+                        child: Text(context.tr('reminders.hydration',
+                            defaultText: 'Hydration'))),
+                    DropdownMenuItem(
+                        value: 'cognitive_activity',
+                        child: Text(context.tr('reminders.activity',
+                            defaultText: 'Cognitive Exercise'))),
                   ],
                   onChanged: (v) => setDlgState(() => type = v ?? 'medication'),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: timeCtrl,
-                  decoration: const InputDecoration(labelText: 'Time (e.g. 02:30 PM)'),
+                  decoration:
+                      const InputDecoration(labelText: 'Time (e.g. 02:30 PM)'),
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
                   initialValue: repeat,
-                  decoration: const InputDecoration(labelText: 'Repeat Interval'),
+                  decoration:
+                      const InputDecoration(labelText: 'Repeat Interval'),
                   items: const [
                     DropdownMenuItem(value: 'daily', child: Text('Daily')),
-                    DropdownMenuItem(value: 'weekdays', child: Text('Weekdays')),
-                    DropdownMenuItem(value: 'weekends', child: Text('Weekends')),
+                    DropdownMenuItem(
+                        value: 'weekdays', child: Text('Weekdays')),
+                    DropdownMenuItem(
+                        value: 'weekends', child: Text('Weekends')),
                     DropdownMenuItem(value: 'once', child: Text('Once Only')),
                   ],
                   onChanged: (v) => setDlgState(() => repeat = v ?? 'daily'),
@@ -520,7 +591,9 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
                 const SizedBox(height: 10),
                 TextField(
                   controller: noteCtrl,
-                  decoration: const InputDecoration(labelText: 'Instructions / Dosage', hintText: 'e.g. Take with warm water'),
+                  decoration: const InputDecoration(
+                      labelText: 'Instructions / Dosage',
+                      hintText: 'e.g. Take with warm water'),
                 ),
               ],
             ),
@@ -554,7 +627,8 @@ class _CaregiverAlertsRemindersTabState extends State<CaregiverAlertsRemindersTa
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
               child: Text(
-                context.tr('caregiver.saveReminder', defaultText: 'Save Reminder'),
+                context.tr('caregiver.saveReminder',
+                    defaultText: 'Save Reminder'),
                 style: const TextStyle(color: Colors.white),
               ),
             ),

@@ -43,10 +43,9 @@ class GameResult {
   /// Helpful aliases satisfying Step 7 cognitive game telemetry specs
   int get mistakes => wrongAnswers;
   DateTime get completionTime => timestamp;
-  double get responseTime =>
-      avgResponseTimeSeconds > 0
-          ? avgResponseTimeSeconds
-          : (attempts > 0 ? (completionTimeSeconds / attempts) : 0.0);
+  double get responseTime => avgResponseTimeSeconds > 0
+      ? avgResponseTimeSeconds
+      : (attempts > 0 ? (completionTimeSeconds / attempts) : 0.0);
 
   int get level {
     final lower = difficulty.toLowerCase();
@@ -89,14 +88,20 @@ class GameResult {
       accuracy: (map['accuracy'] as num?)?.toInt() ?? 0,
       attempts: (map['attempts'] as num?)?.toInt() ?? 0,
       correctAnswers: (map['correctAnswers'] as num?)?.toInt() ?? 0,
-      wrongAnswers: (map['wrongAnswers'] ?? map['mistakes'] as num?)?.toInt() ?? 0,
+      wrongAnswers:
+          (map['wrongAnswers'] ?? map['mistakes'] as num?)?.toInt() ?? 0,
       difficulty: map['difficulty'] as String? ?? 'Level 1',
-      completionTimeSeconds: (map['completionTimeSeconds'] as num?)?.toInt() ?? 0,
-      avgResponseTimeSeconds: (map['responseTime'] ?? map['avgResponseTimeSeconds'] as num?)?.toDouble() ?? 0.0,
+      completionTimeSeconds:
+          (map['completionTimeSeconds'] as num?)?.toInt() ?? 0,
+      avgResponseTimeSeconds:
+          (map['responseTime'] ?? map['avgResponseTimeSeconds'] as num?)
+                  ?.toDouble() ??
+              0.0,
       timestamp: map['timestamp'] != null
           ? DateTime.tryParse(map['timestamp'] as String) ?? DateTime.now()
           : (map['completionTime'] != null
-              ? DateTime.tryParse(map['completionTime'] as String) ?? DateTime.now()
+              ? DateTime.tryParse(map['completionTime'] as String) ??
+                  DateTime.now()
               : DateTime.now()),
       recommendation: map['recommendation'] as String? ?? '',
       syncStatus: map['syncStatus'] as String? ?? 'pending',
@@ -131,8 +136,10 @@ class GameResult {
       correctAnswers: correctAnswers ?? this.correctAnswers,
       wrongAnswers: wrongAnswers ?? this.wrongAnswers,
       difficulty: difficulty ?? this.difficulty,
-      completionTimeSeconds: completionTimeSeconds ?? this.completionTimeSeconds,
-      avgResponseTimeSeconds: avgResponseTimeSeconds ?? this.avgResponseTimeSeconds,
+      completionTimeSeconds:
+          completionTimeSeconds ?? this.completionTimeSeconds,
+      avgResponseTimeSeconds:
+          avgResponseTimeSeconds ?? this.avgResponseTimeSeconds,
       timestamp: timestamp ?? this.timestamp,
       recommendation: recommendation ?? this.recommendation,
       syncStatus: syncStatus ?? this.syncStatus,

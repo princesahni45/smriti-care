@@ -523,7 +523,86 @@
   "voice": {
     "available": "Voice guidance is available in your language.",
     "unavailable": "Voice is not available for this language on this device.",
-    "reading": "Reading aloud..."
+    "reading": "Reading aloud...",
+    "buttonLabel": "Voice",
+    "buttonSemantic": "Voice Assistant. Tap to speak or give commands.",
+    "listening": "Listening",
+    "processing": "Processing",
+    "speaking": "Speaking",
+    "tryAgain": "Try Again",
+    "cancel": "Cancel",
+    "commandNotUnderstood": "Could not understand the command.",
+    "confirmYes": "Yes, Confirm",
+    "confirmNo": "No, Cancel",
+    "confirmationPrompt": "Are you sure you want to proceed?",
+    "caregiverCallConfirmation": "Do you want to call emergency help and alert your caregiver?",
+    "emergencyTriggered": "Emergency SOS triggered. Help is on the way.",
+    "actionConfirmed": "Action confirmed.",
+    "actionCancelled": "Action cancelled.",
+    "activeLanguage": "Active Language: English (EN)",
+    "recognizedSpeech": "Recognized Speech:",
+    "waitingHint": "Listening for your voice... Speak naturally",
+    "typePlaceholder": "Type a command here...",
+    "defaultPrompt": "Hello! Say \"Play games\", \"Check reminders\", or \"Emergency help\".",
+    "availableActionsPrompt": "On this screen, you can:",
+    "status": {
+      "opening": "Opening assistant...",
+      "listening": "Listening... Speak now",
+      "processing": "Processing command...",
+      "executing": "Executing action...",
+      "speaking": "Speaking...",
+      "error": "Could not understand. Tap mic to retry or type below.",
+      "cancelled": "Action cancelled",
+      "idle": "Tap mic to speak"
+    },
+    "actions": {
+      "openHome": "Open Home",
+      "openGames": "Open Games",
+      "openMemoryGame": "Open Memory Game",
+      "openWordRecall": "Open Word Recall",
+      "openDifferentObject": "Open Different Object",
+      "openReminders": "Open Reminders",
+      "readNextReminder": "Read Next Reminder",
+      "openDailyRoutine": "Open Daily Routine",
+      "readNextRoutine": "Read Next Routine",
+      "openHelp": "Open Help",
+      "callCaregiver": "Call Caregiver",
+      "changeLanguage": "Change Language",
+      "goBack": "Go Back",
+      "makeEasier": "Make game easier",
+      "makeHarder": "Make game harder"
+    },
+    "chips": {
+      "brainGames": "Brain Games",
+      "reminders": "Reminders",
+      "emergencySos": "Emergency SOS",
+      "takeMeHome": "Take Me Home"
+    },
+    "clarification": {
+      "gamesScreen": "You can start a game, or go to home screen. What would you like to do?",
+      "remindersScreen": "You can listen to your next reminder, or go to home screen. What would you like to do?",
+      "routineScreen": "You can check your next routine activity, or go to home screen. What would you like to do?",
+      "general": "I could not find that action here. On this screen you can:"
+    },
+    "errors": {
+      "notUnderstood": "Could not understand. Tap mic to retry or type below.",
+      "general": "An unexpected error occurred. Please try again.",
+      "micUnavailable": "Speech recognition is unavailable. Please type your command.",
+      "targetRouteUnavailable": "Sorry, that screen is not available.",
+      "cannotFulfillAction": "Sorry, could not complete that action."
+    },
+    "caregiverConfirm": {
+      "title": "Contact Caregiver",
+      "explanation": "Would you like to call your caregiver for assistance?",
+      "callPrompt": "Do you want to call your caregiver now?",
+      "calling": "Calling caregiver...",
+      "callButton": "Call Caregiver",
+      "cancelButton": "Cancel & Go Back",
+      "listeningHint": "Say \"Yes\" or \"Call\" to place the call, or \"No\" / \"Cancel\" to go back.",
+      "notConfiguredTitle": "No Caregiver Contact Found",
+      "notConfiguredDesc": "Caregiver contact details have not been set up yet. Please ask your caregiver to add their contact number in safety settings.",
+      "backToHome": "Return to Home"
+    }
   },
   "dates": {
     "monday": "Monday",

@@ -26,8 +26,8 @@ class MriFileStorageService {
   MriFileStorageService._();
   static final MriFileStorageService instance = MriFileStorageService._();
 
-  static const String _uploadsDir    = 'caregiver_uploads';
-  static const String _uploadsIndex  = 'uploads_index.json';
+  static const String _uploadsDir = 'caregiver_uploads';
+  static const String _uploadsIndex = 'uploads_index.json';
   static const String _mriHistoryFile = 'mri_history.json';
 
   // ── Directory Helpers ─────────────────────────────────────────────────────
@@ -42,11 +42,11 @@ class MriFileStorageService {
   Future<Directory> _getCategoryDir(MriFileCategory category) async {
     final root = await _getRootDir();
     final sub = switch (category) {
-      MriFileCategory.mri           => 'mri',
-      MriFileCategory.images        => 'images',
-      MriFileCategory.pdf           => 'pdf',
+      MriFileCategory.mri => 'mri',
+      MriFileCategory.images => 'images',
+      MriFileCategory.pdf => 'pdf',
       MriFileCategory.presentations => 'presentations',
-      MriFileCategory.other         => 'other',
+      MriFileCategory.other => 'other',
     };
     final dir = Directory('${root.path}/$sub');
     if (!await dir.exists()) await dir.create(recursive: true);
@@ -56,7 +56,8 @@ class MriFileStorageService {
   // ── File Classification ────────────────────────────────────────────────────
 
   // FIX: Added MRI format validation — classifies based on real backend supported formats
-  ({MriFileCategory category, bool isMriCompatible}) classifyFile(String fileName) {
+  ({MriFileCategory category, bool isMriCompatible}) classifyFile(
+      String fileName) {
     final lower = fileName.toLowerCase();
 
     // Handle double extension .nii.gz first
@@ -64,15 +65,15 @@ class MriFileStorageService {
       return (category: MriFileCategory.mri, isMriCompatible: true);
     }
 
-    final ext = lower.contains('.')
-        ? lower.substring(lower.lastIndexOf('.') + 1)
-        : '';
+    final ext =
+        lower.contains('.') ? lower.substring(lower.lastIndexOf('.') + 1) : '';
 
     // Check against real supported extensions from ApiConfig
     if (ApiConfig.mriCompatibleExtensions.contains(ext)) {
       return (category: MriFileCategory.mri, isMriCompatible: true);
     }
-    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif', 'webp'].contains(ext)) {
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif', 'webp']
+        .contains(ext)) {
       return (category: MriFileCategory.images, isMriCompatible: false);
     }
     if (ext == 'pdf') {
@@ -108,11 +109,11 @@ class MriFileStorageService {
     final safeTs = _safeTimestamp(timestamp);
 
     final prefix = switch (classification.category) {
-      MriFileCategory.mri           => 'mri',
-      MriFileCategory.images        => 'img',
-      MriFileCategory.pdf           => 'doc',
+      MriFileCategory.mri => 'mri',
+      MriFileCategory.images => 'img',
+      MriFileCategory.pdf => 'doc',
       MriFileCategory.presentations => 'pres',
-      MriFileCategory.other         => 'file',
+      MriFileCategory.other => 'file',
     };
 
     // Unique filename to avoid overwriting
@@ -159,9 +160,9 @@ class MriFileStorageService {
 
   String _safeTimestamp(DateTime dt) {
     // Produces e.g. '20260911_144500'
-    return '${dt.year}${dt.month.toString().padLeft(2,'0')}${dt.day.toString().padLeft(2,'0')}'
-           '_${dt.hour.toString().padLeft(2,'0')}${dt.minute.toString().padLeft(2,'0')}'
-           '${dt.second.toString().padLeft(2,'0')}';
+    return '${dt.year}${dt.month.toString().padLeft(2, '0')}${dt.day.toString().padLeft(2, '0')}'
+        '_${dt.hour.toString().padLeft(2, '0')}${dt.minute.toString().padLeft(2, '0')}'
+        '${dt.second.toString().padLeft(2, '0')}';
   }
 
   // ── MRI History ────────────────────────────────────────────────────────────
@@ -195,10 +196,13 @@ class MriFileStorageService {
 
     await histFile.writeAsString(jsonEncode(history));
 
-    await _updateIndexRecord(file.id, file.copyWith(
-      predictionStatus: result.status == 'completed' ? 'completed' : 'failed',
-      scanResultId: result.scanId,
-    ));
+    await _updateIndexRecord(
+        file.id,
+        file.copyWith(
+          predictionStatus:
+              result.status == 'completed' ? 'completed' : 'failed',
+          scanResultId: result.scanId,
+        ));
   }
 
   Future<List<MriScanResult>> loadMriHistory() async {
@@ -210,7 +214,8 @@ class MriFileStorageService {
       final parsed = jsonDecode(raw);
       if (parsed is! List) return [];
       return parsed
-          .map((e) => MriScanResult.fromMap(Map<String, dynamic>.from(e as Map)))
+          .map(
+              (e) => MriScanResult.fromMap(Map<String, dynamic>.from(e as Map)))
           .toList();
     } catch (e) {
       debugPrint('MriFileStorageService: loadMriHistory error: $e');
@@ -236,7 +241,8 @@ class MriFileStorageService {
   Future<void> _writeIndex(List<MriUploadedFile> files) async {
     final root = await _getRootDir();
     final indexFile = File('${root.path}/$_uploadsIndex');
-    await indexFile.writeAsString(jsonEncode(files.map((f) => f.toMap()).toList()));
+    await indexFile
+        .writeAsString(jsonEncode(files.map((f) => f.toMap()).toList()));
   }
 
   Future<List<MriUploadedFile>> loadAllUploads() async {
@@ -248,7 +254,8 @@ class MriFileStorageService {
       final parsed = jsonDecode(raw);
       if (parsed is! List) return [];
       return parsed
-          .map((e) => MriUploadedFile.fromMap(Map<String, dynamic>.from(e as Map)))
+          .map((e) =>
+              MriUploadedFile.fromMap(Map<String, dynamic>.from(e as Map)))
           .toList();
     } catch (e) {
       debugPrint('MriFileStorageService: loadAllUploads error: $e');
@@ -256,7 +263,8 @@ class MriFileStorageService {
     }
   }
 
-  Future<List<MriUploadedFile>> loadUploadsByCategory(MriFileCategory category) async {
+  Future<List<MriUploadedFile>> loadUploadsByCategory(
+      MriFileCategory category) async {
     final all = await loadAllUploads();
     return all.where((f) => f.category == category).toList();
   }

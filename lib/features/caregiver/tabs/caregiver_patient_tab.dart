@@ -87,7 +87,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               ),
               TextButton.icon(
                 onPressed: () => _openLinkPatientDialog(context),
-                icon: const Icon(Icons.add_rounded, size: 18, color: AppColors.teal),
+                icon: const Icon(Icons.add_rounded,
+                    size: 18, color: AppColors.teal),
                 label: const Text(
                   'Link Patient',
                   style: TextStyle(
@@ -131,7 +132,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.notes_rounded, color: AppColors.teal, size: 20),
+                        Icon(Icons.notes_rounded,
+                            color: AppColors.teal, size: 20),
                         SizedBox(width: 8),
                         Text(
                           'Caregiver Notes & Daily Log',
@@ -145,7 +147,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                     ),
                     if (_isNotesSaved)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: AppColors.tealPale,
                           borderRadius: BorderRadius.circular(6),
@@ -166,7 +169,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                   controller: _notesController,
                   maxLines: 4,
                   decoration: InputDecoration(
-                    hintText: 'Add clinical notes or routine observations for this patient...',
+                    hintText:
+                        'Add clinical notes or routine observations for this patient...',
                     filled: true,
                     fillColor: AppColors.softSection,
                     border: OutlineInputBorder(
@@ -189,21 +193,27 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            context.tr('caregiver.notesSaved', defaultText: 'Caregiver notes saved offline successfully.'),
+                            context.tr('caregiver.notesSaved',
+                                defaultText:
+                                    'Caregiver notes saved offline successfully.'),
                           ),
                           backgroundColor: AppColors.tealDark,
                           behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.teal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Text(
-                      context.tr('caregiver.saveNotes', defaultText: 'Save Notes'),
+                      context.tr('caregiver.saveNotes',
+                          defaultText: 'Save Notes'),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -277,7 +287,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: AppColors.tealPale,
                             borderRadius: BorderRadius.circular(6),
@@ -313,13 +324,17 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           const SizedBox(height: 14),
 
           // Vitals & Clinical Attributes Grid
-          _buildInfoRow(Icons.location_on_outlined, 'Home Location', patient.location),
+          _buildInfoRow(
+              Icons.location_on_outlined, 'Home Location', patient.location),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.medical_services_outlined, 'Attending Physician', patient.physician),
+          _buildInfoRow(Icons.medical_services_outlined, 'Attending Physician',
+              patient.physician),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.psychology_outlined, 'Dementia Stage', ' (Screening Support)'),
+          _buildInfoRow(Icons.psychology_outlined, 'Dementia Stage',
+              ' (Screening Support)'),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.translate_rounded, 'Primary Languages', patient.primaryLanguage),
+          _buildInfoRow(Icons.translate_rounded, 'Primary Languages',
+              patient.primaryLanguage),
         ],
       ),
     );
@@ -386,24 +401,31 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
         ),
         title: Text(
           patient.fullName,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: const TextStyle(
+              fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         subtitle: const Text(
           ' yrs • ID:  •  Stage',
           style: TextStyle(fontSize: 12, color: AppColors.muted),
         ),
         trailing: isSelected
-            ? const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 24)
+            ? const Icon(Icons.check_circle_rounded,
+                color: AppColors.teal, size: 24)
             : OutlinedButton(
                 onPressed: onSelect,
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.border),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 child: const Text(
                   'Switch',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.ink),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
                 ),
               ),
       ),
@@ -463,7 +485,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                   Expanded(
                     child: TextField(
                       controller: bloodCtrl,
-                      decoration: const InputDecoration(labelText: 'Blood Group'),
+                      decoration:
+                          const InputDecoration(labelText: 'Blood Group'),
                     ),
                   ),
                 ],
@@ -471,7 +494,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               const SizedBox(height: 10),
               TextField(
                 controller: physicianCtrl,
-                decoration: const InputDecoration(labelText: 'Attending Physician'),
+                decoration:
+                    const InputDecoration(labelText: 'Attending Physician'),
               ),
             ],
           ),
@@ -484,13 +508,23 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           ElevatedButton(
             onPressed: () async {
               if (nameCtrl.text.trim().isEmpty) return;
-              final initials = nameCtrl.text.trim().split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase();
+              final initials = nameCtrl.text
+                  .trim()
+                  .split(' ')
+                  .map((e) => e.isNotEmpty ? e[0] : '')
+                  .take(2)
+                  .join()
+                  .toUpperCase();
               final newP = PatientProfile(
-                id: codeCtrl.text.trim().isNotEmpty ? codeCtrl.text.trim() : 'MC-',
+                id: codeCtrl.text.trim().isNotEmpty
+                    ? codeCtrl.text.trim()
+                    : 'MC-',
                 fullName: nameCtrl.text.trim(),
                 age: int.tryParse(ageCtrl.text) ?? 70,
                 location: 'Guwahati, Assam',
-                bloodGroup: bloodCtrl.text.trim().isNotEmpty ? bloodCtrl.text.trim() : 'B+',
+                bloodGroup: bloodCtrl.text.trim().isNotEmpty
+                    ? bloodCtrl.text.trim()
+                    : 'B+',
                 physician: physicianCtrl.text.trim(),
                 dementiaLevel: 'Mild',
                 primaryLanguage: 'Assamese & English',

@@ -20,6 +20,7 @@ import '../features/games/games_hub_screen.dart';
 import '../features/emergency/take_me_home_screen.dart';
 import '../features/mri/mri_screening_screen.dart';
 import '../features/assessment/cognitive_assessment_screen.dart';
+import '../core/voice/voice.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
@@ -37,6 +38,32 @@ class _MainShellScreenState extends State<MainShellScreen> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialTab;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _syncRouteTracker(widget.initialTab);
+      }
+    });
+  }
+
+  void _syncRouteTracker(int index) {
+    switch (index) {
+      case 1:
+        VoiceRouteTracker.instance.setCurrentRoute('/games');
+        break;
+      case 2:
+        VoiceRouteTracker.instance.setCurrentRoute('/dashboard/reminders');
+        break;
+      case 3:
+        VoiceRouteTracker.instance.setCurrentRoute('/dashboard/progress');
+        break;
+      case 4:
+        VoiceRouteTracker.instance.setCurrentRoute('/dashboard/profile');
+        break;
+      case 0:
+      default:
+        VoiceRouteTracker.instance.setCurrentRoute('/dashboard');
+        break;
+    }
   }
 
   void _onTabTapped(int index) {
@@ -44,6 +71,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       setState(() {
         _currentIndex = index;
       });
+      _syncRouteTracker(index);
     }
   }
 
@@ -76,6 +104,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       case 'location':
         Navigator.of(context).push(
           MaterialPageRoute(
+            settings: const RouteSettings(name: '/take-me-home'),
             builder: (ctx) => TakeMeHomeScreen(
               onBack: () => Navigator.of(ctx).pop(),
             ),
@@ -86,6 +115,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       case 'mri-screening':
         Navigator.of(context).push(
           MaterialPageRoute(
+            settings: const RouteSettings(name: '/mri-screening'),
             builder: (ctx) => MriScreeningScreen(
               onBack: () => Navigator.of(ctx).pop(),
             ),
@@ -95,6 +125,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       case 'assessment':
         Navigator.of(context).push(
           MaterialPageRoute(
+            settings: const RouteSettings(name: '/assessment'),
             builder: (ctx) => CognitiveAssessmentScreen(
               onBack: () => Navigator.of(ctx).pop(),
             ),
@@ -105,6 +136,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       case 'lang':
         Navigator.of(context).push(
           MaterialPageRoute(
+            settings: const RouteSettings(name: '/language-select'),
             builder: (ctx) => LanguageSelectScreen(
               onBack: () => Navigator.of(ctx).pop(),
             ),
@@ -115,6 +147,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
         // For remaining upcoming modules, push the dedicated PlaceholderScreen
         Navigator.of(context).push(
           MaterialPageRoute(
+            settings: RouteSettings(name: '/placeholder/$moduleId'),
             builder: (ctx) => PlaceholderScreen.forModule(
               moduleId,
               onBack: () => Navigator.of(ctx).pop(),
