@@ -1,3 +1,4 @@
+```dart
 // lib/app.dart
 //
 // Root app widget with go_router navigation.
@@ -18,8 +19,14 @@ import 'features/auth/login_screen.dart';
 import 'features/auth/caregiver_login_screen.dart';
 import 'features/auth/register_screen.dart';
 import 'core/services/caregiver_auth_service.dart';
+
 import 'features/patient/patient_dashboard_screen.dart';
 import 'features/caregiver/caregiver_dashboard_screen.dart';
+import 'features/patient/caregiver_confirmation_screen.dart';
+import 'features/patient/patient_profile_screen.dart';
+import 'features/patient/patient_reminders_screen.dart';
+import 'features/patient/patient_progress_screen.dart';
+
 import 'features/games/games_hub_screen.dart';
 import 'features/games/memory_match/memory_match_screen.dart';
 import 'features/games/word_recall/word_recall_screen.dart';
@@ -27,10 +34,15 @@ import 'features/games/different_object/different_object_screen.dart';
 import 'features/games/orientation/day_time_orientation_screen.dart';
 import 'features/games/routine/routine_sequence_screen.dart';
 import 'features/games/family_memories/family_memories_game_screen.dart';
+
 import 'features/mri/mri_screening_screen.dart';
 import 'features/emergency/take_me_home_screen.dart';
 import 'features/assessment/cognitive_assessment_screen.dart';
-import 'features/patient/caregiver_confirmation_screen.dart';
+
+import 'features/auth/doctor_login_screen.dart';
+import 'features/doctor/doctor_dashboard_screen.dart';
+import 'features/doctor/screens/patient_clinical_overview_screen.dart';
+
 import 'core/voice/voice.dart';
 
 GoRouter createAppRouter({
@@ -64,7 +76,9 @@ GoRouter createAppRouter({
           path: '/placeholder/:moduleId',
           name: 'placeholder',
           builder: (context, state) {
-            final moduleId = state.pathParameters['moduleId'] ?? 'general';
+            final moduleId =
+                state.pathParameters['moduleId'] ?? 'general';
+
             return PlaceholderScreen.forModule(
               moduleId,
               onBack: () {
@@ -78,7 +92,7 @@ GoRouter createAppRouter({
           },
         ),
 
-        // ── Prototype Splash (preserved for future onboarding flow)
+        // ── Prototype Splash
         GoRoute(
           path: '/splash',
           name: 'splash',
@@ -92,12 +106,13 @@ GoRouter createAppRouter({
           builder: (context, state) => const RoleSelectionScreen(),
         ),
 
-        // ── Login (accepts 'patient' or 'caregiver' as path param)
+        // ── Login
         GoRoute(
           path: '/login/:role',
           name: 'login',
           builder: (context, state) {
             final role = state.pathParameters['role'] ?? 'patient';
+
             return LoginScreen(role: role);
           },
         ),
@@ -109,7 +124,7 @@ GoRouter createAppRouter({
           builder: (context, state) => const RegisterScreen(),
         ),
 
-        // ── Patient Dashboard (dedicated view)
+        // ── Patient Dashboard
         GoRoute(
           path: '/patient-dashboard',
           name: 'patientDashboard',
@@ -123,7 +138,7 @@ GoRouter createAppRouter({
           builder: (context, state) => const CaregiverDashboardScreen(),
         ),
 
-        // ── Caregiver Login Screen (role-switch auth gate)
+        // ── Caregiver Login
         GoRoute(
           path: '/caregiver-login',
           name: 'caregiverLogin',
@@ -133,7 +148,7 @@ GoRouter createAppRouter({
           ),
         ),
 
-        // ── Caregiver Dashboard (auth-guarded; redirects to /dashboard if not authenticated)
+        // ── Caregiver Dashboard (auth guarded)
         GoRoute(
           path: '/caregiver',
           name: 'caregiver',
@@ -141,6 +156,7 @@ GoRouter createAppRouter({
             if (!CaregiverAuthService.instance.isCaregiverAuthenticated) {
               return '/dashboard';
             }
+
             return null;
           },
           builder: (context, state) => CaregiverDashboardScreen(
@@ -157,39 +173,44 @@ GoRouter createAppRouter({
           name: 'gamesHub',
           builder: (context, state) => const GamesHubScreen(),
         ),
+
         GoRoute(
           path: '/games/memory-match',
           name: 'memoryMatch',
           builder: (context, state) => const MemoryMatchScreen(),
         ),
+
         GoRoute(
           path: '/games/word-recall',
           name: 'wordRecall',
           builder: (context, state) => const WordRecallScreen(),
         ),
+
         GoRoute(
           path: '/games/different-object',
           name: 'differentObject',
           builder: (context, state) => const DifferentObjectScreen(),
         ),
+
         GoRoute(
           path: '/games/orientation',
           name: 'dayTimeOrientation',
           builder: (context, state) => const DayTimeOrientationScreen(),
         ),
+
         GoRoute(
           path: '/games/routine',
           name: 'routineSequence',
           builder: (context, state) => const RoutineSequenceScreen(),
         ),
+
         GoRoute(
           path: '/games/family-memories',
           name: 'familyMemories',
           builder: (context, state) => const FamilyMemoriesGameScreen(),
         ),
 
-        // ── MRI Screening (Caregiver-only — auth guarded)
-        // FIX: Added MRI Screening to Caregiver Dashboard (only authenticated caregivers)
+        // ── MRI Screening (Caregiver-only)
         GoRoute(
           path: '/mri-screening',
           name: 'mriScreening',
@@ -197,6 +218,7 @@ GoRouter createAppRouter({
             if (!CaregiverAuthService.instance.isCaregiverAuthenticated) {
               return '/caregiver-login';
             }
+
             return null;
           },
           builder: (context, state) => const MriScreeningScreen(),
@@ -208,6 +230,7 @@ GoRouter createAppRouter({
           name: 'takeMeHome',
           builder: (context, state) => const TakeMeHomeScreen(),
         ),
+
         GoRoute(
           path: '/emergency',
           name: 'emergency',
@@ -221,11 +244,87 @@ GoRouter createAppRouter({
           builder: (context, state) => const CognitiveAssessmentScreen(),
         ),
 
-        // ── Caregiver Call Confirmation (Patient-facing)
+        // ── Caregiver Call Confirmation
         GoRoute(
           path: '/caregiver-confirm',
           name: 'caregiverConfirm',
           builder: (context, state) => const CaregiverConfirmationScreen(),
+        ),
+
+        // ── Doctor Login
+        GoRoute(
+          path: '/doctor-login',
+          name: 'doctorLogin',
+          builder: (context, state) => DoctorLoginScreen(
+            onSuccess: () => context.go('/doctor'),
+            onCancel: () => context.go('/dashboard'),
+          ),
+        ),
+
+        // ── Doctor Dashboard (auth guarded)
+        GoRoute(
+          path: '/doctor',
+          name: 'doctor',
+          redirect: (context, state) {
+            if (!CaregiverAuthService.instance.isDoctorAuthenticated) {
+              return '/doctor-login';
+            }
+
+            return null;
+          },
+          builder: (context, state) => DoctorDashboardScreen(
+            onBackToPatient: () {
+              CaregiverAuthService.instance.exitDoctorMode();
+              context.go('/dashboard');
+            },
+          ),
+        ),
+
+        // ── Doctor Patient Clinical Overview
+        GoRoute(
+          path: '/doctor/patient/:id',
+          name: 'doctorPatientOverview',
+          redirect: (context, state) {
+            if (!CaregiverAuthService.instance.isDoctorAuthenticated) {
+              return '/doctor-login';
+            }
+
+            return null;
+          },
+          builder: (context, state) {
+            final patientId = state.pathParameters['id'] ?? '';
+
+            return PatientClinicalOverviewScreen(
+              patientId: patientId,
+            );
+          },
+        ),
+
+        // ── Patient Profile
+        GoRoute(
+          path: '/patient-profile',
+          name: 'patientProfile',
+          builder: (context, state) => const PatientProfileScreen(),
+        ),
+
+        GoRoute(
+          path: '/profile',
+          name: 'profile',
+          builder: (context, state) => const PatientProfileScreen(),
+        ),
+
+        // ── Patient Reminders
+        GoRoute(
+          path: '/reminders',
+          name: 'reminders',
+          builder: (context, state) => const PatientRemindersScreen(),
+        ),
+
+        // ── Patient Progress
+        GoRoute(
+          path: '/progress',
+          name: 'progress',
+          builder: (context, state) => const PatientProgressScreen(),
         ),
 
         // ── Language Selection
@@ -240,7 +339,10 @@ GoRouter createAppRouter({
 class SmritiCareApp extends StatefulWidget {
   final GoRouter? router;
 
-  const SmritiCareApp({super.key, this.router});
+  const SmritiCareApp({
+    super.key,
+    this.router,
+  });
 
   @override
   State<SmritiCareApp> createState() => _SmritiCareAppState();
@@ -260,13 +362,15 @@ class _SmritiCareAppState extends State<SmritiCareApp> {
     if (widget.router == null) {
       _router.dispose();
     }
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Locale>(
-      valueListenable: LocalizationService.instance.currentLocaleNotifier,
+      valueListenable:
+          LocalizationService.instance.currentLocaleNotifier,
       builder: (context, currentLocale, _) {
         return MaterialApp.router(
           title: 'Smriti Care',
@@ -280,10 +384,6 @@ class _SmritiCareAppState extends State<SmritiCareApp> {
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
-            // FIX: MaterialLocalizations / localization configuration fix
-            // Fallback delegates provide MaterialLocalizations and CupertinoLocalizations
-            // for regional languages (mni, kha, lus, grt, brx, trp) so widgets like
-            // BottomNavigationBar, Scaffold, and Dialogs never throw No MaterialLocalizations found.
             AppLocalizations.fallbackMaterialDelegate,
             AppLocalizations.fallbackCupertinoDelegate,
           ],
@@ -306,3 +406,4 @@ class _SmritiCareAppState extends State<SmritiCareApp> {
     );
   }
 }
+```

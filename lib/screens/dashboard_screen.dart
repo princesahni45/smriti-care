@@ -20,15 +20,30 @@ import '../widgets/next_reminder_card.dart';
 import '../widgets/quick_action_card.dart';
 import '../widgets/progress_summary_card.dart';
 import '../widgets/sos_button.dart';
+// FIX: Import offline-first step counter service and daily steps widget
+import '../core/services/step_counter_service.dart';
+import '../features/patient/widgets/daily_steps_card.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   final void Function(String moduleId)? onNavigateModule;
 
   const DashboardScreen({super.key, this.onNavigateModule});
 
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // FIX: Initialize offline step tracking on the main patient home screen
+    StepCounterService.instance.init();
+  }
+
   void _handleNavigate(BuildContext context, String moduleId) {
-    if (onNavigateModule != null) {
-      onNavigateModule!(moduleId);
+    if (widget.onNavigateModule != null) {
+      widget.onNavigateModule!(moduleId);
     } else if (moduleId.toLowerCase() == 'games') {
       context.push('/games');
     } else if (moduleId.toLowerCase() == 'caregiver') {
@@ -72,6 +87,11 @@ class DashboardScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
+                    // FIX: Real Daily Step Counter (Target: 10,000 steps/day)
+                    const DailyStepsCard(),
+
+                    const SizedBox(height: 18),
+
                     // ── Prominent Emergency SOS Button for elderly patients ──
                     const SosButton(),
 
@@ -96,11 +116,23 @@ class DashboardScreen extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
-                    // Your Progress (Cognitive indicators)
+                    // Your Progress (Real cognitive indicators from gameplay)
                     ProgressSummaryCard(
-                      memoryScore: 75,
-                      attentionScore: 60,
-                      patternScore: 80,
+                      memoryScore: GameStorageService.instance.getStatsForGame('memory-match').gamesPlayed > 0
+                          ? GameStorageService.instance.getStatsForGame('memory-match').avgAccuracy.round()
+                          : (GameStorageService.instance.getTotalGamesCompleted() > 0
+                              ? GameStorageService.instance.getAverageAccuracy().round()
+                              : 75),
+                      attentionScore: GameStorageService.instance.getStatsForGame('different-object').gamesPlayed > 0
+                          ? GameStorageService.instance.getStatsForGame('different-object').avgAccuracy.round()
+                          : (GameStorageService.instance.getTotalGamesCompleted() > 0
+                              ? GameStorageService.instance.getAverageAccuracy().round()
+                              : 60),
+                      patternScore: GameStorageService.instance.getStatsForGame('routine-sequence').gamesPlayed > 0
+                          ? GameStorageService.instance.getStatsForGame('routine-sequence').avgAccuracy.round()
+                          : (GameStorageService.instance.getTotalGamesCompleted() > 0
+                              ? GameStorageService.instance.getAverageAccuracy().round()
+                              : 80),
                       onTap: () => _handleNavigate(context, 'progress'),
                     ),
 

@@ -1,32 +1,27 @@
+````dart
 // lib/services/auth_service.dart
 //
 // SmritiCare — Centralized Firebase Authentication Service
 //
 // Responsibilities:
 //  1. Caregiver email/password login via Firebase Auth
-//  2. Firestore role verification: users/{uid}/role == "caregiver"
-//  3. Sign out (FirebaseAuth.instance.signOut())
-//  4. Expose current Firebase user
-//  5. Clean FirebaseAuthException error messages
-//  6. Integrates with CaregiverAuthService for mode/session state
+//  2. Doctor email/password login via Firebase Auth
+//  3. Firestore role verification:
+//       users/{uid}/role == "caregiver"
+//       users/{uid}/role == "doctor"
+//  4. Sign out using FirebaseAuth.instance.signOut()
+//  5. Expose the current Firebase user
+//  6. Provide clean FirebaseAuthException messages
 //
-// FLOW:
-//  Patient Dashboard
-//    → Caregiver Login Screen
-//    → AuthService.loginCaregiver()
-//    → Firebase Auth signInWithEmailAndPassword
-//    → Firestore users/{uid} role check
-//    → Success: CaregiverAuthService sets mode = caregiver
-//    → Failure: returns human-readable error
-//
-// NOTE: Passwords are NEVER stored in Firestore.
-// NOTE: Do NOT call this before Firebase.initializeApp() completes.
+// NOTE:
+// - Passwords are never stored in Firestore.
+// - Firebase.initializeApp() must complete before using this service.
 
-import "package:firebase_auth/firebase_auth.dart";
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:flutter/foundation.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
-// Result wrapper for caregiver login
+/// Result wrapper for authentication operations.
 class AuthResult {
   final bool isSuccess;
   final String? errorMessage;
@@ -46,46 +41,56 @@ class AuthResult {
     required String uid,
     required String email,
     String? displayName,
-  }) =>
-      AuthResult._(
-        isSuccess: true,
-        uid: uid,
-        email: email,
-        displayName: displayName,
-      );
+  }) {
+    return AuthResult._(
+      isSuccess: true,
+      uid: uid,
+      email: email,
+      displayName: displayName,
+    );
+  }
 
-  factory AuthResult.failure(String message) =>
-      AuthResult._(isSuccess: false, errorMessage: message);
+  factory AuthResult.failure(String message) {
+    return AuthResult._(
+      isSuccess: false,
+      errorMessage: message,
+    );
+  }
 }
 
-/// Centralized Firebase Authentication Service for SmritiCare.
+/// Centralized Firebase Authentication Service.
 ///
-/// Use [AuthService.instance] to access the singleton.
+/// Access the singleton using:
+///
+/// ```dart
+/// AuthService.instance
+/// ```
 class AuthService {
   AuthService._();
+
   static final AuthService instance = AuthService._();
 
   FirebaseAuth get _auth => FirebaseAuth.instance;
+
   FirebaseFirestore get _db => FirebaseFirestore.instance;
 
   /// The currently signed-in Firebase user, or null.
   User? get currentUser => _auth.currentUser;
 
-  /// Stream of auth state changes. Listen to this to react to login/logout.
+  /// Stream of Firebase authentication state changes.
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // ── Caregiver Login ─────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Caregiver Login
+  // ---------------------------------------------------------------------------
 
-  /// Attempt caregiver login using Firebase Email + Password Authentication.
+  /// Logs in a caregiver using Firebase email/password authentication.
   ///
-  /// Steps:
-  /// 1. Validate inputs
-  /// 2. Sign in with Firebase Auth (signInWithEmailAndPassword)
-  /// 3. Read Firestore: users/{uid} → check role == "caregiver"
-  /// 4. If role is not caregiver → sign out and return failure
-  /// 5. If successful → return [AuthResult.success]
+  /// The user's Firestore document must contain:
   ///
-  /// Passwords are NEVER written to Firestore.
+  /// ```text
+  /// users/{uid}/role = caregiver
+  /// ```
   Future<AuthResult> loginCaregiver({
     required String email,
     required String password,
@@ -94,114 +99,312 @@ class AuthService {
     final cleanPassword = password.trim();
 
     if (cleanEmail.isEmpty || cleanPassword.isEmpty) {
-      return AuthResult.failure("Please enter both email and password.");
+      return AuthResult.failure(
+        'Please enter both email and password.',
+      );
     }
 
     try {
-      // Step 1: Firebase Auth — email + password sign in
       final credential = await _auth.signInWithEmailAndPassword(
         email: cleanEmail,
         password: cleanPassword,
       );
 
       final user = credential.user;
-      if (user == null) {
-        return AuthResult.failure("Authentication failed. Please try again.");
-      }
 
-      // Step 2: Firestore role verification — users/{uid}
-      // Do NOT allow access if role is not "caregiver"
-      String? role;
-      String? name;
-      try {
-        final doc = await _db.collection("users").doc(user.uid).get();
-        if (doc.exists && doc.data() != null) {
-          final data = doc.data()!;
-          role = (data["role"] as String?)?.trim().toLowerCase();
-          name = data["name"] as String?;
-        }
-      } catch (firestoreError) {
-        debugPrint("[AuthService] Firestore role check error: $firestoreError");
-        // If Firestore is unreachable, deny access for security
-        await _auth.signOut();
+      if (user == null) {
         return AuthResult.failure(
-          "Could not verify caregiver permissions. Please check your connection.",
+          'Authentication failed. Please try again.',
         );
       }
 
-      // Step 3: Role check — must be exactly "caregiver"
-      if (role == null || role != "caregiver") {
-        await _auth.signOut();
-        if (role == "patient") {
+      final profile = await _getUserProfile(user.uid);
+
+      if (profile == null) {
+        await _safeSignOut();
+
+        return AuthResult.failure(
+          'Could not verify caregiver permissions. '
+          'Please check your connection and try again.',
+        );
+      }
+
+      final role = _readRole(profile);
+      final name = _readName(profile);
+
+      if (role != 'caregiver') {
+        await _safeSignOut();
+
+        if (role == 'patient') {
           return AuthResult.failure(
-            "This account belongs to a patient, not a caregiver. "
-            "Please use your caregiver credentials.",
+            'This account belongs to a patient, not a caregiver. '
+            'Please use your caregiver credentials.',
           );
         }
+
+        if (role == 'doctor') {
+          return AuthResult.failure(
+            'This account belongs to a doctor. '
+            'Please use the doctor login screen.',
+          );
+        }
+
         return AuthResult.failure(
-          "This account does not have caregiver access. "
-          "Contact your administrator.",
+          'This account does not have caregiver access. '
+          'Contact your administrator.',
         );
       }
 
-      // Step 4: Success
-      debugPrint("[AuthService] Caregiver login success: ${user.uid}");
+      debugPrint(
+        '[AuthService] Caregiver login successful: ${user.uid}',
+      );
+
       return AuthResult.success(
         uid: user.uid,
         email: user.email ?? cleanEmail,
-        displayName: name ?? user.displayName ?? "Caregiver",
+        displayName: name ?? user.displayName ?? 'Caregiver',
       );
-    } on FirebaseAuthException catch (e) {
-      // Step 5: Clean, user-friendly error messages for all Firebase error codes
-      return AuthResult.failure(_mapFirebaseError(e));
-    } catch (e) {
-      debugPrint("[AuthService] Unexpected login error: $e");
+    } on FirebaseAuthException catch (error) {
       return AuthResult.failure(
-          "An unexpected error occurred. Please try again.");
+        _mapFirebaseError(error),
+      );
+    } catch (error) {
+      debugPrint(
+        '[AuthService] Unexpected caregiver login error: $error',
+      );
+
+      return AuthResult.failure(
+        'An unexpected error occurred. Please try again.',
+      );
     }
   }
 
-  // ── Sign Out ────────────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Doctor Login
+  // ---------------------------------------------------------------------------
 
-  /// Sign out the current Firebase user and return to Patient Dashboard.
+  /// Logs in a doctor using Firebase email/password authentication.
   ///
-  /// This is called when:
-  ///  - Caregiver taps "Exit Caregiver Mode"
-  ///  - Caregiver switches back to Patient mode
+  /// The user's Firestore document must contain:
+  ///
+  /// ```text
+  /// users/{uid}/role = doctor
+  /// ```
+  Future<AuthResult> loginDoctor({
+    required String email,
+    required String password,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPassword = password.trim();
+
+    if (cleanEmail.isEmpty || cleanPassword.isEmpty) {
+      return AuthResult.failure(
+        'Please enter both email and password.',
+      );
+    }
+
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: cleanEmail,
+        password: cleanPassword,
+      );
+
+      final user = credential.user;
+
+      if (user == null) {
+        return AuthResult.failure(
+          'Authentication failed. Please try again.',
+        );
+      }
+
+      final profile = await _getUserProfile(user.uid);
+
+      if (profile == null) {
+        await _safeSignOut();
+
+        return AuthResult.failure(
+          'Could not verify doctor permissions. '
+          'Please check your connection and try again.',
+        );
+      }
+
+      final role = _readRole(profile);
+      final name = _readName(profile);
+
+      if (role != 'doctor') {
+        await _safeSignOut();
+
+        if (role == 'caregiver') {
+          return AuthResult.failure(
+            'This account belongs to a caregiver. '
+            'Please use the caregiver login screen.',
+          );
+        }
+
+        if (role == 'patient') {
+          return AuthResult.failure(
+            'This account belongs to a patient. '
+            'Please use the patient login screen.',
+          );
+        }
+
+        return AuthResult.failure(
+          'This account does not have doctor access. '
+          'Please use your medical credentials.',
+        );
+      }
+
+      debugPrint(
+        '[AuthService] Doctor login successful: ${user.uid}',
+      );
+
+      return AuthResult.success(
+        uid: user.uid,
+        email: user.email ?? cleanEmail,
+        displayName: name ?? user.displayName ?? 'Doctor',
+      );
+    } on FirebaseAuthException catch (error) {
+      return AuthResult.failure(
+        _mapFirebaseError(error),
+      );
+    } catch (error) {
+      debugPrint(
+        '[AuthService] Unexpected doctor login error: $error',
+      );
+
+      return AuthResult.failure(
+        'An unexpected error occurred. Please try again.',
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // User Profile and Role Helpers
+  // ---------------------------------------------------------------------------
+
+  /// Reads the Firestore user profile.
+  ///
+  /// Returns null when the document cannot be read.
+  Future<Map<String, dynamic>?> _getUserProfile(String uid) async {
+    try {
+      final document = await _db.collection('users').doc(uid).get();
+
+      if (!document.exists) {
+        debugPrint(
+          '[AuthService] User profile does not exist for uid: $uid',
+        );
+        return <String, dynamic>{};
+      }
+
+      return document.data();
+    } catch (error) {
+      debugPrint(
+        '[AuthService] Firestore profile read error: $error',
+      );
+
+      return null;
+    }
+  }
+
+  String? _readRole(Map<String, dynamic> profile) {
+    final value = profile['role'];
+
+    if (value is! String) {
+      return null;
+    }
+
+    return value.trim().toLowerCase();
+  }
+
+  String? _readName(Map<String, dynamic> profile) {
+    final value = profile['name'];
+
+    if (value is! String) {
+      return null;
+    }
+
+    final cleanName = value.trim();
+
+    return cleanName.isEmpty ? null : cleanName;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sign Out
+  // ---------------------------------------------------------------------------
+
+  /// Signs out the currently authenticated Firebase user.
+  ///
+  /// Sign-out errors are treated as non-fatal.
   Future<void> signOut() async {
+    await _safeSignOut();
+  }
+
+  Future<void> _safeSignOut() async {
     try {
       await _auth.signOut();
-      debugPrint("[AuthService] Caregiver signed out successfully.");
-    } catch (e) {
-      debugPrint("[AuthService] Sign out error (non-fatal): $e");
+
+      debugPrint(
+        '[AuthService] Firebase user signed out successfully.',
+      );
+    } catch (error) {
+      debugPrint(
+        '[AuthService] Sign-out error: $error',
+      );
     }
   }
 
-  // ── FirebaseAuthException → Human-Readable Messages ─────────────────────────
+  // ---------------------------------------------------------------------------
+  // Firebase Error Mapping
+  // ---------------------------------------------------------------------------
 
-  /// Maps Firebase error codes to clean, user-friendly messages.
-  /// Avoids exposing internal Firebase error codes to users.
-  String _mapFirebaseError(FirebaseAuthException e) {
-    switch (e.code) {
-      case "user-not-found":
-      case "wrong-password":
-      case "invalid-credential":
-      case "invalid-email":
-        return "Invalid email or password. Please check your credentials.";
-      case "user-disabled":
-        return "This caregiver account has been disabled. Contact your administrator.";
-      case "too-many-requests":
-        return "Too many failed attempts. Please wait a few minutes and try again.";
-      case "network-request-failed":
-        return "Network error. Please check your internet connection.";
-      case "operation-not-allowed":
-        return "Email/password login is not enabled. Contact your administrator.";
-      case "email-already-in-use":
-        return "This email is already registered.";
+  /// Converts Firebase authentication errors into user-friendly messages.
+  String _mapFirebaseError(FirebaseAuthException error) {
+    switch (error.code) {
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+      case 'invalid-email':
+        return 'Invalid email or password. Please check your credentials.';
+
+      case 'user-disabled':
+        return 'This account has been disabled. '
+            'Contact your administrator.';
+
+      case 'too-many-requests':
+        return 'Too many failed attempts. '
+            'Please wait a few minutes and try again.';
+
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection.';
+
+      case 'operation-not-allowed':
+        return 'Email/password login is not enabled. '
+            'Contact your administrator.';
+
+      case 'email-already-in-use':
+        return 'This email is already registered.';
+
+      case 'weak-password':
+        return 'The password is too weak. '
+            'Please choose a stronger password.';
+
+      case 'requires-recent-login':
+        return 'Please sign in again to continue this action.';
+
+      case 'invalid-api-key':
+      case 'app-not-authorized':
+        return 'Firebase configuration is invalid. '
+            'Please contact your administrator.';
+
       default:
         debugPrint(
-            "[AuthService] Unhandled Firebase error code: ${e.code} — ${e.message}");
-        return e.message ?? "Authentication failed. Please try again.";
+          '[AuthService] Unhandled Firebase error code: '
+          '${error.code}; message: ${error.message}',
+        );
+
+        return error.message ??
+            'Authentication failed. Please try again.';
     }
   }
 }
+````

@@ -1,8 +1,11 @@
+```dart
 // lib/core/theme/app_theme.dart
 //
-// Design tokens faithfully ported from the React app's styles.css and CSS custom properties.
-// Primary palette: teal #157f7a, Background: #f4faf9, Ink: #173944
-// Font: DM Sans (body), Merriweather/Playfair as Fraunces substitute for headings.
+// Design tokens ported from the React app's styles.css and CSS custom properties.
+// Primary palette: teal #157f7a
+// Background: #f4faf9
+// Ink: #173944
+// Font: DM Sans for body and Playfair Display for headings.
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +13,10 @@ import 'package:google_fonts/google_fonts.dart';
 class AppColors {
   AppColors._();
 
-  // ── Primary teal palette (from React --pd-teal, --color-teal)
+  // ---------------------------------------------------------------------------
+  // Primary teal palette
+  // ---------------------------------------------------------------------------
+
   static const Color teal = Color(0xFF157F7A);
   static const Color tealDark = Color(0xFF0E6B65);
   static const Color tealDeep = Color(0xFF063E3B);
@@ -19,51 +25,79 @@ class AppColors {
   static const Color tealSky = Color(0xFFE9F8F8);
   static const Color tealBg = Color(0xFFF0FDFA);
 
-  // ── Background / surface (from --pd-bg, --pd-surface)
+  // ---------------------------------------------------------------------------
+  // Background and surface
+  // ---------------------------------------------------------------------------
+
   static const Color background = Color(0xFFF4FAF9);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color softSection = Color(0xFFF7FBFB);
 
-  // ── Ink / text (from --pd-ink, --color-ink)
+  // ---------------------------------------------------------------------------
+  // Ink and text
+  // ---------------------------------------------------------------------------
+
   static const Color ink = Color(0xFF173944);
   static const Color inkDark = Color(0xFF0F2F38);
   static const Color inkSoft = Color(0xFF2D5560);
   static const Color muted = Color(0xFF66808A);
   static const Color mutedLight = Color(0xFF7FA6A3);
 
-  // ── Border
+  // ---------------------------------------------------------------------------
+  // Borders
+  // ---------------------------------------------------------------------------
+
   static const Color border = Color(0xFFB0D4CF);
   static const Color borderLight = Color(0xFFE0ECEB);
 
-  // ── Accent: blue
+  // Alias used by UI cards.
+  static const Color cardBorder = borderLight;
+
+  // ---------------------------------------------------------------------------
+  // Blue accent
+  // ---------------------------------------------------------------------------
+
   static const Color blue = Color(0xFF287BA7);
   static const Color bluePale = Color(0xFFDAEEF9);
   static const Color blueDeep = Color(0xFF155E8E);
 
-  // ── Accent: violet
+  // ---------------------------------------------------------------------------
+  // Violet accent
+  // ---------------------------------------------------------------------------
+
   static const Color violet = Color(0xFF7162B5);
   static const Color violetDeep = Color(0xFF4B3D9E);
   static const Color violetPale = Color(0xFFEDE9FC);
-  static const Color violetLight =
-      Color(0xFFF3F0FE); // soft lavender fill (role switcher bg)
-  static const Color violetBorder =
-      Color(0xFF9B8FD4); // mid-violet outline (role switcher border)
+  static const Color violetLight = Color(0xFFF3F0FE);
+  static const Color violetBorder = Color(0xFF9B8FD4);
 
-  // ── Accent: coral
+  // ---------------------------------------------------------------------------
+  // Coral accent
+  // ---------------------------------------------------------------------------
+
   static const Color coral = Color(0xFFCE625D);
   static const Color coralDeep = Color(0xFF9E2D26);
   static const Color coralPale = Color(0xFFFDE8E6);
 
-  // ── Accent: amber/gold
+  // ---------------------------------------------------------------------------
+  // Amber accent
+  // ---------------------------------------------------------------------------
+
   static const Color amber = Color(0xFFA87125);
   static const Color amberDeep = Color(0xFF6B4600);
   static const Color amberPale = Color(0xFFFFF6DF);
 
-  // ── Dark Navy (from --color-navy, how-section bg)
+  // ---------------------------------------------------------------------------
+  // Navy
+  // ---------------------------------------------------------------------------
+
   static const Color navy = Color(0xFF123B4A);
   static const Color navyDark = Color(0xFF133D4B);
 
-  // ── Error
+  // ---------------------------------------------------------------------------
+  // Error
+  // ---------------------------------------------------------------------------
+
   static const Color error = Color(0xFFB91C1C);
   static const Color errorLight = Color(0xFFFEE2E2);
 }
@@ -72,7 +106,7 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get light {
-    final base = ThemeData(
+    final baseTheme = ThemeData(
       useMaterial3: true,
       colorScheme: const ColorScheme(
         brightness: Brightness.light,
@@ -101,15 +135,17 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
     );
 
-    return base.copyWith(
-      textTheme: _buildTextTheme(base.textTheme),
+    return baseTheme.copyWith(
+      textTheme: _buildTextTheme(baseTheme.textTheme),
       appBarTheme: _appBarTheme(),
       cardTheme: _cardTheme(),
       elevatedButtonTheme: _elevatedButtonTheme(),
       outlinedButtonTheme: _outlinedButtonTheme(),
       inputDecorationTheme: _inputDecorationTheme(),
-      dividerTheme:
-          const DividerThemeData(color: AppColors.borderLight, thickness: 1),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.borderLight,
+        thickness: 1,
+      ),
       navigationBarTheme: const NavigationBarThemeData(
         backgroundColor: AppColors.surface,
         indicatorColor: AppColors.tealPale,
@@ -119,10 +155,13 @@ class AppTheme {
   }
 
   static TextTheme _buildTextTheme(TextTheme base) {
-    // DM Sans for body; Playfair Display as Fraunces substitute for display/headings
-    final dmSans = GoogleFonts.dmSansTextTheme(base);
-    return dmSans.copyWith(
-      // Display / headings → Playfair Display (closest to Fraunces available on google_fonts)
+    final dmSansTheme = GoogleFonts.dmSansTextTheme(base);
+
+    return dmSansTheme.copyWith(
+      // -----------------------------------------------------------------------
+      // Display and headings
+      // -----------------------------------------------------------------------
+
       displayLarge: GoogleFonts.playfairDisplay(
         fontSize: 57,
         fontWeight: FontWeight.w700,
@@ -159,7 +198,11 @@ class AppTheme {
         letterSpacing: -0.3,
         color: AppColors.ink,
       ),
-      // Body → DM Sans
+
+      // -----------------------------------------------------------------------
+      // Body and titles
+      // -----------------------------------------------------------------------
+
       titleLarge: GoogleFonts.dmSans(
         fontSize: 22,
         fontWeight: FontWeight.w700,
@@ -210,83 +253,126 @@ class AppTheme {
     );
   }
 
-  static AppBarTheme _appBarTheme() => AppBarTheme(
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        shadowColor: Colors.black12,
-        scrolledUnderElevation: 2,
-        titleTextStyle: GoogleFonts.dmSans(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: AppColors.ink,
-        ),
-        iconTheme: const IconThemeData(color: AppColors.ink),
-      );
+  static AppBarTheme _appBarTheme() {
+    return AppBarTheme(
+      backgroundColor: AppColors.surface,
+      foregroundColor: AppColors.ink,
+      elevation: 0,
+      shadowColor: Colors.black12,
+      scrolledUnderElevation: 2,
+      titleTextStyle: GoogleFonts.dmSans(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: AppColors.ink,
+      ),
+      iconTheme: const IconThemeData(
+        color: AppColors.ink,
+      ),
+    );
+  }
 
-  static CardThemeData _cardTheme() => CardThemeData(
-        color: AppColors.surface,
+  static CardThemeData _cardTheme() {
+    return CardThemeData(
+      color: AppColors.surface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(
+          color: AppColors.cardBorder,
+        ),
+      ),
+      margin: EdgeInsets.zero,
+    );
+  }
+
+  static ElevatedButtonThemeData _elevatedButtonTheme() {
+    return ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.teal,
+        foregroundColor: Colors.white,
         elevation: 0,
+        shadowColor: Colors.transparent,
+        minimumSize: const Size(0, 52),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 14,
+        ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: AppColors.borderLight),
+          borderRadius: BorderRadius.circular(14),
         ),
-        margin: EdgeInsets.zero,
-      );
+        textStyle: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
 
-  static ElevatedButtonThemeData _elevatedButtonTheme() =>
-      ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.teal,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          minimumSize: const Size(0, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle:
-              GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700),
+  static OutlinedButtonThemeData _outlinedButtonTheme() {
+    return OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.tealDark,
+        side: const BorderSide(
+          color: AppColors.border,
+          width: 1.5,
         ),
-      );
+        minimumSize: const Size(0, 52),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 14,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        textStyle: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
 
-  static OutlinedButtonThemeData _outlinedButtonTheme() =>
-      OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.tealDark,
-          side: const BorderSide(color: AppColors.border, width: 1.5),
-          minimumSize: const Size(0, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle:
-              GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w700),
+  static InputDecorationTheme _inputDecorationTheme() {
+    return InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.softSection,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: AppColors.border,
         ),
-      );
-
-  static InputDecorationTheme _inputDecorationTheme() => InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.softSection,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: AppColors.border,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: AppColors.teal,
+          width: 2,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.teal, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: AppColors.error,
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        labelStyle: GoogleFonts.dmSans(
-            color: AppColors.inkSoft, fontWeight: FontWeight.w600),
-        hintStyle: GoogleFonts.dmSans(color: AppColors.muted),
-      );
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 16,
+      ),
+      labelStyle: GoogleFonts.dmSans(
+        color: AppColors.inkSoft,
+        fontWeight: FontWeight.w600,
+      ),
+      hintStyle: GoogleFonts.dmSans(
+        color: AppColors.muted,
+      ),
+    );
+  }
 }
+```

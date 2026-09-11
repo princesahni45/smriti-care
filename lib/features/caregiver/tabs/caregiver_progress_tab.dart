@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
+import '../../../core/services/game_storage_service.dart';
 import '../widgets/weekly_engagement_chart.dart';
 
 class CaregiverProgressTab extends StatefulWidget {
@@ -31,9 +32,21 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
 
   @override
   Widget build(BuildContext context) {
-    final weeklyData = CaregiverService.instance.getWeeklyEngagement();
-    final assessmentHistory = CaregiverService.instance.getAssessmentHistory();
-    final gameReports = CaregiverService.instance.getCognitiveGameReports();
+    final selectedPatient = CaregiverService.instance.getPatientProfile();
+    final weeklyData = CaregiverService.instance.getWeeklyEngagement(patientId: selectedPatient.id);
+    final assessmentHistory = CaregiverService.instance.getAssessmentHistory(patientId: selectedPatient.id);
+    final gameReports = CaregiverService.instance.getCognitiveGameReports(patientId: selectedPatient.id);
+
+    final totalGames = GameStorageService.instance.getTotalGamesCompleted(patientId: selectedPatient.id);
+    final avgResponseTime = GameStorageService.instance.getAverageResponseTime(patientId: selectedPatient.id);
+    final overallAccuracy = GameStorageService.instance.getAverageAccuracy(patientId: selectedPatient.id);
+
+    final avgTimeStr = totalGames > 0 ? '${avgResponseTime.toStringAsFixed(1)} sec' : '--';
+    final avgTimeSubtitle = totalGames > 0 ? 'Across $totalGames sessions' : 'No sessions completed';
+    final accuracyStr = totalGames > 0 ? '${overallAccuracy.round()}%' : '--';
+    final accuracySubtitle = totalGames > 0
+        ? (overallAccuracy >= 80 ? 'Consistent stability' : 'Needs daily practice')
+        : 'No sessions completed';
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -42,18 +55,38 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          const Text(
-            'Cognitive Progress & Reports',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColors.ink,
-              letterSpacing: -0.4,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Cognitive Progress & Reports',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                  letterSpacing: -0.4,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.tealPale,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  selectedPatient.fullName.split(' ').first,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.tealDark,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 4),
           const Text(
-            'Detailed analytics across 7 cognitive domains and response speed.',
+            'Live analytics across cognitive domains and response speed.',
             style: TextStyle(fontSize: 13, color: AppColors.muted),
           ),
           const SizedBox(height: 18),
@@ -64,8 +97,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               Expanded(
                 child: _buildMetricCard(
                   title: 'Avg Response Time',
-                  value: '3.3 sec',
-                  subtitle: '0.4s faster than baseline',
+                  value: avgTimeStr,
+                  subtitle: avgTimeSubtitle,
                   icon: Icons.timer_outlined,
                   color: AppColors.teal,
                   bgColor: AppColors.tealPale,
@@ -75,8 +108,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               Expanded(
                 child: _buildMetricCard(
                   title: 'Overall Accuracy',
-                  value: '86.4%',
-                  subtitle: 'Consistent stability',
+                  value: accuracyStr,
+                  subtitle: accuracySubtitle,
                   icon: Icons.pie_chart_outline_rounded,
                   color: AppColors.blueDeep,
                   bgColor: AppColors.bluePale,
@@ -188,15 +221,31 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.borderLight, width: 1.2),
-            ),
-            child: ListView.separated(
+          if (assessmentHistory.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.borderLight, width: 1.2),
+              ),
+              child: const Center(
+                child: Text(
+                  'No assessment history yet for this patient.\nCompleted cognitive sessions will appear here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, color: AppColors.muted, height: 1.4),
+                ),
+              ),
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.borderLight, width: 1.2),
+              ),
+              child: ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: assessmentHistory.length,

@@ -1,221 +1,704 @@
+```dart
 // lib/core/services/game_storage_service.dart
 //
-// 100% Offline Local Storage Service for Cognitive Games.
-// Stores game results, computes activity stats, tracks history,
-// and implements offline adaptive difficulty.
+// Offline-First Local Storage & Cloud Sync Service for Cognitive Games.
+// Stores real game results, computes per-patient analytics, tracks history,
+// manages adaptive difficulty per patient, and synchronizes to Cloud Firestore.
 
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../models/game_result.dart';
 
 class GameStorageService {
   GameStorageService._();
+
   static final GameStorageService instance = GameStorageService._();
 
   final List<GameResult> _history = [];
   final Map<String, int> _adaptiveLevels = {};
+
   bool _isInitialized = false;
 
-  /// Ensure storage file is loaded on startup
+  bool get _isFirebaseAvailable {
+    try {
+      return Firebase.apps.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  FirebaseFirestore? get _firestore {
+    if (!_isFirebaseAvailable) {
+      return null;
+    }
+
+    try {
+      return FirebaseFirestore.instance;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Initialization and Local Storage
+  // ---------------------------------------------------------------------------
+
+  /// Loads local game history and adaptive difficulty settings.
   Future<void> init() async {
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      return;
+    }
+
     try {
       final file = await _getStorageFile();
+
       if (await file.exists()) {
         final content = await file.readAsString();
-        if (content.isNotEmpty) {
-          final decoded = jsonDecode(content) as Map<String, dynamic>;
 
-          if (decoded['history'] is List) {
-            _history.clear();
-            for (final item in decoded['history'] as List) {
-              if (item is Map<String, dynamic>) {
-                _history.add(GameResult.fromMap(item));
+        if (content.isNotEmpty) {
+          final decoded = jsonDecode(content);
+
+          if (decoded is Map<String, dynamic>) {
+            final historyData = decoded['history'];
+
+            if (historyData is List) {
+              _history.clear();
+
+              for (final item in historyData) {
+                if (item is Map<String, dynamic>) {
+                  try {
+                    _history.add(GameResult.fromMap(item));
+                  } catch (e) {
+                    debugPrint(
+                      'GameStorageService invalid history item: $e',
+                    );
+                  }
+                }
               }
             }
-          }
 
-          if (decoded['adaptiveLevels'] is Map) {
-            _adaptiveLevels.clear();
-            (decoded['adaptiveLevels'] as Map<String, dynamic>).forEach((k, v) {
-              if (v is num) _adaptiveLevels[k] = v.toInt();
-            });
+            final adaptiveData = decoded['adaptiveLevels'];
+
+            if (adaptiveData is Map) {
+              _adaptiveLevels.clear();
+
+              adaptiveData.forEach((key, value) {
+                if (value is num) {
+                  _adaptiveLevels[key.toString()] = value.toInt();
+                }
+              });
+            }
           }
         }
       }
     } catch (e) {
-      debugPrint('GameStorageService init note: $e');
+      debugPrint('GameStorageService init error: $e');
     } finally {
+      _seedDefaultHistoryIfEmpty();
       _isInitialized = true;
     }
   }
 
   Future<File> _getStorageFile() async {
-    Directory dir;
+    Directory directory;
+
     try {
-      dir = await getApplicationDocumentsDirectory();
+      directory = await getApplicationDocumentsDirectory();
     } catch (_) {
-      dir = Directory.systemTemp;
+      directory = Directory.systemTemp;
     }
-    return File('${dir.path}/smriti_care_game_history.json');
+
+    return File(
+      '${directory.path}/smriti_care_game_history.json',
+    );
   }
 
   Future<void> _persist() async {
     try {
       final file = await _getStorageFile();
-      final data = {
-        'history': _history.map((r) => r.toMap()).toList(),
+
+      final data = <String, dynamic>{
+        'history': _history.map((result) => result.toMap()).toList(),
         'adaptiveLevels': _adaptiveLevels,
       };
-      await file.writeAsString(jsonEncode(data));
+
+      await file.writeAsString(
+        jsonEncode(data),
+        flush: true,
+      );
     } catch (e) {
-      debugPrint('GameStorageService persist note: $e');
+      debugPrint('GameStorageService persist error: $e');
     }
   }
 
-  /// Save a completed game result
+  /// Adds sample history for the default demo patient.
+  ///
+  /// This is only used when there is no locally stored history.
+  void _seedDefaultHistoryIfEmpty() {
+    if (_history.isNotEmpty) {
+      return;
+    }
+
+    final now = DateTime.now();
+
+    _history.addAll([
+      GameResult(
+        id: 'seed_01',
+        patientId: 'MC-2048',
+        gameId: 'memory-match',
+        gameName: 'Memory Match',
+        score: 85,
+        accuracy: 85,
+        attempts: 12,
+        correctAnswers: 6,
+        wrongAnswers: 6,
+        difficulty: 'Medium (6 Pairs)',
+        completionTimeSeconds: 48,
+        avgResponseTimeSeconds: 3.2,
+        timestamp: now.subtract(const Duration(hours: 2)),
+        recommendation: 'Wonderful job! Memory recall accuracy is high.',
+        syncStatus: 'synced',
+      ),
+      GameResult(
+        id: 'seed_02',
+        patientId: 'MC-2048',
+        gameId: 'word-recall',
+        gameName: 'Word Recall',
+        score: 88,
+        accuracy: 88,
+        attempts: 10,
+        correctAnswers: 5,
+        wrongAnswers: 1,
+        difficulty: 'Standard (6 Words)',
+        completionTimeSeconds: 52,
+        avgResponseTimeSeconds: 3.8,
+        timestamp: now.subtract(const Duration(hours: 5)),
+        recommendation: 'Strong immediate recall; remembered 5 of 6 words.',
+        syncStatus: 'synced',
+      ),
+      GameResult(
+        id: 'seed_03',
+        patientId: 'MC-2048',
+        gameId: 'orientation',
+        gameName: 'Day & Time Orientation',
+        score: 92,
+        accuracy: 92,
+        attempts: 6,
+        correctAnswers: 5,
+        wrongAnswers: 1,
+        difficulty: 'Level 1',
+        completionTimeSeconds: 26,
+        avgResponseTimeSeconds: 2.8,
+        timestamp: now.subtract(const Duration(days: 1, hours: 3)),
+        recommendation:
+            'Clear temporal orientation with day and month recall.',
+        syncStatus: 'synced',
+      ),
+    ]);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Saving and Cloud Synchronization
+  // ---------------------------------------------------------------------------
+
+  /// Saves a completed game result locally first.
+  ///
+  /// Firestore synchronization is then attempted in the background.
   Future<void> saveResult(GameResult result) async {
     await init();
-    _history.insert(0, result); // newest first
 
-    // Calculate adaptive difficulty transition
-    final currentLevel = _parseLevelNumber(result.difficulty);
-    final recommendedLevel = calculateNextLevel(result.accuracy, currentLevel);
-    _adaptiveLevels[result.gameId] = recommendedLevel;
+    final effectivePatientId =
+        result.patientId.isNotEmpty ? result.patientId : 'MC-2048';
+
+    final resultToSave = result.copyWith(
+      patientId: effectivePatientId,
+    );
+
+    // Prevent duplicate entries by ID.
+    _history.removeWhere(
+      (existingResult) => existingResult.id == resultToSave.id,
+    );
+
+    // Newest results are stored first.
+    _history.insert(0, resultToSave);
+
+    // Calculate and store the next adaptive difficulty level.
+    final currentLevel = _parseLevelNumber(
+      resultToSave.difficulty,
+    );
+
+    final recommendedLevel = calculateNextLevel(
+      resultToSave.accuracy,
+      currentLevel,
+    );
+
+    _adaptiveLevels[
+      '${effectivePatientId}_${resultToSave.gameId}'
+    ] = recommendedLevel;
+
+    // Legacy fallback for older code.
+    _adaptiveLevels[resultToSave.gameId] = recommendedLevel;
 
     await _persist();
+
+    // Do not block the user interface while syncing.
+    _syncResultToFirestore(resultToSave);
   }
 
-  /// Retrieve full game history (newest first)
-  List<GameResult> getHistory() {
-    return List.unmodifiable(_history);
+  /// Synchronizes one game result to Cloud Firestore.
+  Future<void> _syncResultToFirestore(GameResult result) async {
+    final database = _firestore;
+
+    if (database == null) {
+      return;
+    }
+
+    try {
+      await database
+          .collection('patientGameResults')
+          .doc(result.id)
+          .set(result.toMap());
+
+      final index = _history.indexWhere(
+        (storedResult) => storedResult.id == result.id,
+      );
+
+      if (index != -1) {
+        _history[index] = _history[index].copyWith(
+          syncStatus: 'synced',
+        );
+
+        await _persist();
+      }
+    } catch (e) {
+      debugPrint(
+        '[GameStorageService] Firestore sync skipped/offline: $e',
+      );
+    }
   }
 
-  /// Retrieve limited recent results
-  List<GameResult> getRecentResults({int limit = 10}) {
-    return _history.take(limit).toList();
+  /// Synchronizes all pending game results.
+  Future<int> syncPendingResults() async {
+    await init();
+
+    final database = _firestore;
+
+    if (database == null) {
+      return 0;
+    }
+
+    int syncedCount = 0;
+
+    for (int index = 0; index < _history.length; index++) {
+      final result = _history[index];
+
+      if (result.syncStatus != 'pending') {
+        continue;
+      }
+
+      try {
+        await database
+            .collection('patientGameResults')
+            .doc(result.id)
+            .set(result.toMap());
+
+        _history[index] = result.copyWith(
+          syncStatus: 'synced',
+        );
+
+        syncedCount++;
+      } catch (e) {
+        debugPrint(
+          '[GameStorageService] Sync pending error: $e',
+        );
+
+        // Stop when the network is unavailable.
+        break;
+      }
+    }
+
+    if (syncedCount > 0) {
+      await _persist();
+    }
+
+    return syncedCount;
   }
 
-  /// Total games completed across all activities
-  int getTotalGamesCompleted() {
-    return _history.length;
+  // ---------------------------------------------------------------------------
+  // Per-Patient Queries and Analytics
+  // ---------------------------------------------------------------------------
+
+  /// Returns the complete history, optionally filtered by patient ID.
+  ///
+  /// Results are returned newest first.
+  List<GameResult> getHistory({
+    String? patientId,
+  }) {
+    if (patientId == null || patientId.isEmpty) {
+      return List.unmodifiable(_history);
+    }
+
+    return List.unmodifiable(
+      _history.where(
+        (result) => result.patientId == patientId,
+      ),
+    );
   }
 
-  /// Today's aggregated score
-  int getTodayScore() {
+  /// Returns recent results for a patient.
+  List<GameResult> getRecentResults({
+    int limit = 10,
+    String? patientId,
+  }) {
+    if (limit <= 0) {
+      return <GameResult>[];
+    }
+
+    final history = getHistory(
+      patientId: patientId,
+    );
+
+    return history.take(limit).toList();
+  }
+
+  /// Returns the total number of completed games.
+  int getTotalGamesCompleted({
+    String? patientId,
+  }) {
+    return getHistory(
+      patientId: patientId,
+    ).length;
+  }
+
+  /// Returns today's average score.
+  int getTodayScore({
+    String? patientId,
+  }) {
     final now = DateTime.now();
-    final todayResults = _history.where((r) =>
-        r.timestamp.year == now.year &&
-        r.timestamp.month == now.month &&
-        r.timestamp.day == now.day);
-    if (todayResults.isEmpty) return 0;
-    final total = todayResults.fold<int>(0, (sum, r) => sum + r.score);
-    return (total / todayResults.length).round();
+
+    final todayResults = getHistory(
+      patientId: patientId,
+    ).where(
+      (result) =>
+          result.timestamp.year == now.year &&
+          result.timestamp.month == now.month &&
+          result.timestamp.day == now.day,
+    );
+
+    if (todayResults.isEmpty) {
+      return 0;
+    }
+
+    final totalScore = todayResults.fold<int>(
+      0,
+      (sum, result) => sum + result.score,
+    );
+
+    return (totalScore / todayResults.length).round();
   }
 
-  /// Current active streak in days
-  int getCurrentStreakDays() {
-    if (_history.isEmpty) return 0;
+  /// Returns the average accuracy percentage.
+  double getAverageAccuracy({
+    String? patientId,
+  }) {
+    final results = getHistory(
+      patientId: patientId,
+    );
+
+    if (results.isEmpty) {
+      return 0.0;
+    }
+
+    final totalAccuracy = results.fold<int>(
+      0,
+      (sum, result) => sum + result.accuracy,
+    );
+
+    return totalAccuracy / results.length;
+  }
+
+  /// Returns the average response time in seconds.
+  double getAverageResponseTime({
+    String? patientId,
+  }) {
+    final results = getHistory(
+      patientId: patientId,
+    );
+
+    if (results.isEmpty) {
+      return 0.0;
+    }
+
+    final totalResponseTime = results.fold<double>(
+      0.0,
+      (sum, result) => sum + result.responseTime,
+    );
+
+    return totalResponseTime / results.length;
+  }
+
+  /// Returns the current active streak in days.
+  int getCurrentStreakDays({
+    String? patientId,
+  }) {
+    final results = getHistory(
+      patientId: patientId,
+    );
+
+    if (results.isEmpty) {
+      return 0;
+    }
 
     final uniqueDays = <String>{};
-    for (final r in _history) {
-      final key = '${r.timestamp.year}-${r.timestamp.month}-${r.timestamp.day}';
+
+    for (final result in results) {
+      final key =
+          '${result.timestamp.year}-${result.timestamp.month}-${result.timestamp.day}';
+
       uniqueDays.add(key);
     }
 
     final now = DateTime.now();
+
     var streak = 0;
-    var checkDate = DateTime(now.year, now.month, now.day);
+    var checkDate = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
 
     while (true) {
-      final key = '${checkDate.year}-${checkDate.month}-${checkDate.day}';
+      final key =
+          '${checkDate.year}-${checkDate.month}-${checkDate.day}';
+
       if (uniqueDays.contains(key)) {
         streak++;
-        checkDate = checkDate.subtract(const Duration(days: 1));
+
+        checkDate = checkDate.subtract(
+          const Duration(days: 1),
+        );
       } else {
-        // Allow streak to count if today has not been played yet but yesterday was
+        // If the patient has not played today, allow yesterday
+        // to start the current streak.
         if (streak == 0 &&
-            checkDate
-                .isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
-          checkDate = checkDate.subtract(const Duration(days: 1));
+            checkDate.year == now.year &&
+            checkDate.month == now.month &&
+            checkDate.day == now.day) {
+          checkDate = checkDate.subtract(
+            const Duration(days: 1),
+          );
+
           continue;
         }
+
         break;
       }
     }
+
     return streak;
   }
 
-  // ── Adaptive Difficulty Logic (Step 13) ──────────────────────────
+  /// Returns detailed performance statistics for one game.
+  ({
+    int gamesPlayed,
+    double avgAccuracy,
+    double avgResponseTime,
+    int lastScore,
+    String difficulty,
+    DateTime? lastPlayed,
+  }) getStatsForGame(
+    String gameId, {
+    String? patientId,
+  }) {
+    final gameResults = getHistory(
+      patientId: patientId,
+    )
+        .where(
+          (result) =>
+              result.gameId == gameId ||
+              result.gameId.replaceAll('-', '_') ==
+                  gameId.replaceAll('-', '_'),
+        )
+        .toList();
 
-  /// Recommended level for a game (defaults to 1)
-  int getRecommendedLevel(String gameId) {
+    if (gameResults.isEmpty) {
+      return (
+        gamesPlayed: 0,
+        avgAccuracy: 0.0,
+        avgResponseTime: 0.0,
+        lastScore: 0,
+        difficulty: 'Level 1',
+        lastPlayed: null,
+      );
+    }
+
+    final totalAccuracy = gameResults.fold<int>(
+      0,
+      (sum, result) => sum + result.accuracy,
+    );
+
+    final totalResponseTime = gameResults.fold<double>(
+      0.0,
+      (sum, result) => sum + result.responseTime,
+    );
+
+    return (
+      gamesPlayed: gameResults.length,
+      avgAccuracy: totalAccuracy / gameResults.length,
+      avgResponseTime: totalResponseTime / gameResults.length,
+      lastScore: gameResults.first.score,
+      difficulty: gameResults.first.difficulty,
+      lastPlayed: gameResults.first.timestamp,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Adaptive Difficulty
+  // ---------------------------------------------------------------------------
+
+  /// Returns the recommended level for a game.
+  int getRecommendedLevel(
+    String gameId, {
+    String? patientId,
+  }) {
+    final key = patientId != null && patientId.isNotEmpty
+        ? '${patientId}_$gameId'
+        : gameId;
+
+    if (_adaptiveLevels.containsKey(key)) {
+      return _adaptiveLevels[key]!;
+    }
+
     if (_adaptiveLevels.containsKey(gameId)) {
       return _adaptiveLevels[gameId]!;
     }
-    // Infer from last game result if available
-    final last = _history.where((r) => r.gameId == gameId).firstOrNull;
-    if (last != null) {
-      final lvl = _parseLevelNumber(last.difficulty);
-      return calculateNextLevel(last.accuracy, lvl);
+
+    final results = getHistory(
+      patientId: patientId,
+    ).where(
+      (result) =>
+          result.gameId == gameId ||
+          result.gameId.replaceAll('-', '_') ==
+              gameId.replaceAll('-', '_'),
+    );
+
+    final lastResult = results.isNotEmpty ? results.first : null;
+
+    if (lastResult != null) {
+      final currentLevel = _parseLevelNumber(
+        lastResult.difficulty,
+      );
+
+      return calculateNextLevel(
+        lastResult.accuracy,
+        currentLevel,
+      );
     }
+
     return 1;
   }
 
-  /// Core Adaptive Rule:
-  /// Accuracy >= 80% -> Increase difficulty (+1)
-  /// Accuracy 50 - 79% -> Keep difficulty
-  /// Accuracy < 50% -> Decrease difficulty (-1)
-  static int calculateNextLevel(int accuracy, int currentLevel) {
+  /// Calculates the next level from the current accuracy.
+  static int calculateNextLevel(
+    int accuracy,
+    int currentLevel,
+  ) {
     if (accuracy >= 80) {
       return min(3, currentLevel + 1);
-    } else if (accuracy < 50) {
-      return max(1, currentLevel - 1);
-    } else {
-      return currentLevel;
     }
+
+    if (accuracy < 50) {
+      return max(1, currentLevel - 1);
+    }
+
+    return currentLevel.clamp(1, 3);
   }
 
-  /// Gentle, non-clinical encouragement string based on score
+  /// Returns a gentle, non-clinical recommendation.
   String getAdaptiveRecommendation(
-      String gameId, int accuracy, int currentLevel) {
-    final nextLevel = calculateNextLevel(accuracy, currentLevel);
+    String gameId,
+    int accuracy,
+    int currentLevel,
+  ) {
+    final nextLevel = calculateNextLevel(
+      accuracy,
+      currentLevel,
+    );
+
     if (accuracy >= 80) {
       if (nextLevel > currentLevel) {
         return 'Wonderful job! You have unlocked Level $nextLevel.';
       }
+
       return 'Outstanding! You have mastered the highest level!';
-    } else if (accuracy >= 50) {
-      return 'Great effort! Practicing Level $currentLevel again will build gentle confidence.';
-    } else {
-      if (nextLevel < currentLevel) {
-        return 'A gentler pace is best. Level $nextLevel is recommended next.';
-      }
-      return 'Take your time. Every bit of daily practice helps!';
     }
+
+    if (accuracy >= 50) {
+      return 'Great effort! Practicing Level $currentLevel again builds gentle confidence.';
+    }
+
+    if (nextLevel < currentLevel) {
+      return 'A gentler pace is best. Level $nextLevel is recommended next.';
+    }
+
+    return 'Take your time. Every bit of daily practice helps!';
   }
 
   int _parseLevelNumber(String difficulty) {
-    final lower = difficulty.toLowerCase();
-    if (lower.contains('3') || lower.contains('hard')) return 3;
-    if (lower.contains('2') || lower.contains('medium')) return 2;
+    final lowerDifficulty = difficulty.toLowerCase();
+
+    if (lowerDifficulty.contains('3') ||
+        lowerDifficulty.contains('hard')) {
+      return 3;
+    }
+
+    if (lowerDifficulty.contains('2') ||
+        lowerDifficulty.contains('medium')) {
+      return 2;
+    }
+
     return 1;
   }
 
-  /// Manually update adaptive difficulty level for a game (1 to 3).
-  Future<void> setAdaptiveLevel(String gameId, int level) async {
+  /// Manually updates adaptive difficulty for a game.
+  Future<void> setAdaptiveLevel(
+    String gameId,
+    int level, {
+    String? patientId,
+  }) async {
     await init();
-    _adaptiveLevels[gameId] = level.clamp(1, 3);
+
+    final safeLevel = level.clamp(1, 3);
+
+    final key = patientId != null && patientId.isNotEmpty
+        ? '${patientId}_$gameId'
+        : gameId;
+
+    _adaptiveLevels[key] = safeLevel;
+
+    // Maintain the legacy game-level value as well.
+    _adaptiveLevels[gameId] = safeLevel;
+
     await _persist();
   }
 
-  /// Clear history (useful for reset or testing)
+  // ---------------------------------------------------------------------------
+  // History Management
+  // ---------------------------------------------------------------------------
+
+  /// Clears all local game history and adaptive difficulty data.
   Future<void> clearAll() async {
     _history.clear();
     _adaptiveLevels.clear();
+
     await _persist();
   }
 }
+```

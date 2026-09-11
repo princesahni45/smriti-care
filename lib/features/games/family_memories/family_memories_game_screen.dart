@@ -144,7 +144,7 @@ class _FamilyMemoriesGameScreenState extends State<FamilyMemoriesGameScreen> {
 
     final result = GameResult(
       id: 'family_${DateTime.now().millisecondsSinceEpoch}',
-      patientId: 'MC-2048',
+      patientId: CaregiverService.instance.selectedPatientId,
       gameId: 'family-memories',
       gameName: 'Family Memories',
       score: score,

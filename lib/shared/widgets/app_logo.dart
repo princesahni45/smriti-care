@@ -26,15 +26,20 @@ class AppLogo extends StatelessWidget {
         // Logo mark — teal rounded square with brain + small heart overlay
         _LogoMark(size: iconSize + 16),
         if (showText) ...[
-          const SizedBox(width: 10),
-          Text(
-            'Smriti Care',
-            style: TextStyle(
-              fontFamily: 'DM Sans',
-              fontSize: fontSize,
-              fontWeight: FontWeight.w700,
-              color: AppColors.ink,
-              letterSpacing: -0.3,
+          const SizedBox(width: 8),
+          // FIX: Prevent RenderFlex overflow on narrow mobile screens - flexible logo text
+          Flexible(
+            child: Text(
+              'Smriti Care',
+              style: TextStyle(
+                fontFamily: 'DM Sans',
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: AppColors.ink,
+                letterSpacing: -0.3,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

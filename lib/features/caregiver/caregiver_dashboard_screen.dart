@@ -174,9 +174,10 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
               label: context.tr('nav.progress', defaultText: 'Progress'),
             ),
             BottomNavigationBarItem(
+              // FIX: Prevent RenderFlex overflow on narrow mobile screens
               icon: const Icon(Icons.notifications_none_rounded),
               activeIcon: const Icon(Icons.notifications_rounded),
-              label: context.tr('reminders.title', defaultText: 'Alerts'),
+              label: context.tr('nav.alerts', defaultText: 'Alerts'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.shield_outlined),

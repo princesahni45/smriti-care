@@ -1,31 +1,42 @@
+```dart
 // lib/screens/main_shell_screen.dart
 //
 // Root mobile shell featuring an accessible BottomNavigationBar.
+//
 // Tabs:
-// 0. Home (SmritiCare Dashboard)
-// 1. Games (Cognitive Games Placeholder)
-// 2. Reminders (Smart Reminders Placeholder)
-// 3. Progress (Your Progress Placeholder)
-// 4. Profile (Patient Profile & Settings Placeholder)
+// 0. Home
+// 1. Games
+// 2. Reminders
+// 3. Progress
+// 4. Profile
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../core/theme/app_theme.dart';
+
 import '../core/localization/app_localizations.dart';
 import '../core/services/caregiver_auth_service.dart';
-import 'dashboard_screen.dart';
-import 'placeholder_screen.dart';
-import 'language_select_screen.dart';
-import '../features/games/games_hub_screen.dart';
-import '../features/emergency/take_me_home_screen.dart';
-import '../features/mri/mri_screening_screen.dart';
-import '../features/assessment/cognitive_assessment_screen.dart';
+import '../core/theme/app_theme.dart';
 import '../core/voice/voice.dart';
+
+import '../features/assessment/cognitive_assessment_screen.dart';
+import '../features/emergency/take_me_home_screen.dart';
+import '../features/games/games_hub_screen.dart';
+import '../features/mri/mri_screening_screen.dart';
+import '../features/patient/patient_profile_screen.dart';
+import '../features/patient/patient_progress_screen.dart';
+import '../features/patient/patient_reminders_screen.dart';
+
+import 'dashboard_screen.dart';
+import 'language_select_screen.dart';
+import 'placeholder_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
 
-  const MainShellScreen({super.key, this.initialTab = 0});
+  const MainShellScreen({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<MainShellScreen> createState() => _MainShellScreenState();
@@ -34,14 +45,18 @@ class MainShellScreen extends StatefulWidget {
 class _MainShellScreenState extends State<MainShellScreen> {
   late int _currentIndex;
 
+  static const int _totalTabs = 5;
+
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialTab;
+
+    _currentIndex = widget.initialTab.clamp(0, _totalTabs - 1);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _syncRouteTracker(widget.initialTab);
-      }
+      if (!mounted) return;
+
+      _syncRouteTracker(_currentIndex);
     });
   }
 
@@ -50,15 +65,25 @@ class _MainShellScreenState extends State<MainShellScreen> {
       case 1:
         VoiceRouteTracker.instance.setCurrentRoute('/games');
         break;
+
       case 2:
-        VoiceRouteTracker.instance.setCurrentRoute('/dashboard/reminders');
+        VoiceRouteTracker.instance.setCurrentRoute(
+          '/dashboard/reminders',
+        );
         break;
+
       case 3:
-        VoiceRouteTracker.instance.setCurrentRoute('/dashboard/progress');
+        VoiceRouteTracker.instance.setCurrentRoute(
+          '/dashboard/progress',
+        );
         break;
+
       case 4:
-        VoiceRouteTracker.instance.setCurrentRoute('/dashboard/profile');
+        VoiceRouteTracker.instance.setCurrentRoute(
+          '/dashboard/profile',
+        );
         break;
+
       case 0:
       default:
         VoiceRouteTracker.instance.setCurrentRoute('/dashboard');
@@ -67,91 +92,145 @@ class _MainShellScreenState extends State<MainShellScreen> {
   }
 
   void _onTabTapped(int index) {
-    if (_currentIndex != index) {
-      setState(() {
-        _currentIndex = index;
-      });
-      _syncRouteTracker(index);
-    }
+    if (index < 0 || index >= _totalTabs) return;
+
+    if (_currentIndex == index) return;
+
+    setState(() {
+      _currentIndex = index;
+    });
+
+    _syncRouteTracker(index);
   }
 
   void _handleDashboardNavigate(String moduleId) {
-    switch (moduleId.toLowerCase()) {
+    final normalizedModuleId = moduleId.trim().toLowerCase();
+
+    switch (normalizedModuleId) {
       case 'games':
         _onTabTapped(1);
         break;
+
       case 'reminders':
         _onTabTapped(2);
         break;
+
       case 'progress':
         _onTabTapped(3);
         break;
+
       case 'profile':
         _onTabTapped(4);
         break;
+
       case 'caregiver':
         final authService = CaregiverAuthService.instance;
+
         if (authService.switchToCaregiverModeIfAuthenticated()) {
-          // Existing session active — go directly to caregiver dashboard
           context.go('/caregiver');
         } else {
-          // No active session — show caregiver login screen
           context.push('/caregiver-login');
         }
         break;
+
+      case 'doctor':
+        final authService = CaregiverAuthService.instance;
+
+        if (authService.switchToDoctorModeIfAuthenticated()) {
+          context.go('/doctor');
+        } else {
+          context.push('/doctor-login');
+        }
+        break;
+
       case 'emergency':
       case 'sos':
       case 'location':
         Navigator.of(context).push(
           MaterialPageRoute(
-            settings: const RouteSettings(name: '/take-me-home'),
-            builder: (ctx) => TakeMeHomeScreen(
-              onBack: () => Navigator.of(ctx).pop(),
+            settings: const RouteSettings(
+              name: '/take-me-home',
             ),
+            builder: (routeContext) {
+              return TakeMeHomeScreen(
+                onBack: () {
+                  Navigator.of(routeContext).pop();
+                },
+              );
+            },
           ),
         );
         break;
+
       case 'mri':
       case 'mri-screening':
         Navigator.of(context).push(
           MaterialPageRoute(
-            settings: const RouteSettings(name: '/mri-screening'),
-            builder: (ctx) => MriScreeningScreen(
-              onBack: () => Navigator.of(ctx).pop(),
+            settings: const RouteSettings(
+              name: '/mri-screening',
             ),
+            builder: (routeContext) {
+              return MriScreeningScreen(
+                onBack: () {
+                  Navigator.of(routeContext).pop();
+                },
+              );
+            },
           ),
         );
         break;
+
       case 'assessment':
+      case 'cognitive-assessment':
         Navigator.of(context).push(
           MaterialPageRoute(
-            settings: const RouteSettings(name: '/assessment'),
-            builder: (ctx) => CognitiveAssessmentScreen(
-              onBack: () => Navigator.of(ctx).pop(),
+            settings: const RouteSettings(
+              name: '/assessment',
             ),
+            builder: (routeContext) {
+              return CognitiveAssessmentScreen(
+                onBack: () {
+                  Navigator.of(routeContext).pop();
+                },
+              );
+            },
           ),
         );
         break;
+
       case 'language':
       case 'lang':
+      case 'language-select':
         Navigator.of(context).push(
           MaterialPageRoute(
-            settings: const RouteSettings(name: '/language-select'),
-            builder: (ctx) => LanguageSelectScreen(
-              onBack: () => Navigator.of(ctx).pop(),
+            settings: const RouteSettings(
+              name: '/language-select',
             ),
+            builder: (routeContext) {
+              return LanguageSelectScreen(
+                onBack: () {
+                  Navigator.of(routeContext).pop();
+                },
+              );
+            },
           ),
         );
         break;
+
       default:
-        // For remaining upcoming modules, push the dedicated PlaceholderScreen
         Navigator.of(context).push(
           MaterialPageRoute(
-            settings: RouteSettings(name: '/placeholder/$moduleId'),
-            builder: (ctx) => PlaceholderScreen.forModule(
-              moduleId,
-              onBack: () => Navigator.of(ctx).pop(),
+            settings: RouteSettings(
+              name: '/placeholder/$normalizedModuleId',
             ),
+            builder: (routeContext) {
+              return PlaceholderScreen.forModule(
+                moduleId,
+                onBack: () {
+                  Navigator.of(routeContext).pop();
+                },
+              );
+            },
           ),
         );
         break;
@@ -164,20 +243,29 @@ class _MainShellScreenState extends State<MainShellScreen> {
       DashboardScreen(
         onNavigateModule: _handleDashboardNavigate,
       ),
+
       GamesHubScreen(
-        onBack: () => _onTabTapped(0),
+        onBack: () {
+          _onTabTapped(0);
+        },
       ),
-      PlaceholderScreen.forModule(
-        'reminders',
-        onBack: () => _onTabTapped(0),
+
+      PatientRemindersScreen(
+        onBack: () {
+          _onTabTapped(0);
+        },
       ),
-      PlaceholderScreen.forModule(
-        'progress',
-        onBack: () => _onTabTapped(0),
+
+      PatientProgressScreen(
+        onBack: () {
+          _onTabTapped(0);
+        },
       ),
-      PlaceholderScreen.forModule(
-        'profile',
-        onBack: () => _onTabTapped(0),
+
+      PatientProfileScreen(
+        onBack: () {
+          _onTabTapped(0);
+        },
       ),
     ];
 
@@ -191,7 +279,10 @@ class _MainShellScreenState extends State<MainShellScreen> {
         decoration: BoxDecoration(
           color: AppColors.surface,
           border: const Border(
-            top: BorderSide(color: AppColors.borderLight, width: 1.5),
+            top: BorderSide(
+              color: AppColors.borderLight,
+              width: 1.5,
+            ),
           ),
           boxShadow: [
             BoxShadow(
@@ -221,29 +312,64 @@ class _MainShellScreenState extends State<MainShellScreen> {
           iconSize: 26,
           items: [
             BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home_rounded),
-              label: context.tr('common.home', defaultText: 'Home'),
+              icon: const Icon(
+                Icons.home_outlined,
+              ),
+              activeIcon: const Icon(
+                Icons.home_rounded,
+              ),
+              label: context.tr(
+                'common.home',
+                defaultText: 'Home',
+              ),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.psychology_outlined),
-              activeIcon: const Icon(Icons.psychology_rounded),
-              label: context.tr('nav.games', defaultText: 'Games'),
+              icon: const Icon(
+                Icons.psychology_outlined,
+              ),
+              activeIcon: const Icon(
+                Icons.psychology_rounded,
+              ),
+              label: context.tr(
+                'nav.games',
+                defaultText: 'Games',
+              ),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.access_time_rounded),
-              activeIcon: const Icon(Icons.access_time_filled_rounded),
-              label: context.tr('nav.reminders', defaultText: 'Reminders'),
+              icon: const Icon(
+                Icons.access_time_rounded,
+              ),
+              activeIcon: const Icon(
+                Icons.access_time_filled_rounded,
+              ),
+              label: context.tr(
+                'nav.reminders',
+                defaultText: 'Reminders',
+              ),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.bar_chart_outlined),
-              activeIcon: const Icon(Icons.bar_chart_rounded),
-              label: context.tr('nav.progress', defaultText: 'Progress'),
+              icon: const Icon(
+                Icons.bar_chart_outlined,
+              ),
+              activeIcon: const Icon(
+                Icons.bar_chart_rounded,
+              ),
+              label: context.tr(
+                'nav.progress',
+                defaultText: 'Progress',
+              ),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline_rounded),
-              activeIcon: const Icon(Icons.person_rounded),
-              label: context.tr('nav.profile', defaultText: 'Profile'),
+              icon: const Icon(
+                Icons.person_outline_rounded,
+              ),
+              activeIcon: const Icon(
+                Icons.person_rounded,
+              ),
+              label: context.tr(
+                'nav.profile',
+                defaultText: 'Profile',
+              ),
             ),
           ],
         ),
@@ -251,3 +377,4 @@ class _MainShellScreenState extends State<MainShellScreen> {
     );
   }
 }
+```

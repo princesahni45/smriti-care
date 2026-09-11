@@ -11,6 +11,8 @@ import 'package:smriti_care/widgets/next_reminder_card.dart';
 import 'package:smriti_care/widgets/today_activity_section.dart';
 import 'package:smriti_care/widgets/progress_summary_card.dart';
 import 'package:smriti_care/widgets/quick_action_card.dart';
+// FIX: Verify DailyStepsCard is visible on dashboard
+import 'package:smriti_care/features/patient/widgets/daily_steps_card.dart';
 
 void main() {
   testWidgets('SmritiCare Mobile Dashboard smoke test',
@@ -29,6 +31,8 @@ void main() {
 
     // Verify core sections
     expect(find.byType(NextReminderCard), findsOneWidget);
+    // FIX: Daily step counter card is rendered and visible on dashboard
+    expect(find.byType(DailyStepsCard), findsOneWidget);
     expect(find.byType(TodayActivitySection), findsOneWidget);
     expect(find.byType(QuickActionsGrid), findsOneWidget);
     expect(find.byType(ProgressSummaryCard), findsOneWidget);
@@ -80,13 +84,11 @@ void main() {
     await tester.tap(find.text('Reminders').last);
     await tester.pumpAndSettle();
 
-    // Should display the Coming Soon placeholder for Reminders
-    expect(find.text('COMING SOON'), findsOneWidget);
-    expect(find.text('Smart Reminders'), findsWidgets);
-    expect(find.text('Back to Dashboard'), findsOneWidget);
+    // Should display the real Daily Schedule & Reminders screen
+    expect(find.text('Daily Schedule & Reminders'), findsOneWidget);
 
     // Tap back button
-    await tester.tap(find.text('Back to Dashboard'));
+    await tester.tap(find.byTooltip('Back to Home'));
     await tester.pumpAndSettle();
 
     // Should be back on the dashboard

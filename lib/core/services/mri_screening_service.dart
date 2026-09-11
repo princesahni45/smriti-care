@@ -37,25 +37,49 @@ class MriScreeningService {
 
   // ── Health Check ──────────────────────────────────────────────────────────
 
-  // FIX: Added FastAPI MRI integration — health check
+  // FIX: Resilient backend health check with automatic fallback URL discovery
   Future<bool> checkBackendHealth() async {
-    try {
-      final uri = Uri.parse('$_apiBaseUrl${ApiConfig.healthEndpoint}');
-      final response = await http
-          .get(uri)
-          .timeout(Duration(seconds: ApiConfig.healthTimeoutSeconds));
-      return response.statusCode == 200;
-    } catch (_) {
-      return false;
+    final candidateUrls = <String>[
+      _apiBaseUrl,
+      ApiConfig.baseUrl,
+      ApiConfig.wifiLanUrl,
+      'http://127.0.0.1:8000',
+      ApiConfig.emulatorUrl,
+      'http://localhost:8000',
+    ];
+
+    final tested = <String>{};
+
+    for (final candidate in candidateUrls) {
+      var clean = candidate.trim();
+      if (clean.endsWith('/')) {
+        clean = clean.substring(0, clean.length - 1);
+      }
+      if (clean.isEmpty || tested.contains(clean)) continue;
+      tested.add(clean);
+
+      try {
+        final uri = Uri.parse('$clean${ApiConfig.healthEndpoint}');
+        final response =
+            await http.get(uri).timeout(const Duration(seconds: 2));
+        if (response.statusCode == 200) {
+          _apiBaseUrl = clean;
+          return true;
+        }
+      } catch (_) {
+        // Try next fallback URL
+      }
     }
+    return false;
   }
 
+  // FIX: Health details fetcher using currently resolved API base URL
   Future<Map<String, dynamic>?> getHealthDetails() async {
     try {
       final uri = Uri.parse('$_apiBaseUrl${ApiConfig.healthEndpoint}');
       final response = await http
           .get(uri)
-          .timeout(Duration(seconds: ApiConfig.healthTimeoutSeconds));
+          .timeout(const Duration(seconds: ApiConfig.healthTimeoutSeconds));
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
       }
@@ -119,7 +143,7 @@ class MriScreeningService {
 
       final streamedResponse = await request
           .send()
-          .timeout(Duration(seconds: ApiConfig.uploadTimeoutSeconds));
+          .timeout(const Duration(seconds: ApiConfig.uploadTimeoutSeconds));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {

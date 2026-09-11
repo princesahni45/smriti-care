@@ -14,9 +14,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
 
+// FIX: Added doctor role support
 enum DashboardMode {
   patient,
   caregiver,
+  doctor,
 }
 
 class CaregiverAuthResult {
@@ -55,6 +57,43 @@ class CaregiverAuthResult {
   }
 }
 
+// FIX: Added doctor role support - DoctorAuthResult wrapper
+class DoctorAuthResult {
+  final bool isSuccess;
+  final String? errorMessage;
+  final String? uid;
+  final String? email;
+  final String? name;
+
+  const DoctorAuthResult({
+    required this.isSuccess,
+    this.errorMessage,
+    this.uid,
+    this.email,
+    this.name,
+  });
+
+  factory DoctorAuthResult.success({
+    required String uid,
+    required String email,
+    String? name,
+  }) {
+    return DoctorAuthResult(
+      isSuccess: true,
+      uid: uid,
+      email: email,
+      name: name,
+    );
+  }
+
+  factory DoctorAuthResult.failure(String message) {
+    return DoctorAuthResult(
+      isSuccess: false,
+      errorMessage: message,
+    );
+  }
+}
+
 class CaregiverAuthService extends ChangeNotifier {
   CaregiverAuthService._();
   static final CaregiverAuthService instance = CaregiverAuthService._();
@@ -67,6 +106,12 @@ class CaregiverAuthService extends ChangeNotifier {
   String? _caregiverUid;
   String? _caregiverEmail;
   String? _caregiverName;
+
+  // FIX: Added doctor role support - In-memory doctor session
+  bool _isDoctorAuthenticated = false;
+  String? _doctorUid;
+  String? _doctorEmail;
+  String? _doctorName;
 
   // FIX: Test mode — enabled automatically by main.dart when Firebase is not
   // configured (no google-services.json), and also used directly in unit tests.
@@ -84,6 +129,13 @@ class CaregiverAuthService extends ChangeNotifier {
       'name': 'Mr. Ramesh Das',
       'uid': 'test_patient_uid_02',
     },
+    // FIX: Added doctor role support - Doctor test account
+    'doctor@smriti.care': {
+      'password': 'password123',
+      'role': 'doctor',
+      'name': 'Dr. Ananya Bora',
+      'uid': 'test_doctor_uid_01',
+    },
   };
 
   DashboardMode get currentMode => _currentMode;
@@ -91,6 +143,13 @@ class CaregiverAuthService extends ChangeNotifier {
   String? get caregiverUid => _caregiverUid;
   String? get caregiverEmail => _caregiverEmail;
   String? get caregiverName => _caregiverName;
+
+  // FIX: Added doctor role support - Doctor state getters
+  bool get isDoctorAuthenticated => _isDoctorAuthenticated;
+  String? get doctorUid => _doctorUid;
+  String? get doctorEmail => _doctorEmail;
+  String? get doctorName => _doctorName;
+
   bool get isTestMode => _isTestMode;
 
   // FIX: enableTestMode() is now called by main.dart (not just tests) when
@@ -122,6 +181,10 @@ class CaregiverAuthService extends ChangeNotifier {
     _caregiverUid = null;
     _caregiverEmail = null;
     _caregiverName = null;
+    _isDoctorAuthenticated = false;
+    _doctorUid = null;
+    _doctorEmail = null;
+    _doctorName = null;
     notifyListeners();
   }
 
@@ -240,6 +303,106 @@ class CaregiverAuthService extends ChangeNotifier {
     _caregiverUid = null;
     _caregiverEmail = null;
     _caregiverName = null;
+    _currentMode = DashboardMode.patient;
+    notifyListeners();
+  }
+
+  // ── Doctor Authentication ──────────────────────────────────────────────────
+
+  // FIX: Added doctor role support - loginDoctor
+  Future<DoctorAuthResult> loginDoctor({
+    required String email,
+    required String password,
+  }) async {
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPassword = password.trim();
+
+    if (cleanEmail.isEmpty || cleanPassword.isEmpty) {
+      return DoctorAuthResult.failure('Please enter both email and password.');
+    }
+
+    // ── Test Mode Handling
+    if (_isTestMode) {
+      final acc = _testAccounts[cleanEmail];
+      if (acc == null || acc['password'] != cleanPassword) {
+        return DoctorAuthResult.failure('Invalid email or password.');
+      }
+
+      final role = acc['role'] ?? 'patient';
+      if (role != 'doctor') {
+        return DoctorAuthResult.failure(
+          'This account does not have doctor access.',
+        );
+      }
+
+      _isDoctorAuthenticated = true;
+      _currentMode = DashboardMode.doctor;
+      _doctorUid = acc['uid'];
+      _doctorEmail = cleanEmail;
+      _doctorName = acc['name'];
+      notifyListeners();
+
+      return DoctorAuthResult.success(
+        uid: acc['uid']!,
+        email: cleanEmail,
+        name: acc['name'],
+      );
+    }
+
+    // ── Production Firebase Auth & Firestore verification
+    try {
+      await ensureFirebaseInitialized();
+
+      final authResult = await AuthService.instance.loginDoctor(
+        email: cleanEmail,
+        password: cleanPassword,
+      );
+
+      if (!authResult.isSuccess) {
+        return DoctorAuthResult.failure(
+          authResult.errorMessage ?? 'Authentication failed.',
+        );
+      }
+
+      _isDoctorAuthenticated = true;
+      _currentMode = DashboardMode.doctor;
+      _doctorUid = authResult.uid;
+      _doctorEmail = authResult.email;
+      _doctorName = authResult.displayName ?? 'Doctor';
+      notifyListeners();
+
+      return DoctorAuthResult.success(
+        uid: authResult.uid!,
+        email: _doctorEmail!,
+        name: _doctorName,
+      );
+    } catch (e) {
+      return DoctorAuthResult.failure('Login error: $e');
+    }
+  }
+
+  /// Switch to Doctor mode if session is already active
+  bool switchToDoctorModeIfAuthenticated() {
+    if (_isDoctorAuthenticated) {
+      _currentMode = DashboardMode.doctor;
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  /// Explicit doctor sign out / Exit Doctor Mode
+  Future<void> exitDoctorMode() async {
+    try {
+      if (!_isTestMode && Firebase.apps.isNotEmpty) {
+        await FirebaseAuth.instance.signOut();
+      }
+    } catch (_) {}
+
+    _isDoctorAuthenticated = false;
+    _doctorUid = null;
+    _doctorEmail = null;
+    _doctorName = null;
     _currentMode = DashboardMode.patient;
     notifyListeners();
   }

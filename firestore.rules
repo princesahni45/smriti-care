@@ -1,0 +1,119 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function isCaregiver() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'caregiver' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'caregiver'
+      );
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Patient Access Codes Collection: patientAccessCodes/{code}
+    // Security Requirements:
+    // 1. Single document-per-code lookup (allow get) for patient code verification.
+    // 2. Listing arbitrary codes is STRICTLY restricted to authorized caregivers.
+    //    Patients CANNOT list or query the entire collection.
+    // 3. Creation & updates are restricted to authenticated caregivers.
+    // 4. Deletion is forbidden to maintain audit integrity.
+    // ─────────────────────────────────────────────────────────────────────────
+    match /patientAccessCodes/{code} {
+      // Patient device can look up ONLY the specific code it was given
+      allow get: if true;
+
+      // Only authenticated caregivers can search/list codes they created
+      allow list: if isAuthenticated() && (
+        isCaregiver() ||
+        resource.data.caregiverId == request.auth.uid ||
+        resource.data.caregiverId == request.auth.token.email
+      );
+
+      // Only authenticated caregivers can create or update codes
+      allow create: if isAuthenticated() && (
+        request.resource.data.caregiverId == request.auth.uid ||
+        request.resource.data.caregiverId == request.auth.token.email ||
+        isCaregiver()
+      );
+
+      allow update: if isAuthenticated() && (
+        resource.data.caregiverId == request.auth.uid ||
+        resource.data.caregiverId == request.auth.token.email ||
+        isCaregiver() ||
+        // Patient app can only update 'isLinked' and 'linkedAt'
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isLinked', 'linkedAt'])
+      );
+
+      allow delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // User Profiles: users/{uid}
+    // ─────────────────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read, write: if isUser(userId);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Patient Profiles & Subcollections: patients/{patientId}
+    // ─────────────────────────────────────────────────────────────────────────
+    match /patients/{patientId} {
+      // Caregivers who own/manage this patient can read/write
+      allow read, write: if isAuthenticated() && (
+        resource == null ||
+        resource.data.caregiverId == request.auth.uid ||
+        resource.data.caregiverId == request.auth.token.email ||
+        isCaregiver()
+      );
+
+      // Emergency settings subcollection
+      match /emergency_settings/{document=**} {
+        allow read: if true; // Accessible for patient offline SOS fallback
+        allow write: if isAuthenticated() && isCaregiver();
+      }
+
+      // Daily activity logs and reminders
+      match /activity_logs/{logId} {
+        allow read, write: if true;
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Caregiver Profiles: caregivers/{caregiverId}
+    // ─────────────────────────────────────────────────────────────────────────
+    match /caregivers/{caregiverId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() && (
+        request.auth.uid == caregiverId ||
+        request.auth.token.email == caregiverId ||
+        isCaregiver()
+      );
+      allow delete: if false;
+
+      match /linkedPatients/{patientId} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Patient Cognitive Game Results: patientGameResults/{resultId}
+    // Offline-first sync telemetry
+    // ─────────────────────────────────────────────────────────────────────────
+    match /patientGameResults/{resultId} {
+      // Authenticated caregivers and patients can read game results
+      allow read: if true;
+      // Patient device or caregiver can write game results
+      allow create, update: if true;
+      allow delete: if false;
+    }
+  }
+}

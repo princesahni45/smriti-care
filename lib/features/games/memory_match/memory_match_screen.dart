@@ -13,6 +13,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../../../shared/widgets/smriti_button.dart';
 import '../game_result_screen.dart';
 
@@ -222,6 +223,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
     // Persist game result locally (Step 11 & 14)
     final gameResult = GameResult(
       id: 'mm_${DateTime.now().millisecondsSinceEpoch}',
+      patientId: CaregiverService.instance.selectedPatientId,
       gameId: 'memory-match',
       gameName: 'Memory Match',
       score: score,
@@ -246,7 +248,13 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                 GameStorageService.instance.getRecommendedLevel('memory-match');
             _startLevel(nextLvl);
           },
-          onBackToGames: () => context.go('/games'),
+          onBackToGames: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/games');
+            }
+          },
         ),
       ),
     );
@@ -264,7 +272,13 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => context.go('/games'),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/games');
+            }
+          },
           tooltip: 'All Games',
         ),
         title: Row(

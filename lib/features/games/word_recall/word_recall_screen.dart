@@ -13,6 +13,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/game_result.dart';
 import '../../../core/services/game_storage_service.dart';
+import '../../../core/services/caregiver_service.dart';
 import '../../../shared/widgets/smriti_button.dart';
 import '../game_result_screen.dart';
 import 'word_data.dart';
@@ -213,6 +214,7 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
     // Save game result to local storage (Step 11 & 14)
     final gameResult = GameResult(
       id: 'wr_${DateTime.now().millisecondsSinceEpoch}',
+      patientId: CaregiverService.instance.selectedPatientId,
       gameId: 'word-recall',
       gameName: 'Word Recall',
       score: combinedAccuracy,
@@ -247,7 +249,13 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
               _step = WordRecallStep.intro;
             });
           },
-          onBackToGames: () => context.go('/games'),
+          onBackToGames: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/games');
+            }
+          },
         ),
       ),
     );
@@ -264,7 +272,11 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () {
             if (_step == WordRecallStep.levelSelect) {
-              context.go('/games');
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/games');
+              }
             } else {
               _countdownTimer?.cancel();
               setState(() {
