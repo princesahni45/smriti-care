@@ -11,6 +11,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
 import '../../../core/services/caregiver_service.dart';
+// FIX: Added secure doctor-patient linking - doctor management service
+import '../../doctor/services/doctor_service.dart';
 
 class CaregiverPatientTab extends StatefulWidget {
   final VoidCallback onPatientChanged;
@@ -217,6 +219,251 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           ),
 
           const SizedBox(height: 24),
+
+          // ── Doctor Access & Linking Section (Section 5)
+          // FIX: Added secure doctor-patient linking - caregiver doctor management
+          _buildDoctorAccessSection(currentPatient),
+
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  // FIX: Added secure doctor-patient linking - doctor access widget
+  Widget _buildDoctorAccessSection(PatientProfile patient) {
+    final linkCode = DoctorService.instance.generateOrGetLinkCode(patient.id);
+    final pendingRequests = DoctorService.instance.getPendingRequestsForPatient(patient.id);
+    final approvedLinks = DoctorService.instance.getApprovedLinksForPatient(patient.id);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.medical_services_rounded, color: AppColors.teal, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Doctor Access & Permissions',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.tealLight,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${approvedLinks.length} Connected',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tealDark,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Share the code below with your neurologist to grant authorized access to cognitive trends and MRI results.',
+            style: TextStyle(fontSize: 12, color: AppColors.muted, height: 1.3),
+          ),
+          const SizedBox(height: 14),
+
+          // Link Code Box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE0F2F1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF80CBC4)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'PATIENT LINK CODE',
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.tealDark),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      linkCode,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                        color: AppColors.tealDark,
+                      ),
+                    ),
+                  ],
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Link Code $linkCode copied to clipboard!')),
+                    );
+                  },
+                  icon: const Icon(Icons.copy_rounded, size: 14),
+                  label: const Text('Share Code'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.teal,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Pending Requests
+          if (pendingRequests.isNotEmpty) ...[
+            const Text(
+              'Pending Doctor Requests',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFFE65100)),
+            ),
+            const SizedBox(height: 8),
+            ...pendingRequests.map((req) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFFB74D)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.person_pin_rounded, color: Color(0xFFE65100), size: 22),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Dr. Ananya Bora (DOC-001)',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                          ),
+                          Text(
+                            req.notes ?? 'Connection requested via link code.',
+                            style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.check_circle_rounded, color: Color(0xFF2E7D32), size: 24),
+                          onPressed: () async {
+                            await DoctorService.instance.approvePatientLink(req.linkId);
+                            if (!mounted) return;
+                            setState(() {});
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Doctor access approved.')),
+                            );
+                          },
+                          tooltip: 'Approve Doctor',
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.cancel_rounded, color: Color(0xFFC62828), size: 24),
+                          onPressed: () async {
+                            await DoctorService.instance.revokePatientLink(req.linkId);
+                            if (!mounted) return;
+                            setState(() {});
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Doctor request rejected.')),
+                            );
+                          },
+                          tooltip: 'Reject Request',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: 12),
+          ],
+
+          // Approved Doctors
+          if (approvedLinks.isNotEmpty) ...[
+            const Text(
+              'Authorized Doctors',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.ink),
+            ),
+            const SizedBox(height: 8),
+            ...approvedLinks.map((link) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.verified_rounded, color: AppColors.teal, size: 18),
+                        SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Dr. Ananya Bora (Neurologist)',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                            ),
+                            Text(
+                              'Guwahati Neurological Institute',
+                              style: TextStyle(fontSize: 11, color: AppColors.muted),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        await DoctorService.instance.revokePatientLink(link.linkId);
+                        if (!mounted) return;
+                        setState(() {});
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Doctor access revoked.')),
+                        );
+                      },
+                      child: const Text(
+                        'Revoke',
+                        style: TextStyle(fontSize: 12, color: Color(0xFFC62828), fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
         ],
       ),
     );

@@ -14,16 +14,21 @@ import '../core/services/caregiver_auth_service.dart';
 class DashboardRoleSwitcher extends StatelessWidget {
   final VoidCallback? onSwitchToPatient;
   final VoidCallback? onSwitchToCaregiver;
+  final VoidCallback? onSwitchToDoctor;
 
   const DashboardRoleSwitcher({
     super.key,
     this.onSwitchToPatient,
     this.onSwitchToCaregiver,
+    this.onSwitchToDoctor,
   });
 
   void _showRoleSelectionSheet(BuildContext context) {
     final authService = CaregiverAuthService.instance;
-    final isPatient = authService.currentMode == DashboardMode.patient;
+    final currentMode = authService.currentMode;
+    final isPatient = currentMode == DashboardMode.patient;
+    final isCaregiver = currentMode == DashboardMode.caregiver;
+    final isDoctor = currentMode == DashboardMode.doctor;
 
     showModalBottomSheet(
       context: context,
@@ -84,21 +89,44 @@ class DashboardRoleSwitcher extends StatelessWidget {
                 context: ctx,
                 title: '👥 Caregiver',
                 subtitle: 'Protected portal • Verification required',
-                isSelected: !isPatient,
+                isSelected: isCaregiver,
                 color: AppColors.violetDeep,
                 onTap: () {
                   Navigator.pop(ctx);
-                  if (isPatient) {
+                  if (!isCaregiver) {
                     if (authService.switchToCaregiverModeIfAuthenticated()) {
-                      // Session already active in this app run
                       if (onSwitchToCaregiver != null) {
                         onSwitchToCaregiver!();
                       } else {
                         context.go('/caregiver');
                       }
                     } else {
-                      // Requires caregiver authentication
                       context.push('/caregiver-login');
+                    }
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
+
+              // ── Option 3: Doctor Mode ──────────────────────────────────
+              // FIX: Added doctor role support - doctor option in role switcher
+              _buildRoleOption(
+                context: ctx,
+                title: '🩺 Doctor',
+                subtitle: 'Clinical portal • Multi-patient cognitive & MRI monitoring',
+                isSelected: isDoctor,
+                color: const Color(0xFF00796B),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  if (!isDoctor) {
+                    if (authService.switchToDoctorModeIfAuthenticated()) {
+                      if (onSwitchToDoctor != null) {
+                        onSwitchToDoctor!();
+                      } else {
+                        context.go('/doctor');
+                      }
+                    } else {
+                      context.push('/doctor-login');
                     }
                   }
                 },
@@ -172,13 +200,31 @@ class DashboardRoleSwitcher extends StatelessWidget {
     return ListenableBuilder(
       listenable: CaregiverAuthService.instance,
       builder: (context, _) {
-        final isPatient =
-            CaregiverAuthService.instance.currentMode == DashboardMode.patient;
+        final mode = CaregiverAuthService.instance.currentMode;
+        final isPatient = mode == DashboardMode.patient;
+        final isDoctor = mode == DashboardMode.doctor;
 
-        final label = isPatient ? '👤 Patient' : '👥 Caregiver';
-        final bg = isPatient ? AppColors.softSection : AppColors.violetLight;
-        final borderColor = isPatient ? AppColors.borderLight : AppColors.violetBorder;
-        final textColor = isPatient ? AppColors.ink : AppColors.violetDeep;
+        final String label;
+        final Color bg;
+        final Color borderColor;
+        final Color textColor;
+
+        if (isDoctor) {
+          label = '🩺 Doctor';
+          bg = const Color(0xFFE0F2F1);
+          borderColor = const Color(0xFF80CBC4);
+          textColor = const Color(0xFF00695C);
+        } else if (!isPatient) {
+          label = '👥 Caregiver';
+          bg = AppColors.violetLight;
+          borderColor = AppColors.violetBorder;
+          textColor = AppColors.violetDeep;
+        } else {
+          label = '👤 Patient';
+          bg = AppColors.softSection;
+          borderColor = AppColors.borderLight;
+          textColor = AppColors.ink;
+        }
 
         return InkWell(
           onTap: () => _showRoleSelectionSheet(context),

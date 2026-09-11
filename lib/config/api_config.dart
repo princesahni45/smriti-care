@@ -18,9 +18,11 @@
 class ApiConfig {
   ApiConfig._();
 
-  // ── FIX: Replace 192.168.x.x with your laptop's actual Wi-Fi IPv4 address ──
-  // FIX: Configured MRI backend for physical Android device
-  static const String baseUrl = 'http://10.109.253.252:8000';
+  // ── FIX: Default to 127.0.0.1:8000 for ADB reverse over USB cable, with Wi-Fi fallback ──
+  // FIX: Configured MRI backend for physical Android device via USB ADB reverse (127.0.0.1) or Wi-Fi LAN
+  static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String wifiLanUrl = 'http://192.168.9.221:8000';
+  static const String emulatorUrl = 'http://10.0.2.2:8000';
 
   // Endpoint paths — from the REAL backend main.py
   static const String healthEndpoint     = '/health';
@@ -37,10 +39,14 @@ class ApiConfig {
   //   - Analyze 7.5: .img (requires paired .hdr file)
   //
   // NOTE: .img files require a matching .hdr file in the same folder.
-  //       DICOM (.dcm) is NOT directly supported by this backend.
+  // ── FIX: Added .dcm, .dicom, .zip, .gz to MRI compatible extensions ──
   static const List<String> mriCompatibleExtensions = [
     'nii',     // NIfTI uncompressed
     'nii.gz',  // NIfTI gzip compressed
+    'gz',      // Gzip compressed volume
+    'dcm',     // DICOM single slice/volume
+    'dicom',   // DICOM format
+    'zip',     // Compressed MRI archive
     'img',     // Analyze 7.5 image data (needs .hdr pair)
   ];
 

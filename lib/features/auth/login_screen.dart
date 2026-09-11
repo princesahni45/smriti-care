@@ -58,6 +58,18 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         setState(() { _errorMessage = result.error; _isLoading = false; });
       }
+    } else if (widget.role.toLowerCase() == 'doctor') {
+      // FIX: Added doctor role support - handle doctor login in generic login screen
+      final result = AuthService.authenticateDoctor(
+        _emailController.text,
+        _passwordController.text,
+      );
+      if (result.success) {
+        UserSessionService.instance.setActiveRole(UserRole.doctor);
+        context.go('/doctor');
+      } else {
+        setState(() { _errorMessage = result.error; _isLoading = false; });
+      }
     } else {
       final result = AuthService.authenticateCaregiver(
         _emailController.text,

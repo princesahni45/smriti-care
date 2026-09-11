@@ -59,17 +59,57 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
 
   // ── File Picker ────────────────────────────────────────────────────────────
 
-  // FIX: Added real file picker with MRI format validation
-  Future<void> _pickFile() async {
+  // FIX: Configured file_picker for MRI files with custom extensions (.nii, .nii.gz, .dcm, .dicom, .zip, .gz)
+  Future<void> _pickMriFile({bool browseAll = false}) async {
     try {
-      // file_picker v12: static API, use pickFile() for single file
-      final platformFile = await FilePicker.pickFile();
+      PlatformFile? platformFile;
+
+      if (!browseAll) {
+        try {
+          platformFile = await FilePicker.pickFile(
+            type: FileType.custom,
+            allowedExtensions: [
+              'nii',
+              'gz',
+              'dcm',
+              'dicom',
+              'zip',
+              'img',
+            ],
+          );
+        } catch (_) {
+          // If system picker rejects custom filter on certain devices, fall back to any
+          platformFile = await FilePicker.pickFile(type: FileType.any);
+        }
+      } else {
+        // Fallback for Android file managers that grey out unregistered mime extensions
+        platformFile = await FilePicker.pickFile(type: FileType.any);
+      }
 
       if (platformFile == null) return;
       if (platformFile.path == null) {
         _showError('Could not access the selected file path. Check storage permissions.');
         return;
       }
+
+      // FIX: Validate complete filename including .nii.gz
+      final name = platformFile.name.toLowerCase();
+      final validMRI =
+          name.endsWith('.nii') ||
+          name.endsWith('.nii.gz') ||
+          name.endsWith('.dcm') ||
+          name.endsWith('.dicom') ||
+          name.endsWith('.zip') ||
+          name.endsWith('.gz') ||
+          name.endsWith('.img');
+
+      if (!validMRI) {
+        _showError('Unsupported MRI file format.\nSupported: .nii, .nii.gz, .dcm, .dicom, .zip, .gz');
+        return;
+      }
+
+      debugPrint("Selected MRI file: ${platformFile.name}");
+      debugPrint("MRI path: ${platformFile.path}");
 
       setState(() {
         _isSaving = true;
@@ -89,7 +129,7 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
         setState(() {
           _selectedFile = savedFile;
           _isSaving = false;
-          _saveMessage = '✓ Saved to local storage (${savedFile.formattedSize})';
+          _saveMessage = '✓ MRI file selected and saved locally';
         });
         await _loadHistory();
       } catch (e) {
@@ -100,18 +140,47 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
         return;
       }
 
-      // Show appropriate message for non-MRI files
-      if (!savedFile.isMriCompatible) {
-        setState(() {
-          _saveMessage = '✓ File saved locally in ${_categoryLabel(savedFile.category)}.\n'
-              'This file cannot be analyzed by the MRI AI model.';
-        });
-      }
-
     } on Exception catch (e) {
       setState(() {
         _isSaving = false;
         _errorMessage = 'File selection error: ${e.toString().split('\n').first}';
+      });
+    }
+  }
+
+  // FIX: Separate document/image picker keeping PDF/images completely separate from MRI
+  Future<void> _pickDocumentFile() async {
+    try {
+      final platformFile = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'pptx', 'docx'],
+      );
+
+      if (platformFile == null || platformFile.path == null) return;
+
+      setState(() {
+        _isSaving = true;
+        _errorMessage = null;
+      });
+
+      try {
+        await MriFileStorageService.instance.saveFile(
+          sourcePath: platformFile.path!,
+          originalFileName: platformFile.name,
+          caregiverId: AppConstants.caregiverName,
+        );
+        setState(() => _isSaving = false);
+        await _loadHistory();
+      } catch (e) {
+        setState(() {
+          _isSaving = false;
+          _errorMessage = 'Failed to save document: ${e.toString().split('\n').first}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isSaving = false;
+        _errorMessage = 'Document selection error: ${e.toString().split('\n').first}';
       });
     }
   }
@@ -170,55 +239,92 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
     }
   }
 
+  // FIX: Config dialog with preset buttons for USB reverse (127.0.0.1), Wi-Fi LAN (192.168.9.221), and emulator (10.0.2.2)
   void _showServerConfigDialog() {
     final controller = TextEditingController(
         text: MriScreeningService.instance.apiBaseUrl);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Configure FastAPI Backend',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter the IP address of your laptop running the Python FastAPI server.\n\n'
-              'Find your laptop\'s IP:\n'
-              '  Windows: ipconfig → IPv4 Address\n'
-              '  Example: http://192.168.1.105:8000',
-              style: TextStyle(fontSize: 13, color: AppColors.muted),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: 'http://192.168.x.x:8000',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                prefixIcon: const Icon(Icons.dns_rounded, color: AppColors.teal),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text('Configure FastAPI Backend',
+              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Select a preset or enter your PC/server IP running the Python FastAPI server:',
+                style: TextStyle(fontSize: 13, color: AppColors.muted),
               ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  ActionChip(
+                    avatar: const Icon(Icons.usb_rounded, size: 16, color: AppColors.teal),
+                    label: const Text('USB (127.0.0.1:8000)', style: TextStyle(fontSize: 11)),
+                    backgroundColor: controller.text == 'http://127.0.0.1:8000' ? AppColors.tealPale : null,
+                    onPressed: () {
+                      setDialogState(() {
+                        controller.text = 'http://127.0.0.1:8000';
+                      });
+                    },
+                  ),
+                  ActionChip(
+                    avatar: const Icon(Icons.wifi_rounded, size: 16, color: AppColors.teal),
+                    label: const Text('Wi-Fi (192.168.9.221:8000)', style: TextStyle(fontSize: 11)),
+                    backgroundColor: controller.text == 'http://192.168.9.221:8000' ? AppColors.tealPale : null,
+                    onPressed: () {
+                      setDialogState(() {
+                        controller.text = 'http://192.168.9.221:8000';
+                      });
+                    },
+                  ),
+                  ActionChip(
+                    avatar: const Icon(Icons.phone_android_rounded, size: 16, color: AppColors.teal),
+                    label: const Text('Emulator (10.0.2.2:8000)', style: TextStyle(fontSize: 11)),
+                    backgroundColor: controller.text == 'http://10.0.2.2:8000' ? AppColors.tealPale : null,
+                    onPressed: () {
+                      setDialogState(() {
+                        controller.text = 'http://10.0.2.2:8000';
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: 'http://127.0.0.1:8000',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.dns_rounded, color: AppColors.teal),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.teal, foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                MriScreeningService.instance.setBaseUrl(controller.text.trim());
+                Navigator.pop(ctx);
+                _checkServer();
+              },
+              child: const Text('Save & Test'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(context.tr('common.cancel', defaultText: 'Cancel')),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.teal, foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            onPressed: () {
-              MriScreeningService.instance.setBaseUrl(controller.text.trim());
-              Navigator.pop(ctx);
-              _checkServer();
-            },
-            child: const Text('Save & Test'),
-          ),
-        ],
       ),
     );
   }
@@ -339,6 +445,16 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
               ),
             ),
           ),
+          // FIX: Added one-tap refresh/retry button to test connection immediately
+          InkWell(
+            onTap: _checkingServer ? null : _checkServer,
+            borderRadius: BorderRadius.circular(16),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              child: Icon(Icons.refresh_rounded, size: 16, color: AppColors.tealDark),
+            ),
+          ),
+          const SizedBox(width: 4),
           GestureDetector(
             onTap: _showServerConfigDialog,
             child: const Text('Change',
@@ -383,7 +499,7 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                     Text('MRI Scan Upload',
                         style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.ink)),
                     SizedBox(height: 2),
-                    Text('NIfTI (.nii, .nii.gz) or Analyze (.img+.hdr)',
+                    Text('Supported: .nii, .nii.gz, .dcm, .dicom, .zip, .gz',
                         style: TextStyle(fontSize: 12, color: AppColors.muted)),
                   ],
                 ),
@@ -392,7 +508,7 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
           ),
           const SizedBox(height: 18),
 
-          // Select File Button
+          // FIX: The MRI upload button shows "Select MRI File"
           SizedBox(
             width: double.infinity,
             height: 50,
@@ -406,15 +522,31 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                   ? const SizedBox(width: 18, height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.teal))
                   : const Icon(Icons.attach_file_rounded),
-              label: Text(_isSaving ? 'Saving file...' : 'Select File',
+              label: Text(_isSaving ? 'Saving MRI File...' : 'Select MRI File',
                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-              onPressed: _isSaving ? null : _pickFile,
+              onPressed: _isSaving ? null : () => _pickMriFile(browseAll: false),
+            ),
+          ),
+          const SizedBox(height: 4),
+          // FIX: Fallback helper if Android file manager greys out uncompressed .nii files
+          Center(
+            child: TextButton(
+              onPressed: _isSaving ? null : () => _pickMriFile(browseAll: true),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text(
+                'Files greyed out? Browse all files from storage',
+                style: TextStyle(fontSize: 11, color: AppColors.teal, decoration: TextDecoration.underline),
+              ),
             ),
           ),
 
-          // Selected File Info
+          // FIX: Display filename, file size, file format, and selected status
           if (hasFile) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -428,12 +560,13 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Filename display
                   Row(
                     children: [
                       Icon(
                         _selectedFile!.isMriCompatible ? Icons.check_circle_rounded : Icons.info_rounded,
                         color: _selectedFile!.isMriCompatible ? AppColors.tealDark : AppColors.amberDeep,
-                        size: 18,
+                        size: 20,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -449,14 +582,19 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Row(
+                  const SizedBox(height: 10),
+                  // File Format, File Size, Selected Status badges
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
                     children: [
-                      _chip(_selectedFile!.fileExtension.toUpperCase()),
-                      const SizedBox(width: 8),
-                      _chip(_selectedFile!.formattedSize),
-                      const SizedBox(width: 8),
-                      _chip(_selectedFile!.isMriCompatible ? 'MRI Compatible' : 'Not MRI Format'),
+                      _detailBadge('Format', _selectedFile!.fileExtension.toUpperCase()),
+                      _detailBadge('Size', _selectedFile!.formattedSize),
+                      _detailBadge(
+                        'Status',
+                        _selectedFile!.isMriCompatible ? 'Selected' : 'Unsupported',
+                        isSuccess: _selectedFile!.isMriCompatible,
+                      ),
                     ],
                   ),
                   if (_saveMessage != null) ...[
@@ -483,16 +621,16 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.borderLight),
               ),
-              child: Row(
+              child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.muted),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info_outline_rounded, size: 16, color: AppColors.muted),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'This file has been stored locally, but it cannot be analyzed by the MRI AI model. '
                       'Only .nii, .nii.gz, and .img (Analyze 7.5) formats are supported.',
-                      style: const TextStyle(fontSize: 12, color: AppColors.muted, height: 1.4),
+                      style: TextStyle(fontSize: 12, color: AppColors.muted, height: 1.4),
                     ),
                   ),
                 ],
@@ -543,14 +681,6 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
     );
   }
 
-  Widget _chip(String label) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-    decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: 0.8),
-      borderRadius: BorderRadius.circular(6),
-    ),
-    child: Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.ink)),
-  );
 
   // ── Error Card ─────────────────────────────────────────────────────────────
 
@@ -843,14 +973,26 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
 
   // ── Document Section ───────────────────────────────────────────────────────
 
+  // FIX: Separate document section with its own dedicated upload button for PDFs/images
   Widget _buildDocumentSection() {
     final nonMriUploads = _allUploads.where((f) => !f.isMriCompatible).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Other Uploaded Documents',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.ink)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Other Uploaded Documents',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.ink)),
+            TextButton.icon(
+              onPressed: _isSaving ? null : _pickDocumentFile,
+              icon: const Icon(Icons.upload_file_rounded, size: 16, color: AppColors.tealDark),
+              label: const Text('Select PDF / Image',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+            ),
+          ],
+        ),
         const SizedBox(height: 10),
         if (nonMriUploads.isEmpty)
           Container(
@@ -861,13 +1003,45 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
               border: Border.all(color: AppColors.borderLight),
             ),
             child: const Center(
-              child: Text('No documents uploaded yet.\nYou can select PDF, images, or presentations to store locally.',
+              child: Text('No documents uploaded yet.\nUse "Select PDF / Image" above to store PDFs or images locally.',
                   style: TextStyle(color: AppColors.muted, fontSize: 13), textAlign: TextAlign.center),
             ),
           )
         else
           ...nonMriUploads.take(10).map((f) => _buildDocumentTile(f)),
       ],
+    );
+  }
+
+  // FIX: Display badges for Format, Size, and Selected Status
+  Widget _detailBadge(String label, String value, {bool isSuccess = true}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isSuccess ? AppColors.teal.withValues(alpha: 0.3) : AppColors.amber.withValues(alpha: 0.3),
+        ),
+      ),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 11, color: AppColors.ink),
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(fontWeight: FontWeight.w500, color: AppColors.muted),
+            ),
+            TextSpan(
+              text: value,
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: isSuccess ? AppColors.tealDark : AppColors.amberDeep,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

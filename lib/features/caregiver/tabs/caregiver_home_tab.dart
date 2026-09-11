@@ -388,7 +388,7 @@ class CaregiverHomeTab extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.borderLight, width: 1.5),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
                 AppColors.tealBg,
                 AppColors.surface,
