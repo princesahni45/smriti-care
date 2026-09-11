@@ -46,8 +46,9 @@ void main() {
       expect(restored.physician, patient.physician);
     });
 
-    test('CaregiverReminder serializes, deserializes, and supports copyWith', () {
-      final reminder = CaregiverReminder(
+    test('CaregiverReminder serializes, deserializes, and supports copyWith',
+        () {
+      const reminder = CaregiverReminder(
         id: 'rem-test-01',
         patientId: 'MC-2048',
         type: 'medication',
@@ -102,7 +103,8 @@ void main() {
   });
 
   group('CaregiverService Tests', () {
-    test('Service initializes with default seed data and provides metrics', () async {
+    test('Service initializes with default seed data and provides metrics',
+        () async {
       final service = CaregiverService.instance;
       await service.init();
 
@@ -126,7 +128,7 @@ void main() {
 
       final initialCount = service.getReminders().length;
 
-      final testRem = CaregiverReminder(
+      const testRem = CaregiverReminder(
         id: 'rem-unit-test',
         patientId: 'MC-2048',
         type: 'hydration',
@@ -142,16 +144,19 @@ void main() {
       expect(service.getReminders().length, initialCount + 1);
 
       await service.toggleReminder('rem-unit-test');
-      final found = service.getReminders().firstWhere((r) => r.id == 'rem-unit-test');
+      final found =
+          service.getReminders().firstWhere((r) => r.id == 'rem-unit-test');
       expect(found.enabled, isFalse);
 
       await service.deleteReminder('rem-unit-test');
-      expect(service.getReminders().any((r) => r.id == 'rem-unit-test'), isFalse);
+      expect(
+          service.getReminders().any((r) => r.id == 'rem-unit-test'), isFalse);
     });
   });
 
   group('CaregiverDashboardScreen Widget Tests', () {
-    testWidgets('Renders header bar, patient banner, and weekly chart on Overview tab',
+    testWidgets(
+        'Renders header bar, patient banner, and weekly chart on Overview tab',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -183,7 +188,8 @@ void main() {
       expect(find.text('Profile'), findsOneWidget);
     });
 
-    testWidgets('Tapping bottom tabs switches between Patient, Progress, Alerts, and Profile',
+    testWidgets(
+        'Tapping bottom tabs switches between Patient, Progress, Alerts, and Profile',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(

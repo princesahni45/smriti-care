@@ -90,7 +90,8 @@ class GameResultScreen extends StatelessWidget {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 28, color: AppColors.ink),
+          icon: const Icon(Icons.arrow_back_rounded,
+              size: 28, color: AppColors.ink),
           onPressed: onBackToGames ?? () => context.go('/games'),
         ),
         title: Text(
@@ -116,7 +117,7 @@ class GameResultScreen extends StatelessWidget {
                   color: AppColors.tealPale,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.teal.withOpacity(0.3),
+                    color: AppColors.teal.withValues(alpha: 0.3),
                     width: 2,
                   ),
                 ),
@@ -164,7 +165,7 @@ class GameResultScreen extends StatelessWidget {
                   border: Border.all(color: AppColors.border, width: 1.8),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.teal.withOpacity(0.08),
+                      color: AppColors.teal.withValues(alpha: 0.08),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -210,7 +211,8 @@ class GameResultScreen extends StatelessWidget {
                 children: [
                   _buildMetricCard(
                     label: 'Answers',
-                    value: '${result.correctAnswers} / ${result.attempts > 0 ? result.attempts : result.correctAnswers}',
+                    value:
+                        '${result.correctAnswers} / ${result.attempts > 0 ? result.attempts : result.correctAnswers}',
                     icon: Icons.check_circle_rounded,
                     color: AppColors.teal,
                     bgColor: AppColors.tealPale,
@@ -244,7 +246,7 @@ class GameResultScreen extends StatelessWidget {
                     color: AppColors.violetPale,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: AppColors.violet.withOpacity(0.35),
+                      color: AppColors.violet.withValues(alpha: 0.35),
                       width: 1.5,
                     ),
                   ),
@@ -304,10 +306,14 @@ class GameResultScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  icon: const Icon(Icons.grid_view_rounded, size: 22, color: AppColors.ink),
+                  icon: const Icon(Icons.grid_view_rounded,
+                      size: 22, color: AppColors.ink),
                   label: const Text(
                     'Back to Games',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.ink),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink),
                   ),
                   onPressed: onBackToGames ?? () => context.go('/games'),
                 ),

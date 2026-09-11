@@ -58,3 +58,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# On-device AI model weights and binaries (never commit to source control)
+*.gguf
+*.bin
+*.onnx
+*.tflite
+*.safetensors
+assets/models/
+models/

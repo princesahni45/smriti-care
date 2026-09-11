@@ -96,7 +96,7 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               border: Border.all(color: AppColors.borderLight, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -125,15 +125,16 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
                       ),
                       child: Row(
                         children: [
-                          _buildPeriodBtn('Weekly', _chartPeriod == 0, () => setState(() => _chartPeriod = 0)),
-                          _buildPeriodBtn('Monthly', _chartPeriod == 1, () => setState(() => _chartPeriod = 1)),
+                          _buildPeriodBtn('Weekly', _chartPeriod == 0,
+                              () => setState(() => _chartPeriod = 0)),
+                          _buildPeriodBtn('Monthly', _chartPeriod == 1,
+                              () => setState(() => _chartPeriod = 1)),
                         ],
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-
                 if (_chartPeriod == 0)
                   WeeklyEngagementChart(data: weeklyData)
                 else
@@ -145,8 +146,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           const SizedBox(height: 24),
 
           // 7 Dedicated Cognitive Game Reports Breakdown
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.psychology_rounded, color: AppColors.teal, size: 22),
               SizedBox(width: 8),
               Text(
@@ -173,8 +174,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           const SizedBox(height: 24),
 
           // Assessment History Log
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.history_rounded, color: AppColors.teal, size: 22),
               SizedBox(width: 8),
               Text(
@@ -199,11 +200,13 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: assessmentHistory.length,
-              separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.borderLight),
+              separatorBuilder: (_, __) =>
+                  const Divider(height: 1, color: AppColors.borderLight),
               itemBuilder: (ctx, idx) {
                 final item = assessmentHistory[idx];
                 return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   leading: CircleAvatar(
                     radius: 20,
                     backgroundColor: AppColors.tealPale,
@@ -218,21 +221,29 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
                   ),
                   title: Text(
                     '${item["type"]} • ${item["date"]}',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink),
                   ),
                   subtitle: Text(
                     'Time: ${item["time"]} • Status: ${item["status"]}',
-                    style: const TextStyle(fontSize: 12, color: AppColors.muted),
+                    style:
+                        const TextStyle(fontSize: 12, color: AppColors.muted),
                   ),
                   trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: AppColors.tealPale,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       '${item["status"]}',
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.tealDark),
+                      style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.tealDark),
                     ),
                   ),
                 );
@@ -255,7 +266,11 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
           boxShadow: isSelected
-              ? [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4)]
+              ? [
+                  BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 4)
+                ]
               : null,
         ),
         child: Text(
@@ -292,14 +307,18 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                    color: bgColor, borderRadius: BorderRadius.circular(8)),
                 child: Icon(icon, color: color, size: 16),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.muted),
+                  style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -309,12 +328,18 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.ink),
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink),
           ),
           const SizedBox(height: 2),
           Text(
             subtitle,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.tealDark),
+            style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppColors.tealDark),
           ),
         ],
       ),
@@ -337,9 +362,12 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     '%',
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.muted),
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.muted),
                   ),
                   const SizedBox(height: 4),
                   Container(
@@ -353,7 +381,10 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
                   const SizedBox(height: 6),
                   Text(
                     m['month'] as String,
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.inkSoft),
                   ),
                 ],
               );
@@ -378,12 +409,12 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
         children: [
           Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColors.tealPale,
                 child: Text(
                   '%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: AppColors.tealDark,
@@ -397,11 +428,17 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
                   children: [
                     Text(
                       report.title,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink),
                     ),
                     Text(
                       report.category,
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.muted),
+                      style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.muted),
                     ),
                   ],
                 ),
@@ -414,7 +451,10 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
                 ),
                 child: const Text(
                   'Stable',
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.tealDark),
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.tealDark),
                 ),
               ),
             ],
@@ -426,16 +466,22 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
               color: AppColors.softSection,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   ': ',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.inkSoft),
                 ),
                 Text(
                   ': ',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.inkSoft),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.inkSoft),
                 ),
               ],
             ),
@@ -443,7 +489,8 @@ class _CaregiverProgressTabState extends State<CaregiverProgressTab> {
           const SizedBox(height: 8),
           Text(
             report.statusDescription,
-            style: const TextStyle(fontSize: 12, color: AppColors.muted, height: 1.3),
+            style: const TextStyle(
+                fontSize: 12, color: AppColors.muted, height: 1.3),
           ),
         ],
       ),

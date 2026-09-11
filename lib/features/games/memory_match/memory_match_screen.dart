@@ -16,7 +16,14 @@ import '../../../shared/widgets/smriti_button.dart';
 import '../game_result_screen.dart';
 
 const List<String> kMemoryIconPool = [
-  '🍎', '🍌', '☕', '🏠', '🌸', '🐶', '🚗', '📚'
+  '🍎',
+  '🍌',
+  '☕',
+  '🏠',
+  '🌸',
+  '🐶',
+  '🚗',
+  '📚'
 ];
 
 class MemoryMatchLevel {
@@ -205,8 +212,8 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
     final accuracy =
         _moves > 0 ? _clampScore((totalPairs / _moves) * 100) : 100;
     final parSeconds = kMemoryLevels[_currentLevel]!.parSeconds;
-    final timeEfficiency = _clampScore(
-        100 - (max(0, _seconds - parSeconds) / parSeconds) * 100);
+    final timeEfficiency =
+        _clampScore(100 - (max(0, _seconds - parSeconds) / parSeconds) * 100);
     final score = _clampScore(accuracy * 0.65 + timeEfficiency * 0.35);
     final recommendation = GameStorageService.instance
         .getAdaptiveRecommendation('memory-match', accuracy, _currentLevel);
@@ -234,7 +241,8 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
           result: gameResult,
           onPlayAgain: () {
             Navigator.of(context).pop();
-            final nextLvl = GameStorageService.instance.getRecommendedLevel('memory-match');
+            final nextLvl =
+                GameStorageService.instance.getRecommendedLevel('memory-match');
             _startLevel(nextLvl);
           },
           onBackToGames: () => context.go('/games'),
@@ -303,14 +311,12 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
-                            color: selected
-                                ? AppColors.teal
-                                : AppColors.surface,
+                            color:
+                                selected ? AppColors.teal : AppColors.surface,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: selected
-                                  ? AppColors.teal
-                                  : AppColors.border,
+                              color:
+                                  selected ? AppColors.teal : AppColors.border,
                             ),
                           ),
                           child: Text(
@@ -318,7 +324,8 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: selected ? Colors.white : AppColors.inkSoft,
+                              color:
+                                  selected ? Colors.white : AppColors.inkSoft,
                             ),
                           ),
                         ),
@@ -354,8 +361,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                     label: 'Moves',
                     value: '$_moves',
                   ),
-                  Container(
-                      width: 1, height: 32, color: AppColors.borderLight),
+                  Container(width: 1, height: 32, color: AppColors.borderLight),
                   _StatItem(
                     icon: Icons.emoji_events_outlined,
                     color: AppColors.tealDark,
@@ -363,8 +369,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                     label: 'Matched',
                     value: '$_matchedCount / $totalPairs',
                   ),
-                  Container(
-                      width: 1, height: 32, color: AppColors.borderLight),
+                  Container(width: 1, height: 32, color: AppColors.borderLight),
                   _StatItem(
                     icon: Icons.timer_outlined,
                     color: AppColors.amberDeep,
@@ -433,7 +438,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -447,7 +452,7 @@ class _MemoryMatchScreenState extends State<MemoryMatchScreen> {
                       )
                     : Icon(
                         Icons.psychology_rounded,
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         size: cardWidth * 0.42,
                       ),
               ),
@@ -492,8 +497,7 @@ class _StatItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: const TextStyle(
-                    fontSize: 11, color: AppColors.muted)),
+                style: const TextStyle(fontSize: 11, color: AppColors.muted)),
             Text(
               value,
               style: GoogleFonts.dmSans(
@@ -503,33 +507,6 @@ class _StatItem extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ResultMetric extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _ResultMetric({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: AppColors.muted)),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: GoogleFonts.dmSans(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.ink,
-          ),
         ),
       ],
     );

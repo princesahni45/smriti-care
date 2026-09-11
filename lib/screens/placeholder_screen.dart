@@ -34,7 +34,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Fun & gentle brain activities',
           icon: Icons.psychology_rounded,
           accentColor: AppColors.teal,
-          detailedNote: 'Memory Match, Word Recall, and Pattern Recognition games are currently being prepared for mobile play.',
+          detailedNote:
+              'Memory Match, Word Recall, and Pattern Recognition games are currently being prepared for mobile play.',
           onBack: onBack,
         );
       case 'reminders':
@@ -43,7 +44,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Daily medicine & activity schedule',
           icon: Icons.access_time_filled_rounded,
           accentColor: AppColors.amber,
-          detailedNote: 'Gentle voice and visual reminders for medications, hydration, and appointments will appear here.',
+          detailedNote:
+              'Gentle voice and visual reminders for medications, hydration, and appointments will appear here.',
           onBack: onBack,
         );
       case 'emergency':
@@ -52,7 +54,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Immediate family & caregiver alert',
           icon: Icons.emergency_rounded,
           accentColor: AppColors.coral,
-          detailedNote: 'One-tap emergency dialing, location sharing, and caregiver notification system.',
+          detailedNote:
+              'One-tap emergency dialing, location sharing, and caregiver notification system.',
           onBack: onBack,
         );
       case 'location':
@@ -61,7 +64,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Offline guidance to your home',
           icon: Icons.location_on_rounded,
           accentColor: AppColors.blue,
-          detailedNote: 'Large visual arrows, spoken directions, and saved home coordinates to guide you safely home.',
+          detailedNote:
+              'Large visual arrows, spoken directions, and saved home coordinates to guide you safely home.',
           onBack: onBack,
         );
       case 'progress':
@@ -70,7 +74,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Cognitive activity summary',
           icon: Icons.bar_chart_rounded,
           accentColor: AppColors.violet,
-          detailedNote: 'Weekly engagement graphs, streak tracking, and memory score overviews will be accessible here.',
+          detailedNote:
+              'Weekly engagement graphs, streak tracking, and memory score overviews will be accessible here.',
           onBack: onBack,
         );
       case 'caregiver':
@@ -79,7 +84,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Connected caregiver support',
           icon: Icons.family_restroom_rounded,
           accentColor: AppColors.navy,
-          detailedNote: 'View caregiver contact Mohak Singh, send updates, and manage care settings.',
+          detailedNote:
+              'View caregiver contact Mohak Singh, send updates, and manage care settings.',
           onBack: onBack,
         );
       case 'profile':
@@ -88,7 +94,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Personal details & preferences',
           icon: Icons.account_circle_rounded,
           accentColor: AppColors.tealDark,
-          detailedNote: 'Mr. Ramesh Das • ID: MC-2048 • Age: 72 • Language preferences and accessibility settings.',
+          detailedNote:
+              'Mr. Ramesh Das • ID: MC-2048 • Age: 72 • Language preferences and accessibility settings.',
           onBack: onBack,
         );
       default:
@@ -97,7 +104,8 @@ class PlaceholderScreen extends StatelessWidget {
           subtitle: 'Under active development',
           icon: Icons.construction_rounded,
           accentColor: AppColors.teal,
-          detailedNote: 'This Smriti Care feature is being fine-tuned for a comfortable elderly experience.',
+          detailedNote:
+              'This Smriti Care feature is being fine-tuned for a comfortable elderly experience.',
           onBack: onBack,
         );
     }
@@ -112,15 +120,17 @@ class PlaceholderScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 28, color: AppColors.ink),
+          icon: const Icon(Icons.arrow_back_rounded,
+              size: 28, color: AppColors.ink),
           tooltip: 'Back to Dashboard',
-          onPressed: onBack ?? () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              context.go('/');
-            }
-          },
+          onPressed: onBack ??
+              () {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  context.go('/');
+                }
+              },
         ),
         title: Text(
           title,
@@ -148,10 +158,10 @@ class PlaceholderScreen extends StatelessWidget {
                   width: 104,
                   height: 104,
                   decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.12),
+                    color: accentColor.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: accentColor.withOpacity(0.28),
+                      color: accentColor.withValues(alpha: 0.28),
                       width: 2,
                     ),
                   ),
@@ -163,16 +173,19 @@ class PlaceholderScreen extends StatelessWidget {
 
                 // Coming Soon Pill Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.amberPale,
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.amber.withOpacity(0.3)),
+                    border: Border.all(
+                        color: AppColors.amber.withValues(alpha: 0.3)),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.auto_awesome_rounded, size: 16, color: AppColors.amber),
+                      Icon(Icons.auto_awesome_rounded,
+                          size: 16, color: AppColors.amber),
                       SizedBox(width: 6),
                       Text(
                         'COMING SOON',
@@ -219,10 +232,11 @@ class PlaceholderScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: AppColors.borderLight, width: 1.5),
+                      border:
+                          Border.all(color: AppColors.borderLight, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -231,7 +245,8 @@ class PlaceholderScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.info_outline_rounded, size: 24, color: accentColor),
+                        Icon(Icons.info_outline_rounded,
+                            size: 24, color: accentColor),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Text(
@@ -270,13 +285,14 @@ class PlaceholderScreen extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    onPressed: onBack ?? () {
-                      if (Navigator.of(context).canPop()) {
-                        Navigator.of(context).pop();
-                      } else {
-                        context.go('/');
-                      }
-                    },
+                    onPressed: onBack ??
+                        () {
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          } else {
+                            context.go('/');
+                          }
+                        },
                   ),
                 ),
               ],

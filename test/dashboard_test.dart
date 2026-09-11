@@ -13,7 +13,8 @@ import 'package:smriti_care/widgets/progress_summary_card.dart';
 import 'package:smriti_care/widgets/quick_action_card.dart';
 
 void main() {
-  testWidgets('SmritiCare Mobile Dashboard smoke test', (WidgetTester tester) async {
+  testWidgets('SmritiCare Mobile Dashboard smoke test',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmritiCareApp());
     await tester.pumpAndSettle();
 
@@ -35,12 +36,17 @@ void main() {
     expect(find.byType(BottomNavigationBar), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Games'), findsOneWidget);
-    expect(find.text('Reminders'), findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(BottomNavigationBar),
+            matching: find.text('Reminders')),
+        findsOneWidget);
     expect(find.text('Progress'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
   });
 
-  testWidgets('Dashboard navigation to games and placeholders', (WidgetTester tester) async {
+  testWidgets('Dashboard navigation to games and placeholders',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmritiCareApp());
     await tester.pumpAndSettle();
 
@@ -55,12 +61,14 @@ void main() {
     expect(find.text('Find the Different Object'), findsOneWidget);
 
     // Tap on Reminders tab in bottom navigation
-    await tester.tap(find.text('Reminders'));
+    await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Reminders')));
     await tester.pumpAndSettle();
 
     // Should display the Coming Soon placeholder for Reminders
     expect(find.text('COMING SOON'), findsOneWidget);
-    expect(find.text('Smart Reminders'), findsOneWidget);
+    expect(find.text('Smart Reminders'), findsWidgets);
     expect(find.text('Back to Dashboard'), findsOneWidget);
 
     // Tap back button

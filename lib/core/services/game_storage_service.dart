@@ -10,6 +10,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/game_result.dart';
+import '../../services/sync/offline_sync_service.dart';
+import '../../services/sync/sync_event.dart';
 
 class GameStorageService {
   GameStorageService._();
@@ -28,7 +30,7 @@ class GameStorageService {
         final content = await file.readAsString();
         if (content.isNotEmpty) {
           final decoded = jsonDecode(content) as Map<String, dynamic>;
-          
+
           if (decoded['history'] is List) {
             _history.clear();
             for (final item in decoded['history'] as List) {
@@ -87,6 +89,27 @@ class GameStorageService {
     _adaptiveLevels[result.gameId] = recommendedLevel;
 
     await _persist();
+
+    try {
+      final syncEvent = SyncEvent(
+        id: 'evt_game_${result.gameId}_${result.timestamp.millisecondsSinceEpoch}',
+        eventType: 'game_completion',
+        dedupKey:
+            'game_${result.gameId}_${result.timestamp.millisecondsSinceEpoch}',
+        payload: {
+          'gameId': result.gameId,
+          'gameName': result.gameName,
+          'score': result.score,
+          'accuracy': result.accuracy,
+          'difficulty': result.difficulty,
+          'timestamp': result.timestamp.toIso8601String(),
+        },
+        createdAt: DateTime.now(),
+      );
+      await OfflineSyncService.instance.queueEvent(syncEvent);
+    } catch (e) {
+      debugPrint('GameStorageService queueEvent warning: $e');
+    }
   }
 
   /// Retrieve full game history (newest first)
@@ -119,7 +142,7 @@ class GameStorageService {
   /// Current active streak in days
   int getCurrentStreakDays() {
     if (_history.isEmpty) return 0;
-    
+
     final uniqueDays = <String>{};
     for (final r in _history) {
       final key = '${r.timestamp.year}-${r.timestamp.month}-${r.timestamp.day}';
@@ -137,7 +160,9 @@ class GameStorageService {
         checkDate = checkDate.subtract(const Duration(days: 1));
       } else {
         // Allow streak to count if today has not been played yet but yesterday was
-        if (streak == 0 && checkDate.isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
+        if (streak == 0 &&
+            checkDate
+                .isAtSameMomentAs(DateTime(now.year, now.month, now.day))) {
           checkDate = checkDate.subtract(const Duration(days: 1));
           continue;
         }
@@ -178,7 +203,8 @@ class GameStorageService {
   }
 
   /// Gentle, non-clinical encouragement string based on score
-  String getAdaptiveRecommendation(String gameId, int accuracy, int currentLevel) {
+  String getAdaptiveRecommendation(
+      String gameId, int accuracy, int currentLevel) {
     final nextLevel = calculateNextLevel(accuracy, currentLevel);
     if (accuracy >= 80) {
       if (nextLevel > currentLevel) {

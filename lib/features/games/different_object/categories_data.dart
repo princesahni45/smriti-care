@@ -212,8 +212,7 @@ DifferentObjectQuestion generateDifferentObjectQuestion(
 ]) {
   final random = Random();
   final allKeys = kCategories.keys.toList();
-  final availableKeys =
-      allKeys.where((k) => k != previousCategoryKey).toList();
+  final availableKeys = allKeys.where((k) => k != previousCategoryKey).toList();
   final commonKey = availableKeys[random.nextInt(availableKeys.length)];
   final commonCat = kCategories[commonKey]!;
 
@@ -224,8 +223,7 @@ DifferentObjectQuestion generateDifferentObjectQuestion(
   // Pick (totalItems - 1) unique items from common pool
   final shuffledCommon = List<CategoryItem>.from(commonCat.items)
     ..shuffle(random);
-  final selectedCommon =
-      shuffledCommon.take(totalItems - 1).map((item) {
+  final selectedCommon = shuffledCommon.take(totalItems - 1).map((item) {
     return GameObjectChoice(
       id: '${item.name}-${random.nextInt(99999)}',
       name: item.name,

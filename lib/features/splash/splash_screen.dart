@@ -69,10 +69,10 @@ class _SplashScreenState extends State<SplashScreen>
                     'Made with care for North East India',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.muted,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.04,
-                    ),
+                          color: AppColors.muted,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.04,
+                        ),
                   ),
                 ),
                 const SizedBox(height: 60),
@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen>
                   height: 28,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    color: AppColors.teal.withOpacity(0.5),
+                    color: AppColors.teal.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -97,7 +97,10 @@ class _SplashScreenState extends State<SplashScreen>
           child: Text(
             '© 2026 Smriti Care · SIH 2026',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.muted),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppColors.muted),
           ),
         ),
       ),

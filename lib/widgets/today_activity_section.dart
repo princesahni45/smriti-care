@@ -37,7 +37,7 @@ class TodayActivitySection extends StatelessWidget {
           border: Border.all(color: AppColors.borderLight, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -100,15 +100,18 @@ class TodayActivitySection extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              Icon(Icons.calendar_today_rounded, size: 20, color: AppColors.teal),
+              Icon(Icons.calendar_today_rounded,
+                  size: 20, color: AppColors.teal),
               SizedBox(width: 8),
-              Text(
-                "Today's Activity",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                  letterSpacing: -0.3,
+              Expanded(
+                child: Text(
+                  "Today's Activity",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                    letterSpacing: -0.3,
+                  ),
                 ),
               ),
             ],

@@ -31,7 +31,8 @@ class CaregiverDashboardScreen extends StatefulWidget {
   });
 
   @override
-  State<CaregiverDashboardScreen> createState() => _CaregiverDashboardScreenState();
+  State<CaregiverDashboardScreen> createState() =>
+      _CaregiverDashboardScreenState();
 }
 
 class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
@@ -131,10 +132,11 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: const Border(top: BorderSide(color: AppColors.borderLight, width: 1.5)),
+          border: const Border(
+              top: BorderSide(color: AppColors.borderLight, width: 1.5)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -150,7 +152,8 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
           unselectedItemColor: AppColors.muted,
           selectedFontSize: 11,
           unselectedFontSize: 11,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.2),
+          selectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.2),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
           items: const [
             BottomNavigationBarItem(

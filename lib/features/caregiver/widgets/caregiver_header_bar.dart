@@ -21,10 +21,11 @@ class CaregiverHeaderBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: const Border(bottom: BorderSide(color: AppColors.borderLight, width: 1.5)),
+        border: const Border(
+            bottom: BorderSide(color: AppColors.borderLight, width: 1.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -44,7 +45,10 @@ class CaregiverHeaderBar extends StatelessWidget {
               ),
               child: const Text(
                 'Caregiver portal',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.tealDark),
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tealDark),
               ),
             ),
             const Spacer(),
@@ -54,7 +58,8 @@ class CaregiverHeaderBar extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   builder: (ctx) => Padding(
                     padding: const EdgeInsets.all(20),
@@ -64,26 +69,28 @@ class CaregiverHeaderBar extends StatelessWidget {
                       children: [
                         const Text(
                           'Caregiver Notifications',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: 12),
                         ...alerts.take(3).map(
-                          (a) => Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.circle, size: 8, color: AppColors.coral),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    '${a.title} - ${a.message}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
+                              (a) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.circle,
+                                        size: 8, color: AppColors.coral),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        '${a.title} - ${a.message}',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -99,7 +106,8 @@ class CaregiverHeaderBar extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    const Icon(Icons.notifications_outlined, size: 20, color: AppColors.inkSoft),
+                    const Icon(Icons.notifications_outlined,
+                        size: 20, color: AppColors.inkSoft),
                     Positioned(
                       right: 8,
                       top: 8,
@@ -127,20 +135,29 @@ class CaregiverHeaderBar extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 profile.initials,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13),
               ),
             ),
             const SizedBox(width: 10),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.border),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              icon: const Icon(Icons.swap_horiz_rounded, size: 16, color: AppColors.ink),
+              icon: const Icon(Icons.swap_horiz_rounded,
+                  size: 16, color: AppColors.ink),
               label: const Text(
                 'Patient View',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.ink),
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.ink),
               ),
               onPressed: onSwitchToPatient,
             ),

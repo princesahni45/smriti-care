@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/localization/locale_controller.dart';
+import 'l10n/app_localizations.dart';
 import 'screens/main_shell_screen.dart';
 import 'screens/placeholder_screen.dart';
 import 'features/splash/splash_screen.dart';
@@ -19,6 +21,10 @@ import 'features/games/games_hub_screen.dart';
 import 'features/games/memory_match/memory_match_screen.dart';
 import 'features/games/word_recall/word_recall_screen.dart';
 import 'features/games/different_object/different_object_screen.dart';
+import 'features/caregiver/screens/caregiver_ai_status_screen.dart';
+import 'features/caregiver/screens/caregiver_asr_benchmark_screen.dart';
+import 'features/caregiver/screens/caregiver_tts_diagnostics_screen.dart';
+import 'features/caregiver/screens/caregiver_offline_diagnostics_screen.dart';
 
 final _router = GoRouter(
   initialLocation: '/',
@@ -36,6 +42,34 @@ final _router = GoRouter(
       path: '/dashboard',
       name: 'dashboard',
       builder: (context, state) => const MainShellScreen(initialTab: 0),
+    ),
+    GoRoute(
+      path: '/patient/dashboard',
+      name: 'patientDashboardAlias',
+      builder: (context, state) => const MainShellScreen(initialTab: 0),
+    ),
+    GoRoute(
+      path: '/reminders',
+      name: 'reminders',
+      builder: (context, state) => const MainShellScreen(initialTab: 2),
+    ),
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (context, state) => const MainShellScreen(initialTab: 4),
+    ),
+    GoRoute(
+      path: '/caregiver-help',
+      name: 'caregiverHelp',
+      builder: (context, state) => CaregiverDashboardScreen(
+        onBackToPatient: () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          } else {
+            context.go('/dashboard');
+          }
+        },
+      ),
     ),
 
     // ── Dynamic Placeholder Route for Upcoming Modules
@@ -101,6 +135,26 @@ final _router = GoRouter(
       name: 'caregiverDashboard',
       builder: (context, state) => const CaregiverDashboardScreen(),
     ),
+    GoRoute(
+      path: '/caregiver/ai-model-status',
+      name: 'caregiverAiStatus',
+      builder: (context, state) => const CaregiverAiStatusScreen(),
+    ),
+    GoRoute(
+      path: '/caregiver/asr-benchmark',
+      name: 'caregiverAsrBenchmark',
+      builder: (context, state) => const CaregiverAsrBenchmarkScreen(),
+    ),
+    GoRoute(
+      path: '/caregiver/tts-diagnostics',
+      name: 'caregiverTtsDiagnostics',
+      builder: (context, state) => const CaregiverTtsDiagnosticsScreen(),
+    ),
+    GoRoute(
+      path: '/caregiver/offline-diagnostics',
+      name: 'caregiverOfflineDiagnostics',
+      builder: (context, state) => const CaregiverOfflineDiagnosticsScreen(),
+    ),
 
     // ── Cognitive Games
     GoRoute(
@@ -131,11 +185,29 @@ class SmritiCareApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Smriti Care',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: _router,
+    return ListenableBuilder(
+      listenable: LocaleController.instance,
+      builder: (context, _) {
+        return MaterialApp.router(
+          title: 'MindCare NER',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          locale: LocaleController.instance.currentLocale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localeResolutionCallback: (deviceLocale, supportedLocales) {
+            if (deviceLocale != null) {
+              for (final supported in supportedLocales) {
+                if (supported.languageCode == deviceLocale.languageCode) {
+                  return supported;
+                }
+              }
+            }
+            return const Locale('en'); // Safe English fallback
+          },
+          routerConfig: _router,
+        );
+      },
     );
   }
 }

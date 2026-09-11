@@ -25,14 +25,14 @@ class PatientUser {
   });
 
   factory PatientUser.prototype() => PatientUser(
-    patientId: 'MC-2048',
-    displayName: 'Ramesh',
-    fullName: 'Mr. Ramesh Das',
-    email: 'patient@example.com',
-    preferredLanguage: 'en',
-    isSessionActive: true,
-    sessionStartedAt: DateTime.now(),
-  );
+        patientId: 'MC-2048',
+        displayName: 'Ramesh',
+        fullName: 'Mr. Ramesh Das',
+        email: 'patient@example.com',
+        preferredLanguage: 'en',
+        isSessionActive: true,
+        sessionStartedAt: DateTime.now(),
+      );
 
   PatientUser copyWith({
     String? patientId,
@@ -42,15 +42,16 @@ class PatientUser {
     String? preferredLanguage,
     bool? isSessionActive,
     DateTime? sessionStartedAt,
-  }) => PatientUser(
-    patientId: patientId ?? this.patientId,
-    displayName: displayName ?? this.displayName,
-    fullName: fullName ?? this.fullName,
-    email: email ?? this.email,
-    preferredLanguage: preferredLanguage ?? this.preferredLanguage,
-    isSessionActive: isSessionActive ?? this.isSessionActive,
-    sessionStartedAt: sessionStartedAt ?? this.sessionStartedAt,
-  );
+  }) =>
+      PatientUser(
+        patientId: patientId ?? this.patientId,
+        displayName: displayName ?? this.displayName,
+        fullName: fullName ?? this.fullName,
+        email: email ?? this.email,
+        preferredLanguage: preferredLanguage ?? this.preferredLanguage,
+        isSessionActive: isSessionActive ?? this.isSessionActive,
+        sessionStartedAt: sessionStartedAt ?? this.sessionStartedAt,
+      );
 }
 
 class CaregiverUser {
@@ -65,10 +66,10 @@ class CaregiverUser {
   });
 
   factory CaregiverUser.prototype() => const CaregiverUser(
-    email: 'singhmohak360@gmail.com',
-    name: 'Mohak Singh',
-    initials: 'MS',
-  );
+        email: 'singhmohak360@gmail.com',
+        name: 'Mohak Singh',
+        initials: 'MS',
+      );
 }
 
 /// Simple prototype authentication — mirrors authConfig.js logic.
@@ -81,7 +82,11 @@ class AuthService {
     String password,
   ) {
     if (email.trim().isEmpty || password.trim().isEmpty) {
-      return (success: false, user: null, error: 'Please enter both email and password.');
+      return (
+        success: false,
+        user: null,
+        error: 'Please enter both email and password.'
+      );
     }
 
     final normalizedEmail = email.trim().toLowerCase();
@@ -97,23 +102,33 @@ class AuthService {
     ];
     const acceptedPasswords = ['Hello@123', 'Patient@123'];
 
-    final emailOk    = acceptedEmails.contains(normalizedEmail);
+    final emailOk = acceptedEmails.contains(normalizedEmail);
     final passwordOk = acceptedPasswords.contains(trimmedPassword);
 
     if (emailOk && passwordOk) {
       return (success: true, user: PatientUser.prototype(), error: null);
     }
-    return (success: false, user: null, error: 'Email or password is incorrect. Please try again.');
+    return (
+      success: false,
+      user: null,
+      error: 'Email or password is incorrect. Please try again.'
+    );
   }
 
-  static ({bool success, CaregiverUser? user, String? error}) authenticateCaregiver(
+  static ({bool success, CaregiverUser? user, String? error})
+      authenticateCaregiver(
     String email,
     String password,
   ) {
     if (email.trim().isEmpty || password.trim().isEmpty) {
-      return (success: false, user: null, error: 'Please enter both email and password.');
+      return (
+        success: false,
+        user: null,
+        error: 'Please enter both email and password.'
+      );
     }
-    if (email.trim() == 'singhmohak360@gmail.com' && password.trim() == 'Hello@123') {
+    if (email.trim() == 'singhmohak360@gmail.com' &&
+        password.trim() == 'Hello@123') {
       return (success: true, user: CaregiverUser.prototype(), error: null);
     }
     return (
@@ -145,4 +160,3 @@ class UserSessionService {
     _activeRole = role;
   }
 }
-

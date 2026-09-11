@@ -16,7 +16,8 @@ class ActivityTimelineSection extends StatelessWidget {
       children: [
         const Text(
           'Recent Patient Activity',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
         const SizedBox(height: 12),
         ...activities.map((a) => _buildTimelineTile(a)),
@@ -65,7 +66,8 @@ class ActivityTimelineSection extends StatelessWidget {
           Container(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+                color: bg, borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(width: 12),
@@ -75,7 +77,10 @@ class ActivityTimelineSection extends StatelessWidget {
               children: [
                 Text(
                   item.title,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink),
                 ),
                 Text(
                   item.subtitle,
@@ -86,7 +91,10 @@ class ActivityTimelineSection extends StatelessWidget {
           ),
           Text(
             item.timeAgo,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.muted),
+            style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.muted),
           ),
         ],
       ),

@@ -54,15 +54,16 @@ class GameResult {
   factory GameResult.fromMap(Map<String, dynamic> map) {
     return GameResult(
       id: map['id'] as String? ?? '',
-      gameId: map['gameId'] as String? ?? '',
-      gameName: map['gameName'] as String? ?? '',
+      gameId: map['gameId'] as String? ?? 'unknown',
+      gameName: map['gameName'] as String? ?? 'Activity',
       score: (map['score'] as num?)?.toInt() ?? 0,
       accuracy: (map['accuracy'] as num?)?.toInt() ?? 0,
       attempts: (map['attempts'] as num?)?.toInt() ?? 0,
       correctAnswers: (map['correctAnswers'] as num?)?.toInt() ?? 0,
       wrongAnswers: (map['wrongAnswers'] as num?)?.toInt() ?? 0,
       difficulty: map['difficulty'] as String? ?? 'Level 1',
-      completionTimeSeconds: (map['completionTimeSeconds'] as num?)?.toInt() ?? 0,
+      completionTimeSeconds:
+          (map['completionTimeSeconds'] as num?)?.toInt() ?? 0,
       timestamp: map['timestamp'] != null
           ? DateTime.tryParse(map['timestamp'] as String) ?? DateTime.now()
           : DateTime.now(),

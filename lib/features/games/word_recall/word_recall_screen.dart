@@ -69,7 +69,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
   @override
   void initState() {
     super.initState();
-    _currentLevel = GameStorageService.instance.getRecommendedLevel('word-recall');
+    _currentLevel =
+        GameStorageService.instance.getRecommendedLevel('word-recall');
   }
 
   @override
@@ -115,7 +116,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
       _immediateSelected.clear();
       _immediateResult = null;
       _distractionIndex = 0;
-      _delayedOptions = buildDelayedOptions(targets, cfg.fixedDistractors ?? kDistractorBankL1);
+      _delayedOptions = buildDelayedOptions(
+          targets, cfg.fixedDistractors ?? kDistractorBankL1);
       _delayedSelected.clear();
       _delayedResult = null;
       _step = WordRecallStep.learning;
@@ -124,7 +126,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
     _startCountdown();
   }
 
-  List<String> buildDelayedOptions(List<String> targets, List<String> distractorPool) {
+  List<String> buildDelayedOptions(
+      List<String> targets, List<String> distractorPool) {
     final shuffled = [...distractorPool]..shuffle(Random());
     final picked = shuffled.take(targets.length).toList();
     return [...targets, ...picked]..shuffle(Random());
@@ -203,7 +206,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
     final immAcc = _immediateResult?.accuracy ?? result.accuracy;
     final combinedAccuracy = ((immAcc + result.accuracy) / 2).round();
     final recommendation = GameStorageService.instance
-        .getAdaptiveRecommendation('word-recall', combinedAccuracy, _currentLevel);
+        .getAdaptiveRecommendation(
+            'word-recall', combinedAccuracy, _currentLevel);
 
     // Save game result to local storage (Step 11 & 14)
     final gameResult = GameResult(
@@ -213,8 +217,10 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
       score: combinedAccuracy,
       accuracy: combinedAccuracy,
       attempts: _targetWordsPlain.length * 2,
-      correctAnswers: (_immediateResult?.correct.length ?? 0) + result.correct.length,
-      wrongAnswers: (_immediateResult?.incorrect.length ?? 0) + result.incorrect.length,
+      correctAnswers:
+          (_immediateResult?.correct.length ?? 0) + result.correct.length,
+      wrongAnswers:
+          (_immediateResult?.incorrect.length ?? 0) + result.incorrect.length,
       difficulty: kWordRecallLevels[_currentLevel]!.label,
       completionTimeSeconds: 60,
       timestamp: DateTime.now(),
@@ -233,7 +239,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
           result: gameResult,
           onPlayAgain: () {
             Navigator.of(context).pop();
-            final nextLvl = GameStorageService.instance.getRecommendedLevel('word-recall');
+            final nextLvl =
+                GameStorageService.instance.getRecommendedLevel('word-recall');
             setState(() {
               _currentLevel = nextLvl;
               _step = WordRecallStep.intro;
@@ -522,15 +529,14 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
           alignment: WrapAlignment.center,
           children: _targetWordObjs.map((w) {
             return Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.teal, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.teal.withOpacity(0.08),
+                    color: AppColors.teal.withValues(alpha: 0.08),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -642,8 +648,7 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                   width: 1.5,
                 ),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               onSelected: (selected) {
                 setState(() {
                   if (selected) {
@@ -720,8 +725,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                   child: OutlinedButton(
                     onPressed: _handleDistractionAnswer,
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                          color: AppColors.border, width: 1.5),
+                      side:
+                          const BorderSide(color: AppColors.border, width: 1.5),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                       backgroundColor: AppColors.softSection,
@@ -780,7 +785,6 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
               ),
         ),
         const SizedBox(height: 24),
-
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -806,8 +810,7 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                   width: 1.5,
                 ),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               onSelected: (selected) {
                 setState(() {
                   if (selected) {
@@ -821,7 +824,6 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
           }).toList(),
         ),
         const SizedBox(height: 32),
-
         SmritiButton(
           label: 'Submit Final Answers',
           width: double.infinity,
@@ -891,8 +893,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Immediate Recall',
-                          style: TextStyle(
-                              fontSize: 11, color: AppColors.muted)),
+                          style:
+                              TextStyle(fontSize: 11, color: AppColors.muted)),
                       const SizedBox(height: 4),
                       Text(
                         '$immCorrect / $totalTargets',
@@ -928,8 +930,8 @@ class _WordRecallScreenState extends State<WordRecallScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Delayed Recall',
-                          style: TextStyle(
-                              fontSize: 11, color: AppColors.muted)),
+                          style:
+                              TextStyle(fontSize: 11, color: AppColors.muted)),
                       const SizedBox(height: 4),
                       Text(
                         '$delCorrect / $totalTargets',

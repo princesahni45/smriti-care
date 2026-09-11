@@ -82,15 +82,18 @@ class ProgressSummaryCard extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              Icon(Icons.trending_up_rounded, size: 20, color: AppColors.violet),
+              Icon(Icons.trending_up_rounded,
+                  size: 20, color: AppColors.violet),
               SizedBox(width: 8),
-              Text(
-                'Your Progress',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                  letterSpacing: -0.3,
+              Expanded(
+                child: Text(
+                  'Your Progress',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                    letterSpacing: -0.3,
+                  ),
                 ),
               ),
             ],
@@ -111,7 +114,7 @@ class ProgressSummaryCard extends StatelessWidget {
                 border: Border.all(color: AppColors.borderLight, width: 1.6),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -143,17 +146,20 @@ class ProgressSummaryCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   const Divider(color: AppColors.borderLight),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text(
-                        'Weekly cognitive summary',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.muted,
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Weekly cognitive summary',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.muted,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      SizedBox(width: 8),
                       Row(
                         children: [
                           Text(

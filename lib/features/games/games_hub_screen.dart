@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/models/game_result.dart';
 import '../../core/services/game_storage_service.dart';
-import '../../shared/widgets/smriti_button.dart';
 
 class GameCatalogItem {
   final String id;
@@ -121,7 +120,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 28, color: AppColors.ink),
+          icon: const Icon(Icons.arrow_back_rounded,
+              size: 28, color: AppColors.ink),
           onPressed: () {
             if (widget.onBack != null) {
               widget.onBack!();
@@ -209,7 +209,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
             // ── Games List Header
             const Row(
               children: [
-                Icon(Icons.sports_esports_rounded, size: 22, color: AppColors.teal),
+                Icon(Icons.sports_esports_rounded,
+                    size: 22, color: AppColors.teal),
                 SizedBox(width: 8),
                 Text(
                   'Available Activities',
@@ -259,7 +260,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
       iconFg = AppColors.amberDeep;
     }
 
-    final recommendedLevel = GameStorageService.instance.getRecommendedLevel(game.id);
+    final recommendedLevel =
+        GameStorageService.instance.getRecommendedLevel(game.id);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
@@ -270,7 +272,7 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         border: Border.all(color: AppColors.borderLight, width: 1.6),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -380,7 +382,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.speed_rounded, size: 14, color: AppColors.tealDeep),
+                const Icon(Icons.speed_rounded,
+                    size: 14, color: AppColors.tealDeep),
                 const SizedBox(width: 6),
                 Text(
                   'Recommended: Level $recommendedLevel',
@@ -458,7 +461,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
             ),
             child: const Row(
               children: [
-                Icon(Icons.info_outline_rounded, color: AppColors.muted, size: 22),
+                Icon(Icons.info_outline_rounded,
+                    color: AppColors.muted, size: 22),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -542,12 +546,13 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.borderLight),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(Icons.lightbulb_outline_rounded, size: 20, color: AppColors.amberDeep),
+            children: [
+              Icon(Icons.lightbulb_outline_rounded,
+                  size: 20, color: AppColors.amberDeep),
               SizedBox(width: 8),
               Text(
                 'Coming in Future Updates',
@@ -559,8 +564,8 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          const Text(
+          SizedBox(height: 8),
+          Text(
             'Pattern Recognition & Daily Routine Recall are currently in development for mobile play.',
             style: TextStyle(
               fontSize: 13,

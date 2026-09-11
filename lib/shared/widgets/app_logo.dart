@@ -61,7 +61,8 @@ class _LogoMark extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Brain icon (primary)
-          Icon(Icons.psychology_rounded, color: AppColors.teal, size: size * 0.56),
+          Icon(Icons.psychology_rounded,
+              color: AppColors.teal, size: size * 0.56),
           // Small heart in bottom-right corner
           Positioned(
             right: -1,
@@ -93,17 +94,17 @@ class AppLogoCentered extends StatelessWidget {
         Text(
           'Smriti Care',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppColors.ink,
-            letterSpacing: -0.5,
-          ),
+                color: AppColors.ink,
+                letterSpacing: -0.5,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
           'Cognitive Care & Safety Platform',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppColors.muted,
-            fontWeight: FontWeight.w600,
-          ),
+                color: AppColors.muted,
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ],
     );

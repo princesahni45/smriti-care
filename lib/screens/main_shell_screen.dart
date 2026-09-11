@@ -14,6 +14,8 @@ import 'dashboard_screen.dart';
 import 'placeholder_screen.dart';
 import '../features/games/games_hub_screen.dart';
 import '../features/caregiver/caregiver_dashboard_screen.dart';
+import '../features/voice_assistant/widgets/voice_assistant_sheet.dart';
+import '../core/models/user_model.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialTab;
@@ -56,13 +58,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
         _onTabTapped(4);
         break;
       case 'caregiver':
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (ctx) => CaregiverDashboardScreen(
-              onBackToPatient: () => Navigator.of(ctx).pop(),
-            ),
-          ),
-        );
+        _openCaregiverWithPin();
         break;
       default:
         // For Emergency, Location, Caregiver, push the dedicated PlaceholderScreen
@@ -75,6 +71,129 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
         );
         break;
+    }
+  }
+
+  Future<void> _openCaregiverWithPin() async {
+    final pinController = TextEditingController();
+    String? pinError;
+
+    final authorized = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setStateDlg) => AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          contentPadding: const EdgeInsets.all(24),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppColors.tealLight,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.shield_rounded,
+                      color: AppColors.teal, size: 28),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Caregiver Authorization',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Enter caregiver PIN to access administrative portal and diagnostics.',
+                  style: TextStyle(fontSize: 13, color: AppColors.muted),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 18),
+                TextField(
+                  controller: pinController,
+                  keyboardType: TextInputType.number,
+                  obscureText: true,
+                  maxLength: 4,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 8),
+                  decoration: InputDecoration(
+                    hintText: '••••',
+                    counterText: '',
+                    errorText: pinError,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: AppColors.teal, width: 2),
+                    ),
+                  ),
+                  onChanged: (_) => setStateDlg(() => pinError = null),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(dialogCtx, false),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final result = AuthService.validateCaregiverPin(
+                              pinController.text);
+                          if (result.success) {
+                            Navigator.pop(dialogCtx, true);
+                          } else {
+                            setStateDlg(() => pinError = result.error);
+                            pinController.clear();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.teal,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: const Text('Unlock'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (authorized == true && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => CaregiverDashboardScreen(
+            onBackToPatient: () => Navigator.of(ctx).pop(),
+          ),
+        ),
+      );
     }
   }
 
@@ -107,6 +226,17 @@ class _MainShellScreenState extends State<MainShellScreen> {
         index: _currentIndex,
         children: screens,
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'voiceAssistantFab',
+        backgroundColor: AppColors.teal,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.mic_rounded, size: 26),
+        label: const Text(
+          'Voice Help',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
+        onPressed: () => VoiceAssistantSheet.show(context),
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -115,7 +245,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -3),
             ),

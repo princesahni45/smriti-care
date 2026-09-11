@@ -1,0 +1,155 @@
+﻿{
+  "@@locale": "en",
+  "appName": "Smriti Care",
+  "@appName": {
+    "description": "Application title"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome greeting for the patient"
+  },
+  "patientLogin": "Patient Login",
+  "@patientLogin": {
+    "description": "Button to log in as a patient"
+  },
+  "caregiverLogin": "Caregiver Login",
+  "@caregiverLogin": {
+    "description": "Button to log in as a caregiver"
+  },
+  "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Main dashboard title and navigation"
+  },
+  "games": "Brain Games",
+  "@games": {
+    "description": "Cognitive activities and games section"
+  },
+  "reminders": "Reminders",
+  "@reminders": {
+    "description": "Medication and routine reminders section"
+  },
+  "voiceAssistant": "Voice Assistant",
+  "@voiceAssistant": {
+    "description": "Spoken assistant feature"
+  },
+  "help": "Help",
+  "@help": {
+    "description": "Help and guidance button"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Application settings"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language selection option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language name"
+  },
+  "hindi": "Hindi",
+  "@hindi": {
+    "description": "Hindi language name"
+  },
+  "assamese": "Assamese",
+  "@assamese": {
+    "description": "Assamese language name"
+  },
+  "start": "Start",
+  "@start": {
+    "description": "Start an activity or game"
+  },
+  "continueText": "Continue",
+  "@continueText": {
+    "description": "Continue action button"
+  },
+  "repeat": "Repeat",
+  "@repeat": {
+    "description": "Repeat instructions or audio"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Navigate back button"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home destination button"
+  },
+  "completed": "Completed",
+  "@completed": {
+    "description": "Indicates an activity or reminder has been completed"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Retry an action or puzzle"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Refers to the current day"
+  },
+  "morning": "Morning",
+  "@morning": {
+    "description": "Morning period of the day"
+  },
+  "afternoon": "Afternoon",
+  "@afternoon": {
+    "description": "Afternoon period of the day"
+  },
+  "evening": "Evening",
+  "@evening": {
+    "description": "Evening period of the day"
+  },
+  "medicineReminder": "Medicine Reminder",
+  "@medicineReminder": {
+    "description": "Prompt to take prescribed medications"
+  },
+  "drinkWater": "Drink Water",
+  "@drinkWater": {
+    "description": "Gentle hydration prompt for the patient"
+  },
+  "appointment": "Appointment",
+  "@appointment": {
+    "description": "Medical or doctor appointment reminder"
+  },
+  "helpMe": "Help Me",
+  "@helpMe": {
+    "description": "One-touch urgent assistance request button"
+  },
+  "emergency": "Emergency SOS",
+  "@emergency": {
+    "description": "Critical emergency SOS trigger"
+  },
+  "caregiver": "Caregiver",
+  "@caregiver": {
+    "description": "Caregiver role label"
+  },
+  "logout": "Log Out",
+  "@logout": {
+    "description": "Log out action"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirmation button"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancellation button"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading state indication"
+  },
+  "offlineMode": "Offline Mode",
+  "@offlineMode": {
+    "description": "Status banner when device is offline"
+  },
+  "internetUnavailable": "Internet is unavailable. Operating in safe offline mode.",
+  "@internetUnavailable": {
+    "description": "Notification when network connection is absent"
+  },
+  "somethingWentWrong": "Something went wrong. Please tap Back or Home.",
+  "@somethingWentWrong": {
+    "description": "Gentle, calm error fallback message for elderly patients"
+  }
+}

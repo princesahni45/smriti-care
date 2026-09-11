@@ -94,7 +94,8 @@ void main() {
     test('Adaptive recommendations are encouraging and non-clinical', () {
       final service = GameStorageService.instance;
 
-      final highLevelRec = service.getAdaptiveRecommendation('memory-match', 85, 1);
+      final highLevelRec =
+          service.getAdaptiveRecommendation('memory-match', 85, 1);
       expect(highLevelRec, contains('unlocked Level 2'));
       expect(highLevelRec, isNot(contains('dementia')));
       expect(highLevelRec, isNot(contains('impairment')));
@@ -102,7 +103,8 @@ void main() {
       final mediumRec = service.getAdaptiveRecommendation('word-recall', 65, 2);
       expect(mediumRec, contains('Practicing Level 2 again'));
 
-      final lowRec = service.getAdaptiveRecommendation('different-object', 30, 2);
+      final lowRec =
+          service.getAdaptiveRecommendation('different-object', 30, 2);
       expect(lowRec, contains('Level 1 is recommended'));
     });
   });
@@ -175,13 +177,16 @@ void main() {
       expect(find.text('Activity Complete!'), findsOneWidget);
       expect(find.text('90%'), findsOneWidget);
       expect(find.text('Level 2'), findsOneWidget);
-      expect(find.text('Wonderful job! You have unlocked Level 3.'), findsOneWidget);
+      expect(find.text('Wonderful job! You have unlocked Level 3.'),
+          findsOneWidget);
 
       // Tap Play Again
+      await tester.ensureVisible(find.text('Play Again'));
       await tester.tap(find.text('Play Again'));
       expect(playAgainTapped, isTrue);
 
       // Tap Back to Games
+      await tester.ensureVisible(find.text('Back to Games'));
       await tester.tap(find.text('Back to Games'));
       expect(backToGamesTapped, isTrue);
     });

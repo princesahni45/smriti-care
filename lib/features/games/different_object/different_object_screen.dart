@@ -55,7 +55,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
   @override
   void initState() {
     super.initState();
-    _currentLevel = GameStorageService.instance.getRecommendedLevel('different-object');
+    _currentLevel =
+        GameStorageService.instance.getRecommendedLevel('different-object');
     _initLevel(_currentLevel);
   }
 
@@ -72,7 +73,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
     String? lastCategory;
 
     for (int i = 0; i < config.questionsCount; i++) {
-      final q = generateDifferentObjectQuestion(config.totalItems, lastCategory);
+      final q =
+          generateDifferentObjectQuestion(config.totalItems, lastCategory);
       generated.add(q);
       lastCategory = q.commonCategory;
     }
@@ -185,9 +187,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
 
   void _showResultsDialog() {
     final totalAttempts = _score + _totalWrongAttempts;
-    final accuracy = totalAttempts > 0
-        ? ((_score / totalAttempts) * 100).round()
-        : 100;
+    final accuracy =
+        totalAttempts > 0 ? ((_score / totalAttempts) * 100).round() : 100;
     final config = kDifferentObjectLevels[_currentLevel]!;
     final recommendation = GameStorageService.instance
         .getAdaptiveRecommendation('different-object', accuracy, _currentLevel);
@@ -215,7 +216,8 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
           result: gameResult,
           onPlayAgain: () {
             Navigator.of(context).pop();
-            _initLevel(GameStorageService.instance.getRecommendedLevel('different-object'));
+            _initLevel(GameStorageService.instance
+                .getRecommendedLevel('different-object'));
           },
           onBackToGames: () => context.go('/games'),
         ),
@@ -296,11 +298,15 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                             ),
                           ),
                           child: Text(
-                            kDifferentObjectLevels[lvl]!.label.split('—')[0].trim(),
+                            kDifferentObjectLevels[lvl]!
+                                .label
+                                .split('—')[0]
+                                .trim(),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: selected ? Colors.white : AppColors.inkSoft,
+                              color:
+                                  selected ? Colors.white : AppColors.inkSoft,
                             ),
                           ),
                         ),
@@ -336,8 +342,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                     label: 'Question',
                     value: '${_currentIndex + 1} / ${config.questionsCount}',
                   ),
-                  Container(
-                      width: 1, height: 32, color: AppColors.borderLight),
+                  Container(width: 1, height: 32, color: AppColors.borderLight),
                   _StatItem(
                     icon: Icons.check_circle_outline_rounded,
                     color: AppColors.tealDark,
@@ -345,8 +350,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                     label: 'Correct',
                     value: '$_score',
                   ),
-                  Container(
-                      width: 1, height: 32, color: AppColors.borderLight),
+                  Container(width: 1, height: 32, color: AppColors.borderLight),
                   _StatItem(
                     icon: Icons.timer_outlined,
                     color: AppColors.amberDeep,
@@ -474,7 +478,7 @@ class _DifferentObjectScreenState extends State<DifferentObjectScreen> {
                   border: Border.all(color: borderColor, width: borderWidth),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
