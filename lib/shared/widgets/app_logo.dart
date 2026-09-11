@@ -26,15 +26,20 @@ class AppLogo extends StatelessWidget {
         // Logo mark — teal rounded square with brain + small heart overlay
         _LogoMark(size: iconSize + 16),
         if (showText) ...[
-          const SizedBox(width: 10),
-          Text(
-            'Smriti Care',
-            style: TextStyle(
-              fontFamily: 'DM Sans',
-              fontSize: fontSize,
-              fontWeight: FontWeight.w700,
-              color: AppColors.ink,
-              letterSpacing: -0.3,
+          const SizedBox(width: 8),
+          // FIX: Prevent RenderFlex overflow on narrow mobile screens - flexible logo text
+          Flexible(
+            child: Text(
+              'Smriti Care',
+              style: TextStyle(
+                fontFamily: 'DM Sans',
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: AppColors.ink,
+                letterSpacing: -0.3,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -61,7 +66,8 @@ class _LogoMark extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Brain icon (primary)
-          Icon(Icons.psychology_rounded, color: AppColors.teal, size: size * 0.56),
+          Icon(Icons.psychology_rounded,
+              color: AppColors.teal, size: size * 0.56),
           // Small heart in bottom-right corner
           Positioned(
             right: -1,
@@ -93,17 +99,17 @@ class AppLogoCentered extends StatelessWidget {
         Text(
           'Smriti Care',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppColors.ink,
-            letterSpacing: -0.5,
-          ),
+                color: AppColors.ink,
+                letterSpacing: -0.5,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
           'Cognitive Care & Safety Platform',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppColors.muted,
-            fontWeight: FontWeight.w600,
-          ),
+                color: AppColors.muted,
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ],
     );
