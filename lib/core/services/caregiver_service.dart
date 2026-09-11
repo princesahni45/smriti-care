@@ -144,6 +144,7 @@ class CaregiverService {
           primaryLanguage: 'English & Assamese',
           avatarInitials: 'RD',
           lastUpdated: DateTime.now().subtract(const Duration(minutes: 15)),
+          activeAccessCode: 'SMR-4827-KP',
         ),
         PatientProfile(
           id: 'MC-3109',
@@ -156,6 +157,7 @@ class CaregiverService {
           primaryLanguage: 'Assamese & Hindi',
           avatarInitials: 'MS',
           lastUpdated: DateTime.now().subtract(const Duration(hours: 3)),
+          activeAccessCode: 'SMR-9182-TR',
         ),
       ]);
     }
@@ -404,6 +406,7 @@ class CaregiverService {
       primaryLanguage: 'English',
       avatarInitials: 'RD',
       lastUpdated: DateTime.now(),
+      activeAccessCode: 'SMR-4827-KP',
     );
   }
 
@@ -425,6 +428,15 @@ class CaregiverService {
     _patients.add(newPatient);
     _selectedPatientId = newPatient.id;
     await _persist();
+  }
+
+  Future<void> updatePatientAccessCode(String patientId, String code) async {
+    await init();
+    final index = _patients.indexWhere((p) => p.id == patientId);
+    if (index != -1) {
+      _patients[index] = _patients[index].copyWith(activeAccessCode: code);
+      await _persist();
+    }
   }
 
   CaregiverProfile getCaregiverProfile() => _caregiver;

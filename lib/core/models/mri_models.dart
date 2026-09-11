@@ -77,10 +77,15 @@ class MriUploadedFile {
   factory MriUploadedFile.fromMap(Map<String, dynamic> map) {
     MriFileCategory cat = MriFileCategory.other;
     final catStr = (map['category'] ?? '').toString().toLowerCase();
-    if (catStr == 'mri') cat = MriFileCategory.mri;
-    else if (catStr == 'images') cat = MriFileCategory.images;
-    else if (catStr == 'pdf') cat = MriFileCategory.pdf;
-    else if (catStr == 'presentations') cat = MriFileCategory.presentations;
+    if (catStr == 'mri') {
+      cat = MriFileCategory.mri;
+    } else if (catStr == 'images') {
+      cat = MriFileCategory.images;
+    } else if (catStr == 'pdf') {
+      cat = MriFileCategory.pdf;
+    } else if (catStr == 'presentations') {
+      cat = MriFileCategory.presentations;
+    }
 
     return MriUploadedFile(
       id: map['id'] ?? '',
@@ -293,9 +298,13 @@ class MriScanResult {
   factory MriScanResult.fromMap(Map<String, dynamic> map) {
     MriPredictionClass pClass = MriPredictionClass.inconclusive;
     final clsStr = (map['predictionClass'] ?? '').toString().toLowerCase();
-    if (clsStr == 'normal') pClass = MriPredictionClass.normal;
-    else if (clsStr == 'verymild' || clsStr == 'very_mild') pClass = MriPredictionClass.veryMild;
-    else if (clsStr == 'dementia') pClass = MriPredictionClass.dementia;
+    if (clsStr == 'normal') {
+      pClass = MriPredictionClass.normal;
+    } else if (clsStr == 'verymild' || clsStr == 'very_mild') {
+      pClass = MriPredictionClass.veryMild;
+    } else if (clsStr == 'dementia') {
+      pClass = MriPredictionClass.dementia;
+    }
 
     Map<String, double>? probs;
     if (map['probabilities'] is Map) {

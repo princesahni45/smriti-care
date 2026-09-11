@@ -6,11 +6,16 @@
 // - Link a new patient via code / profile
 // - Caregiver daily clinical notes & observations
 
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/caregiver_models.dart';
+import '../../../core/models/patient_access_code.dart';
 import '../../../core/services/caregiver_service.dart';
+import '../../../core/services/patient_code_service.dart';
 
 class CaregiverPatientTab extends StatefulWidget {
   final VoidCallback onPatientChanged;
@@ -317,9 +322,310 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           const SizedBox(height: 8),
           _buildInfoRow(Icons.medical_services_outlined, 'Attending Physician', patient.physician),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.psychology_outlined, 'Dementia Stage', ' (Screening Support)'),
+          _buildInfoRow(Icons.psychology_outlined, 'Dementia Stage', '${patient.dementiaLevel} (Screening Support)'),
           const SizedBox(height: 8),
           _buildInfoRow(Icons.translate_rounded, 'Primary Languages', patient.primaryLanguage),
+
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: AppColors.borderLight),
+          const SizedBox(height: 14),
+
+          // ── Patient Access Code Section (Feature 1) ──
+          _buildPatientAccessCodeSection(patient),
+        ],
+      ),
+    );
+  }
+
+  // ── Patient Access Code Section Widget ─────────────────────────────────────
+
+  Widget _buildPatientAccessCodeSection(PatientProfile patient) {
+    return FutureBuilder<PatientAccessCode?>(
+      future: PatientCodeService.instance.getActiveCodeForPatient(patient.id),
+      builder: (context, snapshot) {
+        final codeObj = snapshot.data;
+        final code = codeObj?.formattedCode ?? patient.activeAccessCode;
+        final hasCode = code != null && code.isNotEmpty && (codeObj?.isActive ?? true);
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.tealPale.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.key_rounded, size: 18, color: AppColors.tealDark),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Patient Access Code',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.tealDark,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: hasCode ? AppColors.teal : AppColors.muted,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      hasCode ? 'ACTIVE' : 'NO CODE',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              if (hasCode) ...[
+                // Big code banner
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.4), width: 1.5),
+                  ),
+                  child: Center(
+                    child: SelectableText(
+                      code,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 3,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Give this code to the patient. They can enter it on their login screen to connect directly without email or password.',
+                  style: TextStyle(fontSize: 11, color: AppColors.muted, height: 1.3),
+                ),
+                const SizedBox(height: 12),
+                // Action Buttons: Copy, Share, Regenerate
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () => _copyCode(code),
+                      icon: const Icon(Icons.copy_rounded, size: 15, color: Colors.white),
+                      label: const Text('Copy Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.teal,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _shareCode(code, patient.fullName),
+                      icon: const Icon(Icons.share_rounded, size: 15, color: AppColors.tealDark),
+                      label: const Text('Share Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: AppColors.teal.withValues(alpha: 0.5)),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => _confirmRegenerateCode(patient),
+                      icon: const Icon(Icons.refresh_rounded, size: 15, color: AppColors.inkSoft),
+                      label: const Text('Regenerate', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.inkSoft)),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                const Text(
+                  'No active login code exists for this patient. Generate one to allow simple code-based login.',
+                  style: TextStyle(fontSize: 12, color: AppColors.muted),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () => _generateCodeForPatient(patient),
+                  icon: const Icon(Icons.add_moderator_rounded, size: 16, color: Colors.white),
+                  label: const Text('Generate Patient Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.teal,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _copyCode(String code) {
+    Clipboard.setData(ClipboardData(text: code));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text('Code $code copied to clipboard.'),
+          ],
+        ),
+        backgroundColor: AppColors.tealDark,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> _shareCode(String code, String patientName) async {
+    final message = 'Hello! Here is the SmritiCare patient access code for $patientName:\n\n$code\n\nOpen SmritiCare and enter this code to begin.';
+    final uri = Uri.parse('sms:?body=${Uri.encodeComponent(message)}');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        _copyCode(code);
+      }
+    } catch (_) {
+      _copyCode(code);
+    }
+  }
+
+  Future<void> _generateCodeForPatient(PatientProfile patient) async {
+    final caregiver = CaregiverService.instance.getCaregiverProfile();
+    final newCode = await PatientCodeService.instance.generateCodeForPatient(
+      patientId: patient.id,
+      patientName: patient.fullName,
+      caregiverId: caregiver.email,
+      caregiverName: caregiver.name,
+    );
+
+    await CaregiverService.instance.updatePatientAccessCode(patient.id, newCode.code);
+    if (mounted) {
+      setState(() {});
+      widget.onPatientChanged();
+      _showCodeGeneratedDialog(patient.fullName, newCode.code);
+    }
+  }
+
+  void _confirmRegenerateCode(PatientProfile patient) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Regenerate Patient Code?', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+        content: const Text(
+          'Generating a new code will immediately revoke the existing one. The patient will need to enter the new code to log in.',
+          style: TextStyle(fontSize: 13, color: AppColors.muted),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _generateCodeForPatient(patient);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
+            child: const Text('Regenerate Code', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCodeGeneratedDialog(String patientName, String code) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.tealPale,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.vpn_key_rounded, color: AppColors.teal, size: 22),
+            ),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'New Access Code Ready',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Give this code to $patientName:',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, color: AppColors.muted),
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+              decoration: BoxDecoration(
+                color: AppColors.tealBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.teal, width: 2),
+              ),
+              child: SelectableText(
+                code,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 4,
+                  color: AppColors.ink,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'The patient enters this code on the login screen to start their session.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11, color: AppColors.muted),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _copyCode(code);
+              Navigator.pop(ctx);
+            },
+            child: const Text('Copy & Close'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _shareCode(code, patientName);
+            },
+            icon: const Icon(Icons.share_rounded, size: 16, color: Colors.white),
+            label: const Text('Share Code', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
+          ),
         ],
       ),
     );
@@ -388,9 +694,9 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
           patient.fullName,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink),
         ),
-        subtitle: const Text(
-          ' yrs • ID:  •  Stage',
-          style: TextStyle(fontSize: 12, color: AppColors.muted),
+        subtitle: Text(
+          '${patient.age} yrs • ID: ${patient.id} • ${patient.dementiaLevel} Stage',
+          style: const TextStyle(fontSize: 12, color: AppColors.muted),
         ),
         trailing: isSelected
             ? const Icon(Icons.check_circle_rounded, color: AppColors.teal, size: 24)
@@ -413,7 +719,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
   void _openLinkPatientDialog(BuildContext context) {
     final nameCtrl = TextEditingController();
     final ageCtrl = TextEditingController(text: '70');
-    final codeCtrl = TextEditingController(text: 'MC-');
+    final codeCtrl = TextEditingController();
     final physicianCtrl = TextEditingController(text: 'Dr. Bora');
     final bloodCtrl = TextEditingController(text: 'B+');
 
@@ -422,7 +728,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Link New Patient',
+          'Add & Link New Patient',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
         ),
         content: SingleChildScrollView(
@@ -430,7 +736,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Enter the patient details or link code from the patient application.',
+                'Enter the patient profile details. A unique patient access code will be generated automatically.',
                 style: TextStyle(fontSize: 12, color: AppColors.muted),
               ),
               const SizedBox(height: 14),
@@ -445,8 +751,8 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               TextField(
                 controller: codeCtrl,
                 decoration: const InputDecoration(
-                  labelText: 'Patient Code / ID',
-                  hintText: 'e.g. MC-4022',
+                  labelText: 'Patient ID (Optional)',
+                  hintText: 'e.g. MC-4022 (auto-generated if empty)',
                 ),
               ),
               const SizedBox(height: 10),
@@ -485,8 +791,20 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
             onPressed: () async {
               if (nameCtrl.text.trim().isEmpty) return;
               final initials = nameCtrl.text.trim().split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase();
+              final assignedId = codeCtrl.text.trim().isNotEmpty
+                  ? codeCtrl.text.trim()
+                  : 'MC-${Random().nextInt(8999) + 1000}';
+
+              final caregiver = CaregiverService.instance.getCaregiverProfile();
+              final accessCode = await PatientCodeService.instance.generateCodeForPatient(
+                patientId: assignedId,
+                patientName: nameCtrl.text.trim(),
+                caregiverId: caregiver.email,
+                caregiverName: caregiver.name,
+              );
+
               final newP = PatientProfile(
-                id: codeCtrl.text.trim().isNotEmpty ? codeCtrl.text.trim() : 'MC-',
+                id: assignedId,
                 fullName: nameCtrl.text.trim(),
                 age: int.tryParse(ageCtrl.text) ?? 70,
                 location: 'Guwahati, Assam',
@@ -496,6 +814,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                 primaryLanguage: 'Assamese & English',
                 avatarInitials: initials.isNotEmpty ? initials : 'PT',
                 lastUpdated: DateTime.now(),
+                activeAccessCode: accessCode.code,
               );
 
               await CaregiverService.instance.linkPatient(newP);
@@ -505,12 +824,13 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
               if (mounted) {
                 setState(() {});
                 widget.onPatientChanged();
+                _showCodeGeneratedDialog(newP.fullName, accessCode.code);
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal),
-            child: Text(
-              context.tr('caregiver.linkPatient', defaultText: 'Link Patient'),
-              style: const TextStyle(color: Colors.white),
+            child: const Text(
+              'Link & Generate Code',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
             ),
           ),
         ],

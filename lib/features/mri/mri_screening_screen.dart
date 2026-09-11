@@ -483,16 +483,16 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.borderLight),
               ),
-              child: Row(
+              child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.muted),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info_outline_rounded, size: 16, color: AppColors.muted),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'This file has been stored locally, but it cannot be analyzed by the MRI AI model. '
                       'Only .nii, .nii.gz, and .img (Analyze 7.5) formats are supported.',
-                      style: const TextStyle(fontSize: 12, color: AppColors.muted, height: 1.4),
+                      style: TextStyle(fontSize: 12, color: AppColors.muted, height: 1.4),
                     ),
                   ),
                 ],

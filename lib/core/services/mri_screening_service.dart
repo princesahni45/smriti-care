@@ -43,7 +43,7 @@ class MriScreeningService {
       final uri = Uri.parse('$_apiBaseUrl${ApiConfig.healthEndpoint}');
       final response = await http
           .get(uri)
-          .timeout(Duration(seconds: ApiConfig.healthTimeoutSeconds));
+          .timeout(const Duration(seconds: ApiConfig.healthTimeoutSeconds));
       return response.statusCode == 200;
     } catch (_) {
       return false;
@@ -55,7 +55,7 @@ class MriScreeningService {
       final uri = Uri.parse('$_apiBaseUrl${ApiConfig.healthEndpoint}');
       final response = await http
           .get(uri)
-          .timeout(Duration(seconds: ApiConfig.healthTimeoutSeconds));
+          .timeout(const Duration(seconds: ApiConfig.healthTimeoutSeconds));
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
       }
@@ -119,7 +119,7 @@ class MriScreeningService {
 
       final streamedResponse = await request
           .send()
-          .timeout(Duration(seconds: ApiConfig.uploadTimeoutSeconds));
+          .timeout(const Duration(seconds: ApiConfig.uploadTimeoutSeconds));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {

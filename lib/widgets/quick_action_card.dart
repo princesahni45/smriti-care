@@ -66,24 +66,24 @@ class QuickActionCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 42,
-                    height: 42,
+                    width: 54,
+                    height: 54,
                     decoration: BoxDecoration(
-                      color: item.color.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
+                      color: item.color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Center(
                       child: Icon(
                         item.icon,
                         color: item.color,
-                        size: 26,
+                        size: 32,
                       ),
                     ),
                   ),
                   Icon(
                     Icons.arrow_forward_ios_rounded,
-                    size: 14,
-                    color: item.color.withValues(alpha: 0.7),
+                    size: 16,
+                    color: item.color.withValues(alpha: 0.8),
                   ),
                 ],
               ),
@@ -98,10 +98,10 @@ class QuickActionCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
                       color: AppColors.ink,
-                      letterSpacing: -0.2,
+                      letterSpacing: -0.3,
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -110,7 +110,7 @@ class QuickActionCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppColors.muted,
                     ),

@@ -15,6 +15,7 @@ class PatientProfile {
   final String primaryLanguage;
   final String avatarInitials;
   final DateTime lastUpdated;
+  final String? activeAccessCode;
 
   const PatientProfile({
     required this.id,
@@ -27,7 +28,36 @@ class PatientProfile {
     required this.primaryLanguage,
     required this.avatarInitials,
     required this.lastUpdated,
+    this.activeAccessCode,
   });
+
+  PatientProfile copyWith({
+    String? id,
+    String? fullName,
+    int? age,
+    String? location,
+    String? bloodGroup,
+    String? physician,
+    String? dementiaLevel,
+    String? primaryLanguage,
+    String? avatarInitials,
+    DateTime? lastUpdated,
+    String? activeAccessCode,
+  }) {
+    return PatientProfile(
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      age: age ?? this.age,
+      location: location ?? this.location,
+      bloodGroup: bloodGroup ?? this.bloodGroup,
+      physician: physician ?? this.physician,
+      dementiaLevel: dementiaLevel ?? this.dementiaLevel,
+      primaryLanguage: primaryLanguage ?? this.primaryLanguage,
+      avatarInitials: avatarInitials ?? this.avatarInitials,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+      activeAccessCode: activeAccessCode ?? this.activeAccessCode,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -41,6 +71,7 @@ class PatientProfile {
       'primaryLanguage': primaryLanguage,
       'avatarInitials': avatarInitials,
       'lastUpdated': lastUpdated.toIso8601String(),
+      'activeAccessCode': activeAccessCode,
     };
   }
 
@@ -58,6 +89,7 @@ class PatientProfile {
       lastUpdated: map['lastUpdated'] != null
           ? DateTime.tryParse(map['lastUpdated']) ?? DateTime.now()
           : DateTime.now(),
+      activeAccessCode: map['activeAccessCode'] as String?,
     );
   }
 }
