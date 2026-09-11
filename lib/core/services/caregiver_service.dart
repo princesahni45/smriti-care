@@ -730,51 +730,6 @@ class CaregiverService {
   String _monthName(int month) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return (month >= 1 && month <= 12) ? months[month - 1] : '';
-=======
-  List<Map<String, dynamic>> getWeeklyEngagement() =>
-      List.unmodifiable(_weeklyEngagement);
-  List<Map<String, dynamic>> getMonthlyEngagement() =>
-      List.unmodifiable(_monthlyEngagement);
-
-  List<Map<String, dynamic>> getAssessmentHistory() {
-    return [
-      {
-        'date': 'Today',
-        'time': '10:45 AM',
-        'score': 78,
-        'type': 'Daily Session',
-        'status': 'Stable'
-      },
-      {
-        'date': 'Yesterday',
-        'time': '11:15 AM',
-        'score': 82,
-        'type': 'Daily Session',
-        'status': 'Improved'
-      },
-      {
-        'date': '08 Sep',
-        'time': '10:30 AM',
-        'score': 74,
-        'type': 'Weekly Review',
-        'status': 'Stable'
-      },
-      {
-        'date': '06 Sep',
-        'time': '04:00 PM',
-        'score': 79,
-        'type': 'Daily Session',
-        'status': 'Stable'
-      },
-      {
-        'date': '04 Sep',
-        'time': '09:50 AM',
-        'score': 76,
-        'type': 'Daily Session',
-        'status': 'Normal'
-      },
-    ];
->>>>>>> origin/main
   }
 
   // ── Cognitive Risk Screening Assessment ──────────────────────────

@@ -68,6 +68,7 @@ class MriScreeningService {
         }
       } catch (_) {
         // Try next fallback URL
+      }
     }
     return false;
   }

@@ -29,6 +29,7 @@ import 'features/games/routine/routine_sequence_screen.dart';
 import 'features/games/family_memories/family_memories_game_screen.dart';
 import 'features/mri/mri_screening_screen.dart';
 import 'features/emergency/take_me_home_screen.dart';
+import 'features/assessment/cognitive_assessment_screen.dart';
 import 'features/patient/patient_profile_screen.dart';
 import 'features/patient/patient_reminders_screen.dart';
 import 'features/patient/patient_progress_screen.dart';
