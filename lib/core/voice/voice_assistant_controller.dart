@@ -163,6 +163,10 @@ class VoiceAssistantController extends ChangeNotifier {
       _context = _context.copyWith(currentRoute: currentRoute);
     }
 
+    if (_speechService.state == SpeechServiceState.uninitialized) {
+      await _speechService.initialize(languageCode: _context.activeLanguageCode);
+    }
+
     if (autoListen && _speechService.isAvailable) {
       await startListening();
     } else if (!_speechService.isAvailable) {
@@ -190,6 +194,9 @@ class VoiceAssistantController extends ChangeNotifier {
   /// Manually activate microphone listening.
   Future<void> startListening() async {
     if (_isProcessingCommand || _isDisposed) return;
+    if (_speechService.state == SpeechServiceState.uninitialized) {
+      await _speechService.initialize(languageCode: _context.activeLanguageCode);
+    }
     if (!_speechService.isAvailable) {
       _status = VoiceAssistantStatus.idle;
       _lastFeedback =
@@ -208,6 +215,21 @@ class VoiceAssistantController extends ChangeNotifier {
       onPartial: (partial) {
         if (_status == VoiceAssistantStatus.listening) {
           _activeTranscript = partial;
+          notifyListeners();
+        }
+      },
+      onFailure: (failure) {
+        if (_status == VoiceAssistantStatus.listening) {
+          _status = VoiceAssistantStatus.error;
+          if (failure == SpeechFailureState.permissionDenied) {
+            _errorMessage =
+                _getLocalizedMicPermissionNotice(_context.activeLanguageCode);
+            _lastFeedback = _errorMessage!;
+          } else {
+            _errorMessage =
+                _getLocalizedTextFallbackNotice(_context.activeLanguageCode);
+            _lastFeedback = _errorMessage!;
+          }
           notifyListeners();
         }
       },
@@ -455,6 +477,17 @@ class VoiceAssistantController extends ChangeNotifier {
           : (lang == 'as'
               ? 'ভইচ চিনাক্তকৰণ উপলব্ধ নহয়। অনুগ্ৰহ কৰি টাইপ কৰক।'
               : 'Speech recognition is unavailable. Please type your command.'),
+    );
+  }
+
+  String _getLocalizedMicPermissionNotice(String lang) {
+    return LocalizationService.instance.tr(
+      'voice.errors.micPermissionDenied',
+      defaultText: lang == 'hi'
+          ? 'वॉइस कमांड का उपयोग करने के लिए माइक्रोफ़ोन की अनुमति आवश्यक है। कृपया अपनी डिवाइस सेटिंग्स में माइक्रोफ़ोन की अनुमति दें।'
+          : (lang == 'as'
+              ? 'ভইচ কমাণ্ড ব্যৱহাৰ কৰিবলৈ মাইক্ৰ\'ফোনৰ অনুমতিৰ প্ৰয়োজন। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচৰ ছেটিংছত মাইক্ৰ\'ফোনৰ অনুমতি প্ৰদান কৰক।'
+              : 'Microphone permission is required to use voice commands. Please allow microphone access in your device settings.'),
     );
   }
 

@@ -976,7 +976,9 @@ void main() {
   });
 
   group('VoiceActionExecutor GoRouter Navigation & Approved Route Mapping', () {
-    test('Maps all approved canonical intents to existing routes directly without confirmation', () async {
+    test(
+        'Maps all approved canonical intents to existing routes directly without confirmation',
+        () async {
       final executedRoutes = <String>[];
       final executor = VoiceActionExecutor(
         onNavigate: (route, {arguments}) => executedRoutes.add(route),
@@ -985,7 +987,8 @@ void main() {
       const context = VoiceContext(currentRoute: '/');
 
       // 1. OPEN_HOME -> /dashboard
-      final homeIntent = await router.classify(VoiceCommand(text: 'go to home dashboard'), context);
+      final homeIntent = await router.classify(
+          VoiceCommand(text: 'go to home dashboard'), context);
       final homeAction = executor.resolveAction(homeIntent, context);
       expect(homeAction.type, equals(VoiceActionType.navigate));
       expect(homeAction.requiresConfirmation, isFalse);
@@ -995,7 +998,8 @@ void main() {
       expect(executedRoutes.last, equals('/dashboard'));
 
       // 2. OPEN_GAMES -> /games
-      final gamesIntent = await router.classify(VoiceCommand(text: 'play games'), context);
+      final gamesIntent =
+          await router.classify(VoiceCommand(text: 'play games'), context);
       final gamesAction = executor.resolveAction(gamesIntent, context);
       expect(gamesAction.requiresConfirmation, isFalse);
       final gamesResult = await executor.execute(gamesAction);
@@ -1004,7 +1008,8 @@ void main() {
       expect(executedRoutes.last, equals('/games'));
 
       // 3. OPEN_MEMORY_GAME -> /games/memory-match
-      final memIntent = await router.classify(VoiceCommand(text: 'open memory game'), context);
+      final memIntent = await router.classify(
+          VoiceCommand(text: 'open memory game'), context);
       final memAction = executor.resolveAction(memIntent, context);
       expect(memAction.requiresConfirmation, isFalse);
       final memResult = await executor.execute(memAction);
@@ -1013,7 +1018,8 @@ void main() {
       expect(executedRoutes.last, equals('/games/memory-match'));
 
       // 4. OPEN_WORD_RECALL -> /games/word-recall
-      final wordIntent = await router.classify(VoiceCommand(text: 'open word recall game'), context);
+      final wordIntent = await router.classify(
+          VoiceCommand(text: 'open word recall game'), context);
       final wordAction = executor.resolveAction(wordIntent, context);
       expect(wordAction.requiresConfirmation, isFalse);
       final wordResult = await executor.execute(wordAction);
@@ -1022,7 +1028,8 @@ void main() {
       expect(executedRoutes.last, equals('/games/word-recall'));
 
       // 5. OPEN_DIFFERENT_OBJECT -> /games/different-object
-      final diffIntent = await router.classify(VoiceCommand(text: 'open different object game'), context);
+      final diffIntent = await router.classify(
+          VoiceCommand(text: 'open different object game'), context);
       final diffAction = executor.resolveAction(diffIntent, context);
       expect(diffAction.requiresConfirmation, isFalse);
       final diffResult = await executor.execute(diffAction);
@@ -1031,7 +1038,8 @@ void main() {
       expect(executedRoutes.last, equals('/games/different-object'));
 
       // 6. OPEN_DAILY_ROUTINE -> /games/routine (dedicated existing routine sequence screen)
-      final routineIntent = await router.classify(VoiceCommand(text: 'open daily routine'), context);
+      final routineIntent = await router.classify(
+          VoiceCommand(text: 'open daily routine'), context);
       final routineAction = executor.resolveAction(routineIntent, context);
       expect(routineAction.requiresConfirmation, isFalse);
       final routineResult = await executor.execute(routineAction);
@@ -1040,7 +1048,8 @@ void main() {
       expect(executedRoutes.last, equals('/games/routine'));
 
       // 7. GO_BACK -> '..' (pops back safely)
-      final backIntent = await router.classify(VoiceCommand(text: 'go back'), context);
+      final backIntent =
+          await router.classify(VoiceCommand(text: 'go back'), context);
       final backAction = executor.resolveAction(backIntent, context);
       expect(backAction.requiresConfirmation, isFalse);
       final backResult = await executor.execute(backAction);
@@ -1049,7 +1058,8 @@ void main() {
       expect(executedRoutes.last, equals('..'));
 
       // 8. OPEN_REMINDERS / READ_NEXT_REMINDER -> announces reminders and opens reminders view
-      final remIntent = await router.classify(VoiceCommand(text: 'check my reminders'), context);
+      final remIntent = await router.classify(
+          VoiceCommand(text: 'check my reminders'), context);
       final remAction = executor.resolveAction(remIntent, context);
       expect(remAction.requiresConfirmation, isFalse);
       final remResult = await executor.execute(remAction);
@@ -1058,7 +1068,8 @@ void main() {
       expect(executedRoutes.last, equals('/dashboard'));
     });
 
-    test('Rejects non-existent routes and reports failure without navigating', () async {
+    test('Rejects non-existent routes and reports failure without navigating',
+        () async {
       var wasNavigated = false;
       final executor = VoiceActionExecutor(
         onNavigate: (route, {arguments}) => wasNavigated = true,
@@ -1073,11 +1084,14 @@ void main() {
 
       final result = await executor.execute(invalidAction);
       expect(result.isSuccess, isFalse);
-      expect(result.error, contains("Target route '/non-existent-fake-screen' does not exist"));
+      expect(result.error,
+          contains("Target route '/non-existent-fake-screen' does not exist"));
       expect(wasNavigated, isFalse);
     });
 
-    test('CALL_CAREGIVER routes to Caregiver Confirmation Screen without immediate calling', () async {
+    test(
+        'CALL_CAREGIVER routes to Caregiver Confirmation Screen without immediate calling',
+        () async {
       String? executedRoute;
       final executor = VoiceActionExecutor(
         onNavigate: (route, {arguments}) => executedRoute = route,
@@ -1085,7 +1099,8 @@ void main() {
       const router = DeterministicIntentRouter();
       const context = VoiceContext(currentRoute: '/');
 
-      final intent = await router.classify(VoiceCommand(text: 'call my caregiver'), context);
+      final intent = await router.classify(
+          VoiceCommand(text: 'call my caregiver'), context);
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
       final action = executor.resolveAction(intent, context);
@@ -1097,7 +1112,9 @@ void main() {
       expect(executedRoute, equals('/caregiver-confirm'));
     });
 
-    test('Sensitive operation emergencySos requires confirmation before execution', () async {
+    test(
+        'Sensitive operation emergencySos requires confirmation before execution',
+        () async {
       String? executedRoute;
       final executor = VoiceActionExecutor(
         onNavigate: (route, {arguments}) => executedRoute = route,
@@ -1134,7 +1151,9 @@ void main() {
       controller.dispose();
     });
 
-    test('Preserves patient session and selectedPatientId across navigation actions', () async {
+    test(
+        'Preserves patient session and selectedPatientId across navigation actions',
+        () async {
       final initialPatient = CaregiverService.instance.selectedPatientId;
       expect(initialPatient, isNotEmpty);
 
@@ -1149,7 +1168,8 @@ void main() {
       );
 
       final action = executor.resolveAction(
-        await router.classify(VoiceCommand(text: 'open daily routine'), context),
+        await router.classify(
+            VoiceCommand(text: 'open daily routine'), context),
         context,
       );
       final result = await executor.execute(action);
@@ -1157,14 +1177,16 @@ void main() {
       expect(navRoute, equals('/games/routine'));
 
       // Verify patient session remained completely untouched
-      expect(CaregiverService.instance.selectedPatientId, equals(initialPatient));
+      expect(
+          CaregiverService.instance.selectedPatientId, equals(initialPatient));
     });
   });
 
   group('Contextual Screen Commands & Anti-Hallucination Guard', () {
     const router = DeterministicIntentRouter();
 
-    test('On Games screen: "Start this" uses currently selected game', () async {
+    test('On Games screen: "Start this" uses currently selected game',
+        () async {
       String? navigatedRoute;
       final executor = VoiceActionExecutor(
         onNavigate: (route, {arguments}) => navigatedRoute = route,
@@ -1190,7 +1212,9 @@ void main() {
       expect(navigatedRoute, equals('/games/word-recall'));
     });
 
-    test('Inside Memory Match: "Make it easier" routes to deterministic adaptive difficulty mechanism', () async {
+    test(
+        'Inside Memory Match: "Make it easier" routes to deterministic adaptive difficulty mechanism',
+        () async {
       const executor = VoiceActionExecutor();
       final storage = GameStorageService.instance;
 
@@ -1251,7 +1275,9 @@ void main() {
       expect(storage.getRecommendedLevel('memory-match'), equals(1));
     });
 
-    test('On Reminders screen: "What\'s next?" reads the next available reminder', () async {
+    test(
+        'On Reminders screen: "What\'s next?" reads the next available reminder',
+        () async {
       const executor = VoiceActionExecutor();
       const remContext = VoiceContext(
         currentRoute: '/dashboard',
@@ -1272,7 +1298,9 @@ void main() {
       expect(result.message, contains('Donepezil'));
     });
 
-    test('On Daily Routine: "What\'s my next activity?" uses existing routine data', () async {
+    test(
+        'On Daily Routine: "What\'s my next activity?" uses existing routine data',
+        () async {
       const executor = VoiceActionExecutor();
       const routineContext = VoiceContext(
         currentRoute: '/games/routine',
@@ -1286,7 +1314,8 @@ void main() {
       );
       expect(intentActivity.type, equals(VoiceIntentType.READ_NEXT_ROUTINE));
 
-      final actionActivity = executor.resolveAction(intentActivity, routineContext);
+      final actionActivity =
+          executor.resolveAction(intentActivity, routineContext);
       final resultActivity = await executor.execute(actionActivity);
       expect(resultActivity.isSuccess, isTrue);
       expect(resultActivity.message, contains('Evening Garden Walk'));
@@ -1298,13 +1327,15 @@ void main() {
       );
       expect(intentWhatsNext.type, equals(VoiceIntentType.READ_NEXT_ROUTINE));
 
-      final actionWhatsNext = executor.resolveAction(intentWhatsNext, routineContext);
+      final actionWhatsNext =
+          executor.resolveAction(intentWhatsNext, routineContext);
       final resultWhatsNext = await executor.execute(actionWhatsNext);
       expect(resultWhatsNext.isSuccess, isTrue);
       expect(resultWhatsNext.message, contains('Evening Garden Walk'));
     });
 
-    test('On patient dashboard: "Show my games" routes to OPEN_GAMES', () async {
+    test('On patient dashboard: "Show my games" routes to OPEN_GAMES',
+        () async {
       String? navRoute;
       final executor = VoiceActionExecutor(
         onNavigate: (route, {arguments}) => navRoute = route,
@@ -1326,7 +1357,9 @@ void main() {
       expect(navRoute, equals('/games'));
     });
 
-    test('Anti-Hallucination: Missing contextual information does not guess and asks clarification with available actions', () async {
+    test(
+        'Anti-Hallucination: Missing contextual information does not guess and asks clarification with available actions',
+        () async {
       const executor = VoiceActionExecutor();
 
       // 1. On Dashboard screen: "start this" has no game context and is an unavailable action
@@ -1343,7 +1376,8 @@ void main() {
       // Must NOT guess an arbitrary game!
       expect(intentAmbiguous.type, equals(VoiceIntentType.unknown));
 
-      final actionAmbiguous = executor.resolveAction(intentAmbiguous, dashboardContext);
+      final actionAmbiguous =
+          executor.resolveAction(intentAmbiguous, dashboardContext);
       final resultAmbiguous = await executor.execute(actionAmbiguous);
       expect(resultAmbiguous.isSuccess, isFalse);
       // Provides only actions available on the Dashboard screen
@@ -1399,5 +1433,118 @@ void main() {
       );
     });
   });
+
+  group('Floating Voice Assistant Button & Modal Integration', () {
+    testWidgets(
+        'Tapping floating button opens VoiceAssistantModal without Navigator errors',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: VoiceRouteTracker.instance.rootNavigatorKey,
+          home: Scaffold(
+            body: Stack(
+              children: [
+                const Center(child: Text('Patient Screen')),
+                PatientVoiceFloatingButton(
+                  onNavigate: (route, {arguments}) {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Verify button exists with correct semantics and tooltip
+      expect(find.byType(PatientVoiceFloatingButton), findsOneWidget);
+      expect(find.byType(Tooltip), findsWidgets);
+      expect(
+        find.byWidgetPredicate((w) =>
+            w is Semantics && (w.properties.label?.contains('Voice') ?? false)),
+        findsOneWidget,
+      );
+
+      // Tap floating button
+      await tester.tap(find.byType(PatientVoiceFloatingButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // Verify modal sheet is displayed
+      expect(find.byType(VoiceAssistantModal), findsOneWidget);
+      expect(find.text('How can I help?'), findsOneWidget);
+      expect(find.byIcon(Icons.close_rounded), findsWidgets);
+
+      // Close modal sheet
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(VoiceAssistantModal), findsNothing);
+    });
+
+    testWidgets('Handles microphone permission denied with friendly message',
+        (WidgetTester tester) async {
+      final testSpeech = _TestSpeechProvider(available: true);
+      final speechService = SpeechService.create(provider: testSpeech);
+      final controller = VoiceAssistantController(speechService: speechService);
+
+      await controller.openAssistant(autoListen: true);
+      expect(controller.status, equals(VoiceAssistantStatus.listening));
+
+      // Simulate permission denied error
+      testSpeech.simulateError('error_permission');
+      expect(controller.status, equals(VoiceAssistantStatus.error));
+      expect(
+        controller.lastFeedback,
+        contains('Microphone permission is required'),
+      );
+
+      controller.dispose();
+    });
+  });
 }
 
+class _TestSpeechProvider implements SpeechRecognitionProvider {
+  bool available;
+  bool listening = false;
+  void Function(String error)? onErrorCallback;
+
+  _TestSpeechProvider({this.available = true});
+
+  @override
+  bool get isAvailable => available;
+
+  @override
+  bool get isListening => listening;
+
+  @override
+  Future<bool> initialize({String languageCode = 'en'}) async => available;
+
+  @override
+  Future<void> startListening({
+    required String languageCode,
+    required void Function(String transcript, bool isFinal) onResult,
+    required void Function(String error) onError,
+  }) async {
+    listening = true;
+    onErrorCallback = onError;
+  }
+
+  void simulateError(String error) {
+    onErrorCallback?.call(error);
+  }
+
+  @override
+  Future<void> stopListening() async {
+    listening = false;
+  }
+
+  @override
+  Future<void> cancel() async {
+    listening = false;
+  }
+
+  @override
+  Future<void> dispose() async {
+    listening = false;
+  }
+}

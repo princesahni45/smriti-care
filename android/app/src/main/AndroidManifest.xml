@@ -59,6 +59,10 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Speech Recognition Service for speech_to_text on Android 11+ (API 30+) -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
 
         <!-- Phone dialer -->
         <intent>

@@ -431,7 +431,8 @@ class VoiceActionExecutor {
             break;
           case 'en':
           default:
-            spoken = 'You have completed all planned routine activities for today.';
+            spoken =
+                'You have completed all planned routine activities for today.';
         }
       }
     } else {
@@ -666,7 +667,8 @@ class VoiceActionExecutor {
           intent: intent,
           type: VoiceActionType.adaptiveDifficulty,
           payload: {
-            'gameId': intent.slots['gameId'] ?? context.currentGame ?? 'memory-match',
+            'gameId':
+                intent.slots['gameId'] ?? context.currentGame ?? 'memory-match',
             'mode': intent.slots['mode'] ?? 'easier',
           },
         );

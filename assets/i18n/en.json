@@ -605,6 +605,7 @@
       "notUnderstood": "Could not understand. Tap mic to retry or type below.",
       "general": "An unexpected error occurred. Please try again.",
       "micUnavailable": "Speech recognition is unavailable. Please type your command.",
+      "micPermissionDenied": "Microphone permission is required to use voice commands. Please allow microphone access in your device settings.",
       "targetRouteUnavailable": "Sorry, that screen is not available.",
       "cannotFulfillAction": "Sorry, could not complete that action."
     },

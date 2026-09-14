@@ -58,6 +58,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+.gradle/
+.gradle_home/
+android/.gradle/
+android/.gradle_home/
 
 # Python & MRI Backend
 __pycache__/

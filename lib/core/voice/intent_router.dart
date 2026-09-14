@@ -449,7 +449,8 @@ class DeterministicIntentRouter implements IntentClassifier {
     const tokens = [
       // English
       'sos', 'emergency', 'help me', 'save me', 'call doctor', 'call ambulance',
-      'call emergency', 'call caregiver', 'call my caregiver', 'alert caregiver',
+      'call emergency', 'call caregiver', 'call my caregiver',
+      'alert caregiver',
       'contact caregiver', 'call guardian',
       // Hindi
       'मदद', 'सहायता', 'बचाओ', 'आपातकाल', 'डॉक्टर को बुलाओ', 'एम्बुलेंस',
@@ -485,7 +486,8 @@ class DeterministicIntentRouter implements IntentClassifier {
       // English
       "what's next", 'what is next', 'what next', 'whats next', 'next please',
       // Hindi
-      'आगे क्या है', 'अगला क्या है', 'अगला बताओ', 'aage kya hai', 'agla kya hai',
+      'आगे क्या है', 'अगला क्या है', 'अगला बताओ', 'aage kya hai',
+      'agla kya hai',
       // Assamese
       'পৰৱৰ্তী কি', 'ইয়াৰ পিছত কি', 'পিছৰটো কি', 'poroborti ki', 'pisor ki',
     ];
@@ -676,8 +678,6 @@ class DeterministicIntentRouter implements IntentClassifier {
     }
     return null;
   }
-
-
 
   bool _matchesGamesHub(String t) {
     const tokens = [

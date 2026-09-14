@@ -38,6 +38,7 @@ dependencies:
   geolocator: ^14.0.3
   url_launcher: ^6.3.2
   pedometer: ^4.2.0
+  speech_to_text: ^7.4.0
 
 dev_dependencies:
   flutter_test:

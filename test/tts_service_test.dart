@@ -105,7 +105,8 @@ void main() {
       expect(ttsService, isA<TtsService>());
     });
 
-    test('isAvailable() method reflects provider and language availability', () {
+    test('isAvailable() method reflects provider and language availability',
+        () {
       mockProvider.available = true;
       expect(ttsService.isAvailable(), isTrue);
       expect(ttsService.isAvailable('en'), isTrue);
@@ -122,7 +123,8 @@ void main() {
       expect(ttsService.isAvailable('en'), isFalse);
     });
 
-    test('speak(text, language) speaks in English, Hindi, and Assamese', () async {
+    test('speak(text, language) speaks in English, Hindi, and Assamese',
+        () async {
       await ttsService.speak('Opening brain games.', 'en');
       expect(mockProvider.speaking, isTrue);
       expect(mockProvider.lastSpokenText, equals('Opening brain games.'));
@@ -182,14 +184,17 @@ void main() {
   });
 
   group('Elderly Voice Response Conciseness', () {
-    test('trimResponseForSpeech truncates excessively long sentences for elderly care', () {
+    test(
+        'trimResponseForSpeech truncates excessively long sentences for elderly care',
+        () {
       const shortText = 'Opening Memory Match.';
       expect(TtsService.trimResponseForSpeech(shortText), equals(shortText));
 
       const longPrompt =
           'This is an extremely long response that contains far too many words for an elderly patient '
           'with cognitive decline to process comfortably in a single voice breath and should definitely be kept concise.';
-      final trimmed = TtsService.trimResponseForSpeech(longPrompt, maxWords: 15);
+      final trimmed =
+          TtsService.trimResponseForSpeech(longPrompt, maxWords: 15);
       final words = trimmed.split(' ');
       expect(words.length, equals(15));
       expect(trimmed.endsWith('...'), isTrue);
@@ -197,7 +202,9 @@ void main() {
   });
 
   group('Safe Assamese TTS Fallback & Crash Prevention', () {
-    test('When Assamese TTS is unavailable, fails safely, preserves text visually, and never crashes', () async {
+    test(
+        'When Assamese TTS is unavailable, fails safely, preserves text visually, and never crashes',
+        () async {
       // Simulate device where Assamese TTS is not installed
       ttsService.setAssameseAvailable(false);
       mockProvider.langAvailability['as'] = false;
@@ -223,7 +230,8 @@ void main() {
       expect(mockProvider.speaking, isFalse);
     });
 
-    test('Provider error during speak fails safely without unhandled exception', () async {
+    test('Provider error during speak fails safely without unhandled exception',
+        () async {
       await ttsService.speak('Testing provider failure', 'en');
       expect(ttsService.isSpeaking, isTrue);
 
@@ -235,7 +243,9 @@ void main() {
   });
 
   group('VoiceAssistantController TTS Integration', () {
-    test('Controller handles command and routes spoken response through TTSService', () async {
+    test(
+        'Controller handles command and routes spoken response through TTSService',
+        () async {
       String? navigatedRoute;
       final executor = VoiceActionExecutor(
         onNavigate: (r, {arguments}) => navigatedRoute = r,

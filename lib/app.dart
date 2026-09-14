@@ -47,8 +47,10 @@ import 'core/voice/voice.dart';
 GoRouter createAppRouter({
   String initialLocation = '/',
   List<NavigatorObserver>? observers,
+  GlobalKey<NavigatorState>? navigatorKey,
 }) =>
     GoRouter(
+      navigatorKey: navigatorKey ?? VoiceRouteTracker.instance.rootNavigatorKey,
       initialLocation: initialLocation,
       debugLogDiagnostics: false,
       observers: [

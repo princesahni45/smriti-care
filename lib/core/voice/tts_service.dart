@@ -204,7 +204,8 @@ class TtsService extends ChangeNotifier {
   String get activeLanguage {
     try {
       final current = LocalizationService.instance.currentLanguageCode;
-      if (current.isNotEmpty && _supportedLanguages.contains(current.toLowerCase())) {
+      if (current.isNotEmpty &&
+          _supportedLanguages.contains(current.toLowerCase())) {
         return current.toLowerCase();
       }
     } catch (_) {
@@ -315,7 +316,8 @@ class TtsService extends ChangeNotifier {
   /// - Fails safely without throwing any unhandled exception (never crashes).
   /// - Preserves response in [lastSpokenText] so the caller / UI displays it visually.
   Future<void> speak(String text, [String? language]) async {
-    final targetLang = (language ?? activeLanguage).toLowerCase().split('-').first;
+    final targetLang =
+        (language ?? activeLanguage).toLowerCase().split('-').first;
     final shortText = trimResponseForSpeech(text);
     _lastSpokenText = shortText;
 
@@ -345,13 +347,15 @@ class TtsService extends ChangeNotifier {
           notifyListeners();
         },
         onError: (err) {
-          debugPrint('[TtsService] Error speaking ($targetLang): $err. Failing safely.');
+          debugPrint(
+              '[TtsService] Error speaking ($targetLang): $err. Failing safely.');
           _state = TtsServiceState.idle;
           notifyListeners();
         },
       );
     } catch (e) {
-      debugPrint('[TtsService] Exception during speak ($targetLang): $e. Failing safely.');
+      debugPrint(
+          '[TtsService] Exception during speak ($targetLang): $e. Failing safely.');
       _state = TtsServiceState.idle;
       notifyListeners();
     }

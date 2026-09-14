@@ -60,71 +60,81 @@ class PatientVoiceFloatingButton extends StatelessWidget {
     final effectiveBottom = (bottomOffset ?? defaultBottom) + safeArea.bottom;
     final effectiveRight = 16.0 + safeArea.right;
 
-    return Positioned(
-      right: effectiveRight,
-      bottom: effectiveBottom,
-      child: Semantics(
-        button: true,
-        label: _getSemanticLabel(context, lang),
-        hint: 'Opens the voice assistant and starts listening',
-        child: Material(
-          color: Colors.transparent,
-          elevation: 6,
-          shadowColor: AppColors.tealDeep.withValues(alpha: 0.35),
+    final button = Semantics(
+      button: true,
+      label: _getSemanticLabel(context, lang),
+      hint: 'Opens the voice assistant and starts listening',
+      child: Material(
+        color: Colors.transparent,
+        elevation: 6,
+        shadowColor: AppColors.tealDeep.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(32),
+        child: InkWell(
+          onTap: () {
+            debugPrint('[VoiceAssistant] Button tapped');
+            // Preserve current screen context and open assistant with auto-listen
+            showVoiceAssistantModal(
+              context: context,
+              currentRoute: currentRoute,
+              onNavigate: onNavigate,
+            );
+          },
           borderRadius: BorderRadius.circular(32),
-          child: InkWell(
-            onTap: () {
-              // Preserve current screen context and open assistant with auto-listen
-              showVoiceAssistantModal(
-                context: context,
-                currentRoute: currentRoute,
-                onNavigate: onNavigate,
-              );
-            },
-            borderRadius: BorderRadius.circular(32),
-            child: Ink(
-              decoration: BoxDecoration(
-                color: AppColors.teal,
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.25),
-                  width: 1.5,
-                ),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: AppColors.teal,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.25),
+                width: 1.5,
               ),
-              child: Container(
-                constraints: const BoxConstraints(
-                  minHeight: 56,
-                  minWidth: 124,
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.mic_rounded,
+            ),
+            child: Container(
+              constraints: const BoxConstraints(
+                minHeight: 56,
+                minWidth: 124,
+              ),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.mic_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _getLocalizedButtonLabel(context, lang),
+                    style: const TextStyle(
                       color: Colors.white,
-                      size: 28,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _getLocalizedButtonLabel(context, lang),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
+    );
+
+    final hasOverlay = Overlay.maybeOf(context) != null;
+
+    return Positioned(
+      right: effectiveRight,
+      bottom: effectiveBottom,
+      child: hasOverlay
+          ? Tooltip(
+              message: 'Voice assistant',
+              child: button,
+            )
+          : button,
     );
   }
 }

@@ -160,7 +160,8 @@ void main() {
   });
 
   group('Voice Assistant Localization Integration Tests', () {
-    test('en.json, hi.json, and as.json contain all required voice assistant keys',
+    test(
+        'en.json, hi.json, and as.json contain all required voice assistant keys',
         () {
       const voiceTargetCodes = ['en', 'hi', 'as'];
       for (final code in voiceTargetCodes) {
@@ -211,17 +212,15 @@ void main() {
       }
     });
 
-    test('AppLocalizations.fromMap translates voice keys correctly in en, hi, as',
+    test(
+        'AppLocalizations.fromMap translates voice keys correctly in en, hi, as',
         () {
-      final enData =
-          jsonDecode(File('assets/i18n/en.json').readAsStringSync())
-              as Map<String, dynamic>;
-      final hiData =
-          jsonDecode(File('assets/i18n/hi.json').readAsStringSync())
-              as Map<String, dynamic>;
-      final asData =
-          jsonDecode(File('assets/i18n/as.json').readAsStringSync())
-              as Map<String, dynamic>;
+      final enData = jsonDecode(File('assets/i18n/en.json').readAsStringSync())
+          as Map<String, dynamic>;
+      final hiData = jsonDecode(File('assets/i18n/hi.json').readAsStringSync())
+          as Map<String, dynamic>;
+      final asData = jsonDecode(File('assets/i18n/as.json').readAsStringSync())
+          as Map<String, dynamic>;
 
       final enLoc = AppLocalizations.fromMap(const Locale('en'), enData);
       final hiLoc =
@@ -290,7 +289,8 @@ void main() {
 
       // Non-existent key in both maps falls back to defaultText
       expect(
-        partialLoc.translate('voice.nonExistentKey', defaultText: 'Default String'),
+        partialLoc.translate('voice.nonExistentKey',
+            defaultText: 'Default String'),
         'Default String',
       );
 
@@ -304,15 +304,12 @@ void main() {
     testWidgets(
         'Language switching updates Voice Assistant UI strings without restart',
         (WidgetTester tester) async {
-      final enData =
-          jsonDecode(File('assets/i18n/en.json').readAsStringSync())
-              as Map<String, dynamic>;
-      final hiData =
-          jsonDecode(File('assets/i18n/hi.json').readAsStringSync())
-              as Map<String, dynamic>;
-      final asData =
-          jsonDecode(File('assets/i18n/as.json').readAsStringSync())
-              as Map<String, dynamic>;
+      final enData = jsonDecode(File('assets/i18n/en.json').readAsStringSync())
+          as Map<String, dynamic>;
+      final hiData = jsonDecode(File('assets/i18n/hi.json').readAsStringSync())
+          as Map<String, dynamic>;
+      final asData = jsonDecode(File('assets/i18n/as.json').readAsStringSync())
+          as Map<String, dynamic>;
 
       final service = LocalizationService.instance;
       service.setLocale('en');
@@ -363,7 +360,8 @@ void main() {
       expect(find.text('Listening'), findsOneWidget);
       expect(find.text('Cancel'), findsOneWidget);
       expect(
-        find.text('Do you want to call emergency help and alert your caregiver?'),
+        find.text(
+            'Do you want to call emergency help and alert your caregiver?'),
         findsOneWidget,
       );
 

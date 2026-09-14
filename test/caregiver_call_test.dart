@@ -117,7 +117,7 @@ void main() {
       );
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
-      final executor = VoiceActionExecutor();
+      const executor = VoiceActionExecutor();
       final action = executor.resolveAction(intent, context);
       expect(action.type, equals(VoiceActionType.navigate));
       expect(action.targetRoute, equals('/caregiver-confirm'));
@@ -131,7 +131,7 @@ void main() {
       );
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
-      final executor = VoiceActionExecutor();
+      const executor = VoiceActionExecutor();
       final action = executor.resolveAction(intent, context);
       expect(action.targetRoute, equals('/caregiver-confirm'));
     });
@@ -144,12 +144,11 @@ void main() {
       );
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
-      final executor = VoiceActionExecutor();
+      const executor = VoiceActionExecutor();
       final action = executor.resolveAction(intent, context);
       expect(action.targetRoute, equals('/caregiver-confirm'));
     });
   });
-
 
   group('CaregiverConfirmationScreen Widget Tests', () {
     setUp(() async {
@@ -193,13 +192,12 @@ void main() {
       );
     });
 
-
     testWidgets(
         'Renders caregiver details, high-contrast Confirm & Cancel buttons, and explanation',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -215,8 +213,10 @@ void main() {
       );
 
       // 3. Confirm button and Cancel button exist
-      expect(find.byKey(const Key('caregiver_call_confirm_button')), findsOneWidget);
-      expect(find.byKey(const Key('caregiver_call_cancel_button')), findsOneWidget);
+      expect(find.byKey(const Key('caregiver_call_confirm_button')),
+          findsOneWidget);
+      expect(find.byKey(const Key('caregiver_call_cancel_button')),
+          findsOneWidget);
 
       // 4. Security & Privacy check: NO password, PIN, or settings fields
       expect(find.textContaining('PIN'), findsNothing);
@@ -224,7 +224,8 @@ void main() {
       expect(find.textContaining('Emergency Settings'), findsNothing);
     });
 
-    testWidgets('Tapping Cancel invokes onBack callback without initiating call',
+    testWidgets(
+        'Tapping Cancel invokes onBack callback without initiating call',
         (WidgetTester tester) async {
       bool backCalled = false;
 
@@ -244,7 +245,8 @@ void main() {
       expect(backCalled, isTrue);
     });
 
-    testWidgets('Shows safe configuration notice when no caregiver contact exists',
+    testWidgets(
+        'Shows safe configuration notice when no caregiver contact exists',
         (WidgetTester tester) async {
       // Clear emergency contacts to simulate missing configuration
       await CaregiverService.instance.saveEmergencyContact(
@@ -258,8 +260,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -273,10 +275,12 @@ void main() {
       );
 
       // Confirm button must NOT be present
-      expect(find.byKey(const Key('caregiver_call_confirm_button')), findsNothing);
+      expect(
+          find.byKey(const Key('caregiver_call_confirm_button')), findsNothing);
 
       // Return to home button must be present
-      expect(find.byKey(const Key('caregiver_call_back_home_button')), findsOneWidget);
+      expect(find.byKey(const Key('caregiver_call_back_home_button')),
+          findsOneWidget);
     });
 
     testWidgets('Renders localized strings in Hindi without error',
@@ -295,8 +299,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -322,8 +326,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();

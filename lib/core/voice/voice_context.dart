@@ -47,7 +47,9 @@ class VoiceContext {
     final screen = (currentScreen ?? '').toLowerCase();
 
     // Memory match or specific games
-    if (currentGame == 'memory-match' || route.contains('memory-match') || screen.contains('memory_match')) {
+    if (currentGame == 'memory-match' ||
+        route.contains('memory-match') ||
+        screen.contains('memory_match')) {
       return const [
         'ADAPTIVE_DIFFICULTY',
         'MAKE_EASIER',
@@ -93,7 +95,9 @@ class VoiceContext {
       ];
     }
     // Daily Routine
-    if (route.contains('routine') || screen == 'routine' || screen == 'daily_routine') {
+    if (route.contains('routine') ||
+        screen == 'routine' ||
+        screen == 'daily_routine') {
       return const [
         'READ_NEXT_ROUTINE',
         'OPEN_DAILY_ROUTINE',
@@ -105,7 +109,10 @@ class VoiceContext {
       ];
     }
     // Home / Patient Dashboard
-    if (route == '/' || route == '/dashboard' || route == '/patient-dashboard' || screen == 'home') {
+    if (route == '/' ||
+        route == '/dashboard' ||
+        route == '/patient-dashboard' ||
+        screen == 'home') {
       return const [
         'OPEN_GAMES',
         'OPEN_REMINDERS',
@@ -145,8 +152,7 @@ class VoiceContext {
     String? patientName,
     this.metadata = const {},
   })  : selectedLanguage = selectedLanguage ?? activeLanguageCode ?? 'en',
-        availableActions = availableActions ??
-            const [];
+        availableActions = availableActions ?? const [];
 
   /// Backward-compatible alias for [selectedLanguage].
   String get activeLanguageCode => selectedLanguage;
@@ -271,34 +277,39 @@ class VoiceContext {
       default:
         final prefix = LocalizationService.instance.tr(
           'voice.clarification.general',
-          defaultText: 'I could not find that action here. On this screen you can:',
+          defaultText:
+              'I could not find that action here. On this screen you can:',
         );
         return '$prefix ${_formatActionsForPrompt(actions)}.';
     }
   }
 
   static String _formatActionsForPrompt(List<String> actions) {
-    final readable = actions.map((a) {
-      switch (a) {
-        case 'START_SELECTED_GAME':
-          return 'start game';
-        case 'ADAPTIVE_DIFFICULTY':
-        case 'MAKE_EASIER':
-          return 'adjust difficulty';
-        case 'READ_NEXT_REMINDER':
-          return 'check next reminder';
-        case 'READ_NEXT_ROUTINE':
-          return 'check next routine activity';
-        case 'OPEN_GAMES':
-          return 'open games';
-        case 'OPEN_HOME':
-          return 'go home';
-        case 'CALL_CAREGIVER':
-          return 'call caregiver';
-        default:
-          return a.toLowerCase().replaceAll('_', ' ');
-      }
-    }).toSet().take(3).join(', ');
+    final readable = actions
+        .map((a) {
+          switch (a) {
+            case 'START_SELECTED_GAME':
+              return 'start game';
+            case 'ADAPTIVE_DIFFICULTY':
+            case 'MAKE_EASIER':
+              return 'adjust difficulty';
+            case 'READ_NEXT_REMINDER':
+              return 'check next reminder';
+            case 'READ_NEXT_ROUTINE':
+              return 'check next routine activity';
+            case 'OPEN_GAMES':
+              return 'open games';
+            case 'OPEN_HOME':
+              return 'go home';
+            case 'CALL_CAREGIVER':
+              return 'call caregiver';
+            default:
+              return a.toLowerCase().replaceAll('_', ' ');
+          }
+        })
+        .toSet()
+        .take(3)
+        .join(', ');
     return readable.isNotEmpty ? readable : 'go home or open games';
   }
 
@@ -321,7 +332,8 @@ class VoiceContext {
       currentRoute: currentRoute ?? this.currentRoute,
       currentScreen: currentScreen ?? this.currentScreen,
       selectedPatient: selectedPatient ?? patientName ?? this.selectedPatient,
-      selectedLanguage: selectedLanguage ?? activeLanguageCode ?? this.selectedLanguage,
+      selectedLanguage:
+          selectedLanguage ?? activeLanguageCode ?? this.selectedLanguage,
       currentGame: currentGame ?? this.currentGame,
       currentGameState: currentGameState ?? this.currentGameState,
       availableActions: availableActions ?? this.availableActions,

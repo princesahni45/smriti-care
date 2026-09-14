@@ -13,15 +13,31 @@ import '../../theme/app_theme.dart';
 import '../../localization/app_localizations.dart';
 import '../voice_assistant_controller.dart';
 import '../voice_action_executor.dart';
+import '../voice_route_tracker.dart';
 
 /// Displays the SmritiCare Voice Assistant modal bottom sheet.
+///
+/// Ensures a valid Navigator context is used. If the passed [context] does not
+/// include a Navigator (e.g. called from MaterialApp builder above Navigator),
+/// falls back safely to [VoiceRouteTracker.instance.rootNavigatorKey.currentContext].
 Future<void> showVoiceAssistantModal({
   required BuildContext context,
   String? currentRoute,
   void Function(String route, {Map<String, dynamic>? arguments})? onNavigate,
 }) {
+  // Resolve a BuildContext that is guaranteed to contain a Navigator
+  BuildContext effectiveContext = context;
+  if (Navigator.maybeOf(context) == null) {
+    final rootContext =
+        VoiceRouteTracker.instance.rootNavigatorKey.currentContext;
+    if (rootContext != null) {
+      effectiveContext = rootContext;
+    }
+  }
+
   return showModalBottomSheet<void>(
-    context: context,
+    context: effectiveContext,
+    useRootNavigator: true,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (modalContext) => VoiceAssistantModal(
@@ -589,10 +605,10 @@ class _VoiceAssistantModalState extends State<VoiceAssistantModal>
 
   String _getTitle(String lang) {
     return context.tr(
-      'voice.buttonLabel',
+      'voice.helpTitle',
       defaultText: lang == 'hi'
-          ? 'स्मृति केयर सहायक'
-          : (lang == 'as' ? 'স্মৃতি কেয়াৰ সহায়ক' : 'SmritiCare Assistant'),
+          ? 'मैं कैसे मदद कर सकता हूँ?'
+          : (lang == 'as' ? 'মই কেনেকৈ সহায় কৰিব পাৰোঁ?' : 'How can I help?'),
     );
   }
 
@@ -647,11 +663,15 @@ class _VoiceAssistantModalState extends State<VoiceAssistantModal>
           case VoiceAssistantStatus.opening:
             return lang == 'hi'
                 ? 'सहायक शुरू हो रहा है...'
-                : (lang == 'as' ? 'सहায়ক আৰম্ভ হৈছে...' : 'Opening assistant...');
+                : (lang == 'as'
+                    ? 'सहায়ক আৰম্ভ হৈছে...'
+                    : 'Opening assistant...');
           case VoiceAssistantStatus.listening:
             return lang == 'hi'
                 ? 'सुन रहा हूँ... बोलिए'
-                : (lang == 'as' ? 'শুনি আছোঁ... কওক' : 'Listening... Speak now');
+                : (lang == 'as'
+                    ? 'শুনি আছোঁ... কওক'
+                    : 'Listening... Speak now');
           case VoiceAssistantStatus.processing:
             return lang == 'hi'
                 ? 'समझ रहा हूँ...'

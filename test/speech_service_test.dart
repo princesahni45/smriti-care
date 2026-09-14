@@ -127,13 +127,16 @@ void main() {
       expect(speechService.lastFailure, isNull);
     });
 
-    test('Rejects unsupported language and emits languageUnavailable failure', () async {
+    test('Rejects unsupported language and emits languageUnavailable failure',
+        () async {
       SpeechFailureState? capturedFailure;
-      final sub = speechService.failureStream.listen((f) => capturedFailure = f);
+      final sub =
+          speechService.failureStream.listen((f) => capturedFailure = f);
 
       final success = await speechService.initialize(languageCode: 'fr');
       expect(success, isFalse);
-      expect(speechService.lastFailure, equals(SpeechFailureState.languageUnavailable));
+      expect(speechService.lastFailure,
+          equals(SpeechFailureState.languageUnavailable));
       expect(speechService.state, equals(SpeechServiceState.error));
       expect(capturedFailure, equals(SpeechFailureState.languageUnavailable));
 
@@ -142,7 +145,8 @@ void main() {
   });
 
   group('SpeechService Availability & Inspection', () {
-    test('isAvailable getter and isAvailableSync method reflect provider state', () {
+    test('isAvailable getter and isAvailableSync method reflect provider state',
+        () {
       mockProvider.available = true;
       expect(speechService.isAvailable, isTrue);
       expect(speechService.isAvailableSync(), isTrue);
@@ -155,7 +159,8 @@ void main() {
     });
   });
 
-  group('Listening Lifecycle: startListening, stopListening, cancelListening', () {
+  group('Listening Lifecycle: startListening, stopListening, cancelListening',
+      () {
     test('startListening initiates listening state', () async {
       await speechService.initialize(languageCode: 'en');
       await speechService.startListening();
@@ -176,7 +181,8 @@ void main() {
       expect(mockProvider.listening, isFalse);
     });
 
-    test('cancelListening transitions to ready and emits cancelled failure', () async {
+    test('cancelListening transitions to ready and emits cancelled failure',
+        () async {
       await speechService.initialize(languageCode: 'en');
       await speechService.startListening();
 
@@ -195,7 +201,8 @@ void main() {
   });
 
   group('Reactive Streams & Recognized Text Emitted', () {
-    test('Streams recognized transcripts via textStream and resultStream', () async {
+    test('Streams recognized transcripts via textStream and resultStream',
+        () async {
       await speechService.initialize(languageCode: 'en');
 
       final textEvents = <String>[];
@@ -234,7 +241,8 @@ void main() {
   });
 
   group('Clear Failure States', () {
-    test('Maps "permission denied" error to permissionDenied failure state', () async {
+    test('Maps "permission denied" error to permissionDenied failure state',
+        () async {
       await speechService.initialize(languageCode: 'en');
 
       SpeechFailureState? failureCallback;
@@ -243,7 +251,8 @@ void main() {
       );
 
       mockProvider.emitError('Microphone permission was denied by user');
-      expect(speechService.lastFailure, equals(SpeechFailureState.permissionDenied));
+      expect(speechService.lastFailure,
+          equals(SpeechFailureState.permissionDenied));
       expect(speechService.state, equals(SpeechServiceState.error));
       expect(failureCallback, equals(SpeechFailureState.permissionDenied));
     });
@@ -256,12 +265,15 @@ void main() {
         onFailure: (failure) => failureCallback = failure,
       );
 
-      mockProvider.emitError('No internet connection found for cloud recognition');
-      expect(speechService.lastFailure, equals(SpeechFailureState.networkRequired));
+      mockProvider
+          .emitError('No internet connection found for cloud recognition');
+      expect(speechService.lastFailure,
+          equals(SpeechFailureState.networkRequired));
       expect(failureCallback, equals(SpeechFailureState.networkRequired));
     });
 
-    test('Maps service unavailable error to serviceUnavailable failure state', () async {
+    test('Maps service unavailable error to serviceUnavailable failure state',
+        () async {
       mockProvider.available = false;
 
       SpeechFailureState? failureCallback;
@@ -269,11 +281,13 @@ void main() {
         onFailure: (failure) => failureCallback = failure,
       );
 
-      expect(speechService.lastFailure, equals(SpeechFailureState.serviceUnavailable));
+      expect(speechService.lastFailure,
+          equals(SpeechFailureState.serviceUnavailable));
       expect(failureCallback, equals(SpeechFailureState.serviceUnavailable));
     });
 
-    test('Maps generic audio decode error to recognitionFailed failure state', () async {
+    test('Maps generic audio decode error to recognitionFailed failure state',
+        () async {
       await speechService.initialize(languageCode: 'en');
 
       SpeechFailureState? failureCallback;
@@ -282,13 +296,15 @@ void main() {
       );
 
       mockProvider.emitError('Audio buffer overflow in native recorder');
-      expect(speechService.lastFailure, equals(SpeechFailureState.recognitionFailed));
+      expect(speechService.lastFailure,
+          equals(SpeechFailureState.recognitionFailed));
       expect(failureCallback, equals(SpeechFailureState.recognitionFailed));
     });
   });
 
   group('Fallback Text Input Path (submitTextFallback)', () {
-    test('Routes typed text through textStream, resultStream, and onCommand', () async {
+    test('Routes typed text through textStream, resultStream, and onCommand',
+        () async {
       await speechService.initialize(languageCode: 'en');
 
       final textEvents = <String>[];
@@ -320,7 +336,9 @@ void main() {
   });
 
   group('Offline ASR Provider Contract Integrity', () {
-    test('OfflineAsrProvider does NOT claim offline recognition when weights are absent', () async {
+    test(
+        'OfflineAsrProvider does NOT claim offline recognition when weights are absent',
+        () async {
       final offlineProvider = OfflineAsrProvider();
       expect(offlineProvider.isAvailable, isFalse);
       expect(offlineProvider.isModelLoaded, isFalse);
@@ -340,7 +358,9 @@ void main() {
   });
 
   group('VoiceAssistantController Exclusive SpeechService Integration', () {
-    test('Controller handles command emitted by SpeechService through cancelListening and text fallback', () async {
+    test(
+        'Controller handles command emitted by SpeechService through cancelListening and text fallback',
+        () async {
       String? routeNavigated;
       final executor = VoiceActionExecutor(
         onNavigate: (r, {arguments}) => routeNavigated = r,

@@ -10,6 +10,11 @@ class VoiceRouteTracker extends NavigatorObserver with ChangeNotifier {
   VoiceRouteTracker._();
   static final VoiceRouteTracker instance = VoiceRouteTracker._();
 
+  /// Global navigator key for the root GoRouter/MaterialApp navigator.
+  /// Allows modals and dialogs to be presented with a valid Navigator context.
+  final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'smritiCareRootNavigator');
+
   String _currentRoute = '/';
   bool _isModalOpen = false;
 

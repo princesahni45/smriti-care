@@ -7,6 +7,7 @@
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'voice_command.dart';
 
 /// Explicit failure states exposed by [SpeechService].
@@ -172,11 +173,16 @@ class OfflineAsrProvider implements SpeechRecognitionProvider {
   }
 }
 
-/// Default development / platform fallback provider.
-/// Safe across all platforms and test runners.
+/// Default development / platform speech recognition provider.
+/// Integrates device microphone input via speech_to_text while remaining safe
+/// across platforms and test runners with graceful fallback.
 class DefaultSpeechRecognitionProvider implements SpeechRecognitionProvider {
+  final stt.SpeechToText _speechToText = stt.SpeechToText();
   bool _available = true;
   bool _listening = false;
+  bool _sttInitialized = false;
+  String? _lastRecognizedWords;
+  bool _hasFinalResult = false;
   void Function(String transcript, bool isFinal)? _activeResultCallback;
 
   @override
@@ -191,7 +197,36 @@ class DefaultSpeechRecognitionProvider implements SpeechRecognitionProvider {
 
   @override
   Future<bool> initialize({String languageCode = 'en'}) async {
-    return _available;
+    if (!_available) return false;
+    try {
+      final initialized = await _speechToText.initialize(
+        onError: (errorNotification) {
+          debugPrint('[SpeechService] Recognition error: ${errorNotification.errorMsg}');
+          _listening = false;
+        },
+        onStatus: (status) {
+          debugPrint('[SpeechService] Status: $status');
+          if (status == 'notListening' || status == 'done') {
+            if (_listening &&
+                _activeResultCallback != null &&
+                _lastRecognizedWords != null &&
+                _lastRecognizedWords!.trim().isNotEmpty &&
+                !_hasFinalResult) {
+              _hasFinalResult = true;
+              _activeResultCallback!(_lastRecognizedWords!, true);
+            }
+            _listening = false;
+          } else if (status == 'listening') {
+            _listening = true;
+          }
+        },
+      );
+      _sttInitialized = initialized;
+      return true;
+    } catch (e) {
+      debugPrint('[SpeechService] SpeechToText initialize fallback: $e');
+      return _available;
+    }
   }
 
   @override
@@ -206,6 +241,34 @@ class DefaultSpeechRecognitionProvider implements SpeechRecognitionProvider {
     }
     _listening = true;
     _activeResultCallback = onResult;
+    _lastRecognizedWords = null;
+    _hasFinalResult = false;
+
+    if (!_sttInitialized) {
+      await initialize(languageCode: languageCode);
+    }
+
+    if (_speechToText.isAvailable) {
+      try {
+        await _speechToText.listen(
+          onResult: (result) {
+            _lastRecognizedWords = result.recognizedWords;
+            _hasFinalResult = result.finalResult;
+            if (_listening && _activeResultCallback != null) {
+              _activeResultCallback!(result.recognizedWords, result.finalResult);
+            }
+          },
+          listenOptions: stt.SpeechListenOptions(
+            localeId: languageCode,
+            cancelOnError: false,
+            partialResults: true,
+            listenMode: stt.ListenMode.confirmation,
+          ),
+        );
+      } catch (e) {
+        debugPrint('[SpeechService] SpeechToText listen error: $e');
+      }
+    }
   }
 
   /// Helper to inject simulated speech in automated tests and previews.
@@ -219,18 +282,31 @@ class DefaultSpeechRecognitionProvider implements SpeechRecognitionProvider {
   Future<void> stopListening() async {
     _listening = false;
     _activeResultCallback = null;
+    try {
+      if (_speechToText.isListening) {
+        await _speechToText.stop();
+      }
+    } catch (_) {}
   }
 
   @override
   Future<void> cancel() async {
     _listening = false;
     _activeResultCallback = null;
+    try {
+      if (_speechToText.isListening) {
+        await _speechToText.cancel();
+      }
+    } catch (_) {}
   }
 
   @override
   Future<void> dispose() async {
     _listening = false;
     _activeResultCallback = null;
+    try {
+      await _speechToText.stop();
+    } catch (_) {}
   }
 }
 
@@ -377,6 +453,10 @@ class SpeechService extends ChangeNotifier {
   }) async {
     if (_state == SpeechServiceState.listening) return;
 
+    if (_state == SpeechServiceState.uninitialized) {
+      await initialize(languageCode: _currentLanguage);
+    }
+
     if (!isAvailable) {
       _state = SpeechServiceState.unavailable;
       _lastFailure = SpeechFailureState.serviceUnavailable;
@@ -464,7 +544,8 @@ class SpeechService extends ChangeNotifier {
   Future<void> cancelListening() async => cancel();
 
   /// Fallback text input path when microphone is disabled, denied, or user chooses to type.
-  void submitTextFallback(String text, {void Function(VoiceCommand command)? onCommand}) {
+  void submitTextFallback(String text,
+      {void Function(VoiceCommand command)? onCommand}) {
     final clean = text.trim();
     if (clean.isEmpty) return;
 
@@ -490,7 +571,9 @@ class SpeechService extends ChangeNotifier {
     if (lower.contains('permission') || lower.contains('denied')) {
       return SpeechFailureState.permissionDenied;
     }
-    if (lower.contains('network') || lower.contains('internet') || lower.contains('connection')) {
+    if (lower.contains('network') ||
+        lower.contains('internet') ||
+        lower.contains('connection')) {
       return SpeechFailureState.networkRequired;
     }
     if (lower.contains('cancel')) {
@@ -499,7 +582,9 @@ class SpeechService extends ChangeNotifier {
     if (lower.contains('language') || lower.contains('locale')) {
       return SpeechFailureState.languageUnavailable;
     }
-    if (lower.contains('unavailable') || lower.contains('not found') || lower.contains('not supported')) {
+    if (lower.contains('unavailable') ||
+        lower.contains('not found') ||
+        lower.contains('not supported')) {
       return SpeechFailureState.serviceUnavailable;
     }
     return SpeechFailureState.recognitionFailed;
@@ -514,4 +599,3 @@ class SpeechService extends ChangeNotifier {
     super.dispose();
   }
 }
-
