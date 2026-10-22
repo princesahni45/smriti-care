@@ -49,52 +49,61 @@ class DailyStepsCard extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: isWalking
-                                          ? AppColors.tealPale
-                                          : AppColors.softSection,
-                                      borderRadius: BorderRadius.circular(12),
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: isWalking
+                                            ? AppColors.tealPale
+                                            : AppColors.softSection,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.directions_walk_rounded,
+                                        color: isWalking
+                                            ? AppColors.teal
+                                            : AppColors.inkSoft,
+                                        size: 22,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.directions_walk_rounded,
-                                      color: isWalking
-                                          ? AppColors.teal
-                                          : AppColors.inkSoft,
-                                      size: 22,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        context.tr('patient.dailyActivity',
-                                            defaultText: 'Daily Activity'),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w800,
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            context.tr('patient.dailyActivity',
+                                                defaultText: 'Daily Activity'),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            context.tr('patient.todaysSteps',
+                                                defaultText: "Today's Steps"),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: AppColors.muted,
+                                              fontWeight: FontWeight.w600,
                                             ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        context.tr('patient.todaysSteps',
-                                            defaultText: "Today's Steps"),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.muted,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               _buildStatusBadge(
                                   context, status, record.syncStatus),
                             ],
@@ -145,14 +154,19 @@ class DailyStepsCard extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${context.tr('patient.goal', defaultText: 'Goal')}: ${_formatSteps(record.goal)}',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.inkSoft,
+                                Flexible(
+                                  child: Text(
+                                    '${context.tr('patient.goal', defaultText: 'Goal')}: ${_formatSteps(record.goal)}',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.inkSoft,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
+                                const SizedBox(width: 8),
                                 Text(
                                   '${(record.progressPercentage * 100).toInt()}% ${context.tr('patient.completed', defaultText: 'completed')}',
                                   style: TextStyle(

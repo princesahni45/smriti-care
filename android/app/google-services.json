@@ -1,13 +1,13 @@
-﻿{
+{
   "project_info": {
-    "project_number": "000000000000",
-    "project_id": "smriti-care-placeholder",
-    "storage_bucket": "smriti-care-placeholder.appspot.com"
+    "project_number": "158664881293",
+    "project_id": "smriti-care-487bb",
+    "storage_bucket": "smriti-care-487bb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+        "mobilesdk_app_id": "1:158664881293:android:92a2b92074e3f09e441ec4",
         "android_client_info": {
           "package_name": "com.smriticare.smriti_care"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "PLACEHOLDER_KEY_REPLACE_WITH_REAL_KEY"
+          "current_key": "AIzaSyBZEAc-u5l4baQJxUYVXldLJytonnNOeZU"
         }
       ],
       "services": {

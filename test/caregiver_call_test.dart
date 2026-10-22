@@ -117,7 +117,7 @@ void main() {
       );
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
-      final executor = VoiceActionExecutor();
+      const executor = VoiceActionExecutor();
       final action = executor.resolveAction(intent, context);
       expect(action.type, equals(VoiceActionType.navigate));
       expect(action.targetRoute, equals('/caregiver-confirm'));
@@ -131,7 +131,7 @@ void main() {
       );
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
-      final executor = VoiceActionExecutor();
+      const executor = VoiceActionExecutor();
       final action = executor.resolveAction(intent, context);
       expect(action.targetRoute, equals('/caregiver-confirm'));
     });
@@ -144,7 +144,7 @@ void main() {
       );
       expect(intent.type, equals(VoiceIntentType.CALL_CAREGIVER));
 
-      final executor = VoiceActionExecutor();
+      const executor = VoiceActionExecutor();
       final action = executor.resolveAction(intent, context);
       expect(action.targetRoute, equals('/caregiver-confirm'));
     });
@@ -198,8 +198,8 @@ void main() {
         'Renders caregiver details, high-contrast Confirm & Cancel buttons, and explanation',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -258,8 +258,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -295,8 +295,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();
@@ -322,8 +322,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: const CaregiverConfirmationScreen(),
+        const MaterialApp(
+          home: CaregiverConfirmationScreen(),
         ),
       );
       await tester.pumpAndSettle();

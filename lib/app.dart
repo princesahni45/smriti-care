@@ -47,8 +47,10 @@ import 'core/voice/voice.dart';
 GoRouter createAppRouter({
   String initialLocation = '/',
   List<NavigatorObserver>? observers,
+  GlobalKey<NavigatorState>? navigatorKey,
 }) =>
     GoRouter(
+      navigatorKey: navigatorKey,
       initialLocation: initialLocation,
       debugLogDiagnostics: false,
       observers: [
@@ -349,11 +351,14 @@ class SmritiCareApp extends StatefulWidget {
 
 class _SmritiCareAppState extends State<SmritiCareApp> {
   late final GoRouter _router;
+  final GlobalKey<NavigatorState> _rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
-    _router = widget.router ?? createAppRouter();
+    _router = widget.router ??
+        createAppRouter(navigatorKey: _rootNavigatorKey);
   }
 
   @override
@@ -387,6 +392,7 @@ class _SmritiCareAppState extends State<SmritiCareApp> {
             AppLocalizations.fallbackCupertinoDelegate,
           ],
           builder: (context, child) => GlobalPatientVoiceAssistant(
+            navigatorKey: _router.routerDelegate.navigatorKey,
             onNavigate: (route, {arguments}) {
               if (route == '..' || route == 'pop') {
                 if (_router.canPop()) {

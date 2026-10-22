@@ -23,10 +23,14 @@ class PatientVoiceFloatingButton extends StatelessWidget {
   final void Function(String route, {Map<String, dynamic>? arguments})?
       onNavigate;
 
+  /// Optional root navigator key to ensure modals mount in root navigator context.
+  final GlobalKey<NavigatorState>? navigatorKey;
+
   const PatientVoiceFloatingButton({
     super.key,
     this.bottomOffset,
     this.onNavigate,
+    this.navigatorKey,
   });
 
   String _getLocalizedButtonLabel(BuildContext context, String lang) {
@@ -74,9 +78,10 @@ class PatientVoiceFloatingButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(32),
           child: InkWell(
             onTap: () {
+              final effectiveContext = navigatorKey?.currentContext ?? context;
               // Preserve current screen context and open assistant with auto-listen
               showVoiceAssistantModal(
-                context: context,
+                context: effectiveContext,
                 currentRoute: currentRoute,
                 onNavigate: onNavigate,
               );

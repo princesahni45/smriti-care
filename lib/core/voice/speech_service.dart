@@ -6,7 +6,9 @@
 // fallback when speech input is unavailable.
 
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'voice_command.dart';
 
 /// Explicit failure states exposed by [SpeechService].
@@ -234,10 +236,148 @@ class DefaultSpeechRecognitionProvider implements SpeechRecognitionProvider {
   }
 }
 
+class PlatformSpeechRecognitionProvider
+    implements SpeechRecognitionProvider {
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  final SpeechRecognitionProvider _fallback = DefaultSpeechRecognitionProvider();
+  bool _useFallback = false;
+
+  bool _initialized = false;
+  bool _listening = false;
+
+  void Function(String transcript, bool isFinal)? _onResult;
+  void Function(String error)? _onError;
+
+  @override
+  bool get isAvailable =>
+      _initialized && (_useFallback ? _fallback.isAvailable : _speech.isAvailable);
+
+  @override
+  bool get isListening =>
+      _listening && (_useFallback ? _fallback.isListening : _speech.isListening);
+
+  @override
+  Future<bool> initialize({String languageCode = 'en'}) async {
+    if (_initialized) return isAvailable;
+
+    // On non-mobile platforms (e.g. unit test runners, Windows desktop),
+    // use the default fallback provider to keep tests and desktop builds working.
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
+      _useFallback = true;
+      _initialized = await _fallback.initialize(languageCode: languageCode);
+      return _initialized;
+    }
+
+    try {
+      _initialized = await _speech.initialize(
+        onError: (error) {
+          _listening = false;
+          _onError?.call(error.errorMsg);
+        },
+        onStatus: (status) {
+          if (status == 'notListening' || status == 'done') {
+            _listening = false;
+          }
+        },
+      );
+    } catch (_) {
+      _initialized = false;
+    }
+
+    if (!_initialized) {
+      _useFallback = true;
+      _initialized = await _fallback.initialize(languageCode: languageCode);
+      return _initialized;
+    }
+
+    return _initialized;
+  }
+
+  @override
+  Future<void> startListening({
+    required String languageCode,
+    required void Function(String transcript, bool isFinal) onResult,
+    required void Function(String error) onError,
+  }) async {
+    if (!isAvailable) {
+      onError('Speech recognition is not available.');
+      return;
+    }
+
+    _onResult = onResult;
+    _onError = onError;
+
+    if (_useFallback) {
+      _listening = true;
+      await _fallback.startListening(
+        languageCode: languageCode,
+        onResult: (transcript, isFinal) {
+          _onResult?.call(transcript, isFinal);
+        },
+        onError: (err) {
+          _listening = false;
+          _onError?.call(err);
+        },
+      );
+      return;
+    }
+
+    await _speech.listen(
+      listenOptions: stt.SpeechListenOptions(
+        localeId: languageCode,
+        partialResults: true,
+        cancelOnError: true,
+        listenMode: stt.ListenMode.dictation,
+      ),
+      onResult: (result) {
+        _onResult?.call(
+          result.recognizedWords,
+          result.finalResult,
+        );
+      },
+    );
+
+    _listening = _speech.isListening;
+  }
+
+  @override
+  Future<void> stopListening() async {
+    if (_useFallback) {
+      await _fallback.stopListening();
+    } else {
+      await _speech.stop();
+    }
+    _listening = false;
+  }
+
+  @override
+  Future<void> cancel() async {
+    if (_useFallback) {
+      await _fallback.cancel();
+    } else {
+      await _speech.cancel();
+    }
+    _listening = false;
+  }
+
+  @override
+  Future<void> dispose() async {
+    await cancel();
+    if (_useFallback) {
+      await _fallback.dispose();
+    }
+    _onResult = null;
+    _onError = null;
+  }
+}
+
 /// Central Speech Service singleton and controller interface.
 class SpeechService extends ChangeNotifier {
   SpeechService._({SpeechRecognitionProvider? provider})
-      : _provider = provider ?? DefaultSpeechRecognitionProvider();
+      : _provider = provider ??
+            (!kIsWeb && (Platform.isAndroid || Platform.isIOS)
+                ? PlatformSpeechRecognitionProvider()
+                : DefaultSpeechRecognitionProvider());
 
   /// Create an isolated SpeechService instance for testing.
   factory SpeechService.create({SpeechRecognitionProvider? provider}) {

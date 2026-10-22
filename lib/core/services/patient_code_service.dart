@@ -13,6 +13,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -409,7 +410,30 @@ class PatientCodeService {
       );
     }
 
-    // Mark as linked
+    // 3. Authenticate anonymously with Firebase Auth (if available)
+    String? anonymousUid;
+    try {
+      if (Firebase.apps.isNotEmpty) {
+        final auth = FirebaseAuth.instance;
+        User? user = auth.currentUser;
+        if (user != null && !user.isAnonymous) {
+          // If previously logged in with email/password (caregiver), sign out
+          await auth.signOut();
+          user = null;
+        }
+        if (user == null) {
+          final cred = await auth.signInAnonymously();
+          user = cred.user;
+        }
+        if (user != null) {
+          anonymousUid = user.uid;
+        }
+      }
+    } catch (e) {
+      debugPrint('[PatientCodeService] Anonymous auth note (offline or test environment): $e');
+    }
+
+    // 4. Mark as linked locally and in Firestore
     final updated = foundCode.copyWith(
       isLinked: true,
       linkedAt: DateTime.now(),
@@ -419,14 +443,40 @@ class PatientCodeService {
 
     if (db != null) {
       try {
-        await db.collection('patientAccessCodes').doc(clean).update({
+        final updatePayload = <String, dynamic>{
           'isLinked': true,
           'linkedAt': DateTime.now().toIso8601String(),
-        });
+        };
+        if (anonymousUid != null) {
+          updatePayload['linkedUid'] = anonymousUid;
+        }
+        await db.collection('patientAccessCodes').doc(clean).update(updatePayload);
       } catch (_) {}
+
+      // Securely associate anonymous UID with verified patientId in patientSessions
+      if (anonymousUid != null) {
+        try {
+          await db.collection('patientSessions').doc(anonymousUid).set({
+            'patientId': updated.patientId,
+            'code': clean,
+            'anonymousUid': anonymousUid,
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+            'isLinked': true,
+          }, SetOptions(merge: true));
+        } catch (e) {
+          debugPrint('[PatientCodeService] patientSessions session record note: $e');
+        }
+      }
     }
 
-    // Update active patient in CaregiverService and UserSessionService
+    // 5. Update session in memory
+    if (anonymousUid != null) {
+      UserSessionService.instance.setVerifiedPatientSession(
+        anonymousUid: anonymousUid,
+        patientId: updated.patientId,
+      );
+    }
     await CaregiverService.instance.selectPatient(updated.patientId);
     UserSessionService.instance.setActiveRole(UserRole.patient);
 

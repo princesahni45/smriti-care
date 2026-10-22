@@ -163,13 +163,21 @@ class VoiceAssistantController extends ChangeNotifier {
       _context = _context.copyWith(currentRoute: currentRoute);
     }
 
-    if (autoListen && _speechService.isAvailable) {
-      await startListening();
-    } else if (!_speechService.isAvailable) {
-      _status = VoiceAssistantStatus.idle;
-      _lastFeedback =
-          _getLocalizedTextFallbackNotice(_context.activeLanguageCode);
-      notifyListeners();
+    if (autoListen) {
+      final available = await _speechService.initialize(
+        languageCode: _context.activeLanguageCode,
+      );
+
+      if (_isDisposed || !_isAssistantOpen) return;
+
+      if (available) {
+        await startListening();
+      } else {
+        _status = VoiceAssistantStatus.idle;
+        _lastFeedback =
+            _getLocalizedTextFallbackNotice(_context.activeLanguageCode);
+        notifyListeners();
+      }
     } else {
       _status = VoiceAssistantStatus.idle;
       notifyListeners();

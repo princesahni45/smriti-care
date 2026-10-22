@@ -278,12 +278,16 @@ class DashboardHeader extends StatelessWidget {
                               color: AppColors.teal,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              '${context.tr('caregiver.role', defaultText: 'Caregiver')}: ${AppConstants.caregiverName}',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.tealDark,
+                            Expanded(
+                              child: Text(
+                                '${context.tr('caregiver.role', defaultText: 'Caregiver')}: ${AppConstants.caregiverName}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.tealDark,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],

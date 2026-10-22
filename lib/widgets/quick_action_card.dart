@@ -59,15 +59,15 @@ class QuickActionCard extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               // Icon inside circular tinted bubble
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 54,
-                    height: 54,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: item.color.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(16),
@@ -76,7 +76,7 @@ class QuickActionCard extends StatelessWidget {
                       child: Icon(
                         item.icon,
                         color: item.color,
-                        size: 32,
+                        size: 28,
                       ),
                     ),
                   ),
@@ -87,7 +87,7 @@ class QuickActionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
 
               // Title & Subtitle
               Column(
@@ -196,14 +196,17 @@ class QuickActionsGrid extends StatelessWidget {
               const Icon(Icons.touch_app_rounded,
                   size: 22, color: AppColors.teal),
               const SizedBox(width: 8),
-              Text(
-                context.tr('patient.todayActivities',
-                    defaultText: 'Quick Actions'),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                  letterSpacing: -0.3,
+              Expanded(
+                child: Text(
+                  context.tr('patient.todayActivities',
+                      defaultText: 'Quick Actions'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                    letterSpacing: -0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -218,7 +221,7 @@ class QuickActionsGrid extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 14,
             mainAxisSpacing: 14,
-            childAspectRatio: 1.15,
+            childAspectRatio: 1.08,
           ),
           itemBuilder: (context, index) {
             final item = activeItems[index];
