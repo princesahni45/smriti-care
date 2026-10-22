@@ -397,7 +397,7 @@ class GameStorageService {
 
     final totalScore = todayResults.fold<int>(
       0,
-      (sum, result) => sum + result.score,
+      (acc, result) => acc + result.score,
     );
 
     return (totalScore / todayResults.length).round();
@@ -417,7 +417,7 @@ class GameStorageService {
 
     final totalAccuracy = results.fold<int>(
       0,
-      (sum, result) => sum + result.accuracy,
+      (acc, result) => acc + result.accuracy,
     );
 
     return totalAccuracy / results.length;
@@ -437,7 +437,7 @@ class GameStorageService {
 
     final totalResponseTime = results.fold<double>(
       0.0,
-      (sum, result) => sum + result.responseTime,
+      (acc, result) => acc + result.responseTime,
     );
 
     return totalResponseTime / results.length;
@@ -540,12 +540,12 @@ class GameStorageService {
 
     final totalAccuracy = gameResults.fold<int>(
       0,
-      (sum, result) => sum + result.accuracy,
+      (acc, result) => acc + result.accuracy,
     );
 
     final totalResponseTime = gameResults.fold<double>(
       0.0,
-      (sum, result) => sum + result.responseTime,
+      (acc, result) => acc + result.responseTime,
     );
 
     return (

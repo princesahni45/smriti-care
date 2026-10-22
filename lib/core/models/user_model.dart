@@ -302,6 +302,15 @@ class UserSessionService {
 
   UserRole _activeRole = UserRole.patient;
 
+  // Set after Firebase Anonymous Auth succeeds during patient code verification.
+  // Null until a patient has been verified in the current process lifetime.
+  String? _anonymousUid;
+
+  // The patientId that was bound to _anonymousUid during verification.
+  // Must only be set by PatientCodeService after successful code check,
+  // never from user-supplied input alone.
+  String? _verifiedPatientId;
+
   UserRole get activeRole => _activeRole;
 
   bool get isPatient =>
@@ -313,7 +322,31 @@ class UserSessionService {
   bool get isDoctor =>
       _activeRole == UserRole.doctor;
 
+  /// The Firebase anonymous UID for the currently signed-in patient, if any.
+  String? get anonymousUid => _anonymousUid;
+
+  /// The patientId verified during code verification.
+  /// Do NOT trust a patientId from any other source; always prefer this.
+  String? get verifiedPatientId => _verifiedPatientId;
+
   void setActiveRole(UserRole role) {
     _activeRole = role;
+  }
+
+  /// Called exclusively from [PatientCodeService] after code verification and
+  /// anonymous sign-in both succeed. Never expose a setter that takes arbitrary
+  /// patientId values from the UI layer.
+  void setVerifiedPatientSession({
+    required String anonymousUid,
+    required String patientId,
+  }) {
+    _anonymousUid = anonymousUid;
+    _verifiedPatientId = patientId;
+  }
+
+  /// Clears the patient session (e.g. on sign-out or app reset).
+  void clearPatientSession() {
+    _anonymousUid = null;
+    _verifiedPatientId = null;
   }
 }

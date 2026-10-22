@@ -104,14 +104,17 @@ class TodayActivitySection extends StatelessWidget {
               const Icon(Icons.calendar_today_rounded,
                   size: 20, color: AppColors.teal),
               const SizedBox(width: 8),
-              Text(
-                context.tr('landing.todaysActivity',
-                    defaultText: "Today's Activity"),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                  letterSpacing: -0.3,
+              Expanded(
+                child: Text(
+                  context.tr('landing.todaysActivity',
+                      defaultText: "Today's Activity"),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                    letterSpacing: -0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

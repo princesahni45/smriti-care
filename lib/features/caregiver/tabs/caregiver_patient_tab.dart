@@ -649,22 +649,22 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
         builder: (context, constraints) {
           final isNarrow = constraints.maxWidth < 290;
 
-          final doctorInfo = Row(
+          const doctorInfo = Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
+              Icon(
                 Icons.verified_rounded,
                 color: AppColors.teal,
                 size: 18,
               ),
 
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
 
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Dr. Ananya Bora (Neurologist)',
                       style: TextStyle(
                         fontSize: 13,
@@ -674,7 +674,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    const Text(
+                    Text(
                       'Guwahati Neurological Institute',
                       style: TextStyle(
                         fontSize: 11,
@@ -691,6 +691,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
 
           final revokeButton = TextButton(
             onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
               await DoctorService.instance
                   .revokePatientLink(link.linkId);
 
@@ -698,7 +699,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
 
               setState(() {});
 
-              ScaffoldMessenger.of(context).showSnackBar(
+              messenger.showSnackBar(
                 const SnackBar(
                   content: Text('Doctor access revoked.'),
                 ),
@@ -737,7 +738,7 @@ class _CaregiverPatientTabState extends State<CaregiverPatientTab> {
                 )
               : Row(
                   children: [
-                    Expanded(child: doctorInfo),
+                    const Expanded(child: doctorInfo),
                     const SizedBox(width: 8),
                     revokeButton,
                   ],

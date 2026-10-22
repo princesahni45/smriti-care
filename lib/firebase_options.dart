@@ -1,4 +1,4 @@
-﻿// lib/firebase_options.dart
+// lib/firebase_options.dart
 //
 // FIX: Firebase Options — generated stub for SmritiCare.
 //
@@ -58,13 +58,13 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // ── ANDROID (replace with real values from google-services.json) ────────────
+  // ── ANDROID (configured from google-services.json) ──────────────────────────
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'PLACEHOLDER_REPLACE_WITH_REAL_API_KEY',
-    appId: '1:000000000000:android:0000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'smriti-care-placeholder',
-    storageBucket: 'smriti-care-placeholder.appspot.com',
+    apiKey: 'AIzaSyBZEAc-u5l4baQJxUYVXldLJytonnNOeZU',
+    appId: '1:158664881293:android:92a2b92074e3f09e441ec4',
+    messagingSenderId: '158664881293',
+    projectId: 'smriti-care-487bb',
+    storageBucket: 'smriti-care-487bb.firebasestorage.app',
   );
 
   // ── WEB (replace with real values from Firebase Console) ───────────────────

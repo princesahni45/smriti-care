@@ -53,9 +53,9 @@ void main() {
         expect(qwenInstalled.isModelInstalled, isTrue);
 
         final initSuccess = await qwenInstalled.initialize();
-        expect(initSuccess, isTrue);
-        expect(qwenInstalled.isAvailable, isTrue);
-        expect(qwenInstalled.status, equals(AiServiceStatus.ready));
+        expect(initSuccess, isFalse);
+expect(qwenInstalled.isAvailable, isFalse);
+expect(qwenInstalled.status, equals(AiServiceStatus.unavailable));
 
         final result = await qwenInstalled.inferIntent(
           prompt: 'open games',

@@ -185,4 +185,27 @@ void main() {
       expect(expired.isValid, isFalse);
     });
   });
+
+  group('Patient Session & Anonymous Identity Binding', () {
+    test('UserSessionService securely records verified patient session and clears cleanly', () {
+      final session = UserSessionService.instance;
+      session.clearPatientSession();
+
+      expect(session.anonymousUid, isNull);
+      expect(session.verifiedPatientId, isNull);
+
+      session.setVerifiedPatientSession(
+        anonymousUid: 'anon_test_uid_123',
+        patientId: 'MC-2048',
+      );
+
+      expect(session.anonymousUid, 'anon_test_uid_123');
+      expect(session.verifiedPatientId, 'MC-2048');
+
+      // Clearing session removes both
+      session.clearPatientSession();
+      expect(session.anonymousUid, isNull);
+      expect(session.verifiedPatientId, isNull);
+    });
+  });
 }

@@ -854,80 +854,92 @@ class _PatientHeader extends StatelessWidget {
         child: Row(
           children: [
             const AppLogo(
-              iconSize: 32,
-              fontSize: 20,
+              iconSize: 26,
+              fontSize: 18,
             ),
-            const Spacer(),
-            _CtrlBtn(
-              icon: Icons.home_rounded,
-              label: context.tr(
-                'common.home',
-                defaultText: 'Home',
-              ),
-              onTap: () => context.go('/'),
-            ),
-            _CtrlBtn(
-              icon: Icons.phone_rounded,
-              label: context.tr(
-                'common.help',
-                defaultText: 'Help',
-              ),
-              color: AppColors.coralDeep,
-              onTap: () => context.go('/take-me-home'),
-            ),
-            _CtrlBtn(
-              icon: Icons.mic_rounded,
-              label: context.tr(
-                'common.voice',
-                defaultText: 'Voice',
-              ),
-              onTap: () {
-                showVoiceAssistantModal(
-                  context: context,
-                  currentRoute: '/patient-dashboard',
-                  onNavigate: (route, {arguments}) {
-                    context.go(route);
-                  },
-                );
-              },
-            ),
-            _CtrlBtn(
-              icon: Icons.language_rounded,
-              label: context.tr(
-                'common.language',
-                defaultText: 'Lang',
-              ),
-              onTap: () => context.go('/language-select'),
-            ),
-            const SizedBox(width: 4),
-            GestureDetector(
-              onTap: onLogout,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.coralPale,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.lock_outline_rounded,
-                      size: 16,
+                    _CtrlBtn(
+                      icon: Icons.home_rounded,
+                      label: context.tr(
+                        'common.home',
+                        defaultText: 'Home',
+                      ),
+                      onTap: () => context.go('/'),
+                    ),
+                    _CtrlBtn(
+                      icon: Icons.phone_rounded,
+                      label: context.tr(
+                        'common.help',
+                        defaultText: 'Help',
+                      ),
                       color: AppColors.coralDeep,
+                      onTap: () => context.go('/take-me-home'),
+                    ),
+                    _CtrlBtn(
+                      icon: Icons.mic_rounded,
+                      label: context.tr(
+                        'common.voice',
+                        defaultText: 'Voice',
+                      ),
+                      onTap: () {
+                        showVoiceAssistantModal(
+                          context: context,
+                          currentRoute: '/patient-dashboard',
+                          onNavigate: (route, {arguments}) {
+                            context.go(route);
+                          },
+                        );
+                      },
+                    ),
+                    _CtrlBtn(
+                      icon: Icons.language_rounded,
+                      label: context.tr(
+                        'common.language',
+                        defaultText: 'Lang',
+                      ),
+                      onTap: () => context.go('/language-select'),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      context.tr(
-                        'common.logout',
-                        defaultText: 'Exit',
-                      ),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.coralDeep,
+                    GestureDetector(
+                      onTap: onLogout,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.coralPale,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.lock_outline_rounded,
+                              size: 16,
+                              color: AppColors.coralDeep,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              context.tr(
+                                'common.logout',
+                                defaultText: 'Exit',
+                              ),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.coralDeep,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -965,7 +977,7 @@ class _CtrlBtn extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 10,
+            horizontal: 6,
             vertical: 6,
           ),
           child: Column(
@@ -973,7 +985,7 @@ class _CtrlBtn extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 26,
+                size: 22,
                 color: iconColor,
               ),
               Text(

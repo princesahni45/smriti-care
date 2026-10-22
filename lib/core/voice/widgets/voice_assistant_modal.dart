@@ -19,16 +19,30 @@ Future<void> showVoiceAssistantModal({
   required BuildContext context,
   String? currentRoute,
   void Function(String route, {Map<String, dynamic>? arguments})? onNavigate,
-}) {
-  return showModalBottomSheet<void>(
+}) async {
+  String? requestedRoute;
+  Map<String, dynamic>? requestedArguments;
+
+  await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (modalContext) => VoiceAssistantModal(
       currentRoute: currentRoute,
-      onNavigate: onNavigate,
+      onNavigate: (route, {arguments}) {
+        requestedRoute = route;
+        requestedArguments = arguments;
+        Navigator.of(modalContext).pop();
+      },
     ),
   );
+
+  if (requestedRoute != null && onNavigate != null) {
+    onNavigate(
+      requestedRoute!,
+      arguments: requestedArguments,
+    );
+  }
 }
 
 class VoiceAssistantModal extends StatefulWidget {
@@ -65,10 +79,10 @@ class _VoiceAssistantModalState extends State<VoiceAssistantModal>
     _controller = VoiceAssistantController(
       actionExecutor: VoiceActionExecutor(
         onNavigate: (route, {arguments}) {
-          Navigator.of(context).pop();
-          if (widget.onNavigate != null) {
-            widget.onNavigate!(route, arguments: arguments);
-          }
+          widget.onNavigate?.call(
+            route,
+            arguments: arguments,
+          );
         },
       ),
     );

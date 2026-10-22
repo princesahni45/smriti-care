@@ -8,8 +8,11 @@
 
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import '../models/daily_step_record.dart';
+import '../models/user_model.dart';
 import 'step_storage_service.dart';
 
 class StepSyncService {
@@ -61,6 +64,32 @@ class StepSyncService {
   /// Uploads a single record to Firestore using deterministic date document ID
   Future<bool> _uploadRecordToCloud(DailyStepRecord record) async {
     try {
+      if (Firebase.apps.isEmpty) {
+        return false;
+      }
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        debugPrint(
+          '[StepSyncService] Step sync deferred: no authenticated Firebase session.',
+        );
+        return false;
+      }
+
+      // Security check: If running in patient mode with a verified session,
+      // enforce that steps are only written for the verified patient ID.
+      // Do not trust an arbitrary patient ID provided by the client alone.
+      final verifiedPatientId = UserSessionService.instance.verifiedPatientId;
+      if (UserSessionService.instance.isPatient &&
+          verifiedPatientId != null &&
+          verifiedPatientId != record.patientId) {
+        debugPrint(
+          '[StepSyncService] Security rejected upload: record patientId ${record.patientId} '
+          'does not match verified patient session $verifiedPatientId',
+        );
+        return false;
+      }
+
       final firestore = FirebaseFirestore.instance;
       final docRef = firestore
           .collection('patients')
@@ -91,6 +120,7 @@ class StepSyncService {
     required String date,
   }) async {
     try {
+      if (Firebase.apps.isEmpty) return null;
       final doc = await FirebaseFirestore.instance
           .collection('patients')
           .doc(patientId)

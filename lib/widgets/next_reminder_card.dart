@@ -44,14 +44,17 @@ class NextReminderCard extends StatelessWidget {
               const Icon(Icons.alarm_on_rounded,
                   size: 20, color: AppColors.amber),
               const SizedBox(width: 8),
-              Text(
-                context.tr('reminders.nextReminder',
-                    defaultText: 'Next Reminder'),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                  letterSpacing: -0.3,
+              Expanded(
+                child: Text(
+                  context.tr('reminders.nextReminder',
+                      defaultText: 'Next Reminder'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
+                    letterSpacing: -0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

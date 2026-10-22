@@ -26,7 +26,8 @@ android {
         applicationId = "com.smriticare.smriti_care"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // Android API 26 (Android 8.0) required by native llama.cpp runtime
+        minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
