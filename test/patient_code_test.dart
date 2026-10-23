@@ -87,10 +87,13 @@ void main() {
     });
   });
 
+  setUp(() async {
+    await PatientCodeService.instance.resetForTesting();
+  });
+
   group('Patient Access Code - Verification & Offline Login', () {
     test('Default seeded code SMR-4827-KP logs in successfully', () async {
       final service = PatientCodeService.instance;
-      await service.init();
 
       final result = await service.verifyPatientCode('smr-4827-kp');
       expect(result.isSuccess, isTrue);
@@ -98,6 +101,19 @@ void main() {
       expect(result.patientName, 'Mr. Ramesh Das');
       expect(result.accessCode?.isLinked, isTrue);
       expect(UserSessionService.instance.activeRole, UserRole.patient);
+    });
+
+    test('Verifying an already-linked code is rejected to prevent duplicate linking and session hijacking', () async {
+      final service = PatientCodeService.instance;
+
+      // First verification succeeds and links the code
+      final firstResult = await service.verifyPatientCode('smr-4827-kp');
+      expect(firstResult.isSuccess, isTrue);
+
+      // Second verification attempt on the now-linked code MUST fail
+      final secondResult = await service.verifyPatientCode('smr-4827-kp');
+      expect(secondResult.isSuccess, isFalse);
+      expect(secondResult.errorMessage, contains('already been linked'));
     });
 
     test('Invalid code returns elderly-friendly error message', () async {

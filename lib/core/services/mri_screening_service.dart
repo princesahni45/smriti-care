@@ -42,8 +42,9 @@ class MriScreeningService {
     final candidateUrls = <String>[
       _apiBaseUrl,
       ApiConfig.baseUrl,
+      ApiConfig.hotspotUrl,
       ApiConfig.wifiLanUrl,
-      'http://127.0.0.1:8000',
+      ApiConfig.usbUrl,
       ApiConfig.emulatorUrl,
       'http://localhost:8000',
     ];

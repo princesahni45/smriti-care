@@ -60,10 +60,13 @@ class PatientAccessCode {
       createdAt: map['createdAt'] != null
           ? DateTime.tryParse(map['createdAt'] as String) ?? DateTime.now()
           : DateTime.now(),
-      expiresAt: map['expiresAt'] != null
-          ? DateTime.tryParse(map['expiresAt'] as String) ??
-              DateTime.now().add(const Duration(days: 30))
-          : DateTime.now().add(const Duration(days: 30)),
+      expiresAt: map['expiresAtTimestamp'] != null &&
+              map['expiresAtTimestamp'].runtimeType.toString().contains('Timestamp')
+          ? (map['expiresAtTimestamp'] as dynamic).toDate() as DateTime
+          : (map['expiresAt'] != null
+              ? DateTime.tryParse(map['expiresAt'] as String) ??
+                  DateTime.now().add(const Duration(days: 30))
+              : DateTime.now().add(const Duration(days: 30))),
       isActive: map['isActive'] as bool? ?? true,
       isLinked: map['isLinked'] as bool? ?? false,
       linkedAt: map['linkedAt'] != null

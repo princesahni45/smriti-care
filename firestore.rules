@@ -51,33 +51,32 @@ service cloud.firestore {
         get(/databases/$(database)/documents/patientSessions/$(request.auth.uid)).data.patientId == targetPatientId;
     }
 
+    // Assigned Caregiver verification: verifies that the authenticated caregiver
+    // is specifically assigned to targetPatientId in patients/{patientId} or caregivers/{uid}/patients/{patientId}.
+    function isAssignedCaregiver(patientId) {
+      return isCaregiver() && (
+        (exists(/databases/$(database)/documents/patients/$(patientId)) &&
+         (get(/databases/$(database)/documents/patients/$(patientId)).data.caregiverId == request.auth.uid ||
+          (request.auth.token.email != null && get(/databases/$(database)/documents/patients/$(patientId)).data.caregiverId == request.auth.token.email))) ||
+        exists(/databases/$(database)/documents/caregivers/$(request.auth.uid)/patients/$(patientId)) ||
+        (request.auth.token.email != null && exists(/databases/$(database)/documents/caregivers/$(request.auth.token.email)/patients/$(patientId)))
+      );
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // User Profiles: users/{userId}
-    // Provisioned by backend/admin or self during onboarding.
-    // Self-profile reads allowed; role escalation strictly blocked.
+    // Provisioned strictly via Admin SDK / Backend. Client mutations disabled.
     // ─────────────────────────────────────────────────────────────────────────
     match /users/{userId} {
-      allow get: if isUser(userId) || isCaregiver();
+      allow get: if isUser(userId) || isDoctor();
       allow list: if false;
-
-      // New users can only initialize themselves as 'patient'
-      allow create: if isUser(userId) && (
-        !('role' in request.resource.data) ||
-        request.resource.data.role == 'patient'
-      );
-
-      // Existing users cannot alter their role (privilege escalation prevention)
-      allow update: if isUser(userId) && (
-        !('role' in request.resource.data) ||
-        request.resource.data.role == resource.data.role
-      );
-
-      allow delete: if false;
+      allow create, update, delete: if false;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Patient Sessions: patientSessions/{sessionUid}
     // Maps Firebase Anonymous UIDs to verified patient identities.
+    // CREATE-ONLY: Immutable once written. Atomic mutual binding with code update.
     // ─────────────────────────────────────────────────────────────────────────
     match /patientSessions/{sessionUid} {
       allow read: if isAuthenticated() && (
@@ -86,16 +85,28 @@ service cloud.firestore {
       );
 
       // A client may only bind their own anonymous UID to a patient if they
-      // supply a valid, active access code registered for that patient ID.
-      allow create, update: if isAuthenticated()
+      // supply a valid, active, unexpired, unlinked access code in the SAME atomic batch.
+      allow create: if isAuthenticated()
         && request.auth.uid == sessionUid
         && request.resource.data.anonymousUid == sessionUid
         && request.resource.data.patientId is string
         && request.resource.data.code is string
         && exists(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code))
+        // Code must be active
+        && get(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.isActive == true
+        // Code must NOT have been linked prior to this atomic write
+        && get(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.isLinked != true
+        // Code must not be expired
+        && (!('expiresAtTimestamp' in get(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data) ||
+            get(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.expiresAtTimestamp > request.time)
+        // PatientId in session must match patientId in code
         && get(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.patientId == request.resource.data.patientId
-        && get(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.isActive == true;
+        // Atomic mutual binding: code must be marked isLinked=true with linkedUid=sessionUid in this batch
+        && getAfter(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.isLinked == true
+        && getAfter(/databases/$(database)/documents/patientAccessCodes/$(request.resource.data.code)).data.linkedUid == sessionUid;
 
+      // STRICT IMMUTABILITY: Sessions can never be rebound or updated
+      allow update: if false;
       allow delete: if isAuthenticated() && (request.auth.uid == sessionUid || isCaregiver());
     }
 
@@ -103,28 +114,45 @@ service cloud.firestore {
     // Patient Access Codes: patientAccessCodes/{code}
     // ─────────────────────────────────────────────────────────────────────────
     match /patientAccessCodes/{code} {
-      // Direct lookup by document ID only; codes cannot be listed publicly
-      allow get: if resource.data.isActive == true;
+      // Direct get: Strictly authorized caregivers or doctors.
+      // Anonymous clients are denied direct reads to prevent PII harvesting.
+      allow get: if isAuthenticated() && (
+        isCaregiver() ||
+        isDoctor()
+      );
 
       // Only authenticated caregivers can search/list codes
       allow list: if isAuthenticated() && isCaregiver();
 
-      // Only authenticated caregivers can create codes
+      // Only authenticated caregivers can create codes; requires valid expiresAtTimestamp
       allow create: if isAuthenticated() && isCaregiver() && (
         request.resource.data.caregiverId == request.auth.uid ||
-        request.resource.data.caregiverId == request.auth.token.email
-      );
+        (request.auth.token.email != null && request.resource.data.caregiverId == request.auth.token.email)
+      )
+      && request.resource.data.expiresAtTimestamp is timestamp
+      && request.resource.data.expiresAtTimestamp > request.time
+      && request.resource.data.isActive == true
+      && request.resource.data.isLinked == false;
 
-      // Caregivers can update their codes (revoke, etc.);
-      // Verified/anonymous patients can only update linking metadata
+      // Updates: Caregiver managing code OR Patient atomic linking
       allow update: if isAuthenticated() && (
         (isCaregiver() && (
           resource.data.caregiverId == request.auth.uid ||
-          resource.data.caregiverId == request.auth.token.email
+          (request.auth.token.email != null && resource.data.caregiverId == request.auth.token.email)
         )) ||
         (
           resource.data.isActive == true &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isLinked', 'linkedAt', 'linkedUid'])
+          resource.data.isLinked != true &&
+          (
+            (resource.data.expiresAtTimestamp is timestamp && resource.data.expiresAtTimestamp > request.time) ||
+            (!('expiresAtTimestamp' in resource.data) && 'expiresAt' in resource.data)
+          ) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isLinked', 'linkedAt', 'linkedUid']) &&
+          request.resource.data.isLinked == true &&
+          request.resource.data.linkedUid == request.auth.uid &&
+          // Atomic mutual binding: patientSession document for this UID must be created in this batch
+          getAfter(/databases/$(database)/documents/patientSessions/$(request.auth.uid)).data.code == code &&
+          getAfter(/databases/$(database)/documents/patientSessions/$(request.auth.uid)).data.patientId == resource.data.patientId
         )
       );
 
@@ -135,37 +163,51 @@ service cloud.firestore {
     // Patient Profiles & Subcollections: patients/{patientId}
     // ─────────────────────────────────────────────────────────────────────────
     match /patients/{patientId} {
-      // Caregiver/Doctor access or verified patient reading their own record
+      // Read: Assigned caregiver, doctor, or verified patient reading their own record
       allow read: if isAuthenticated() && (
-        isMedicalStaff() ||
+        isDoctor() ||
+        isAssignedCaregiver(patientId) ||
         isVerifiedPatient(patientId)
       );
 
-      // Writes restricted to caregivers
-      allow write: if isAuthenticated() && isCaregiver();
+      // Create: Caregiver assigning themselves
+      allow create: if isAuthenticated() && isCaregiver() && (
+        request.resource.data.caregiverId == request.auth.uid ||
+        (request.auth.token.email != null && request.resource.data.caregiverId == request.auth.token.email)
+      );
 
-      // Emergency settings: offline SOS fallback requires read
+      // Update: Assigned caregiver only
+      allow update: if isAuthenticated() && isAssignedCaregiver(patientId);
+
+      allow delete: if false;
+
+      // Emergency settings: No public read; restricted to assigned medical staff or verified patient
       match /emergency_settings/{document=**} {
-        allow read: if true;
-        allow write: if isAuthenticated() && isCaregiver();
+        allow read: if isAuthenticated() && (
+          isDoctor() ||
+          isAssignedCaregiver(patientId) ||
+          isVerifiedPatient(patientId)
+        );
+        allow write: if isAuthenticated() && isAssignedCaregiver(patientId);
       }
 
       // Activity logs
       match /activity_logs/{logId} {
-        allow read: if isAuthenticated() && (isMedicalStaff() || isVerifiedPatient(patientId));
-        allow write: if isAuthenticated() && (isCaregiver() || isVerifiedPatient(patientId));
+        allow read: if isAuthenticated() && (isDoctor() || isAssignedCaregiver(patientId) || isVerifiedPatient(patientId));
+        allow write: if isAuthenticated() && (isAssignedCaregiver(patientId) || isVerifiedPatient(patientId));
       }
 
       // Daily step tracking telemetry: patients/{patientId}/dailySteps/{date}
       match /dailySteps/{date} {
         allow read: if isAuthenticated() && (
-          isMedicalStaff() ||
+          isDoctor() ||
+          isAssignedCaregiver(patientId) ||
           isVerifiedPatient(patientId)
         );
 
-        // Secure write validation: only caregiver or verified patient for this patientId
+        // Secure write validation: only assigned caregiver or verified patient for this patientId
         allow create, update: if isAuthenticated() && (
-          isCaregiver() ||
+          isAssignedCaregiver(patientId) ||
           isVerifiedPatient(patientId)
         )
         && request.resource.data.patientId == patientId
@@ -173,9 +215,12 @@ service cloud.firestore {
         && request.resource.data.steps is number
         && request.resource.data.steps >= 0
         && request.resource.data.goal is number
-        && request.resource.data.goal >= 0;
+        && request.resource.data.goal >= 0
+        && request.resource.data.updatedAt is string
+        && request.resource.data.source is string
+        && (resource == null || request.resource.data.steps >= resource.data.steps);
 
-        allow delete: if isAuthenticated() && isCaregiver();
+        allow delete: if isAuthenticated() && isAssignedCaregiver(patientId);
       }
     }
 
@@ -183,22 +228,59 @@ service cloud.firestore {
     // Caregiver Profiles: caregivers/{caregiverId}
     // ─────────────────────────────────────────────────────────────────────────
     match /caregivers/{caregiverId} {
-      // Only authenticated users can look up caregivers
-      allow read: if isAuthenticated();
+      // Profile get: Strictly Self or Doctor. No public or anonymous profile scraping.
+      allow get: if isAuthenticated() && (
+        request.auth.uid == caregiverId ||
+        (request.auth.token.email != null && request.auth.token.email == caregiverId) ||
+        isDoctor()
+      );
+
+      // List: Doctors or caregiver self
+      allow list: if isAuthenticated() && (
+        isDoctor() ||
+        request.auth.uid == caregiverId ||
+        (request.auth.token.email != null && request.auth.token.email == caregiverId)
+      );
 
       allow create, update: if isAuthenticated() && isCaregiver() && (
         request.auth.uid == caregiverId ||
-        request.auth.token.email == caregiverId
+        (request.auth.token.email != null && request.auth.token.email == caregiverId)
       );
 
       allow delete: if false;
 
+      match /patients/{patientId} {
+        allow read, write: if isAuthenticated() && isCaregiver() && (
+          request.auth.uid == caregiverId ||
+          (request.auth.token.email != null && request.auth.token.email == caregiverId)
+        );
+      }
+
       match /linkedPatients/{patientId} {
         allow read, write: if isAuthenticated() && isCaregiver() && (
           request.auth.uid == caregiverId ||
-          request.auth.token.email == caregiverId
+          (request.auth.token.email != null && request.auth.token.email == caregiverId)
         );
       }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Caregiver Code Directory: caregiverCodeDirectory/{caregiverCode}
+    // Secure minimal lookup: Only exposes caregiverId and name; no phone, email, or private data.
+    // ─────────────────────────────────────────────────────────────────────────
+    match /caregiverCodeDirectory/{caregiverCode} {
+      allow get: if isAuthenticated();
+      allow list: if false;
+      allow create, update: if isAuthenticated() && isCaregiver() && (
+        request.resource.data.caregiverId == request.auth.uid ||
+        (request.auth.token.email != null && request.resource.data.caregiverId == request.auth.token.email)
+      )
+      && request.resource.data.caregiverId is string
+      && request.resource.data.caregiverName is string;
+      allow delete: if isAuthenticated() && isCaregiver() && (
+        resource.data.caregiverId == request.auth.uid ||
+        (request.auth.token.email != null && resource.data.caregiverId == request.auth.token.email)
+      );
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -206,20 +288,24 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────────────────
     match /patientGameResults/{resultId} {
       allow read: if isAuthenticated() && (
-        isMedicalStaff() ||
+        isDoctor() ||
+        isAssignedCaregiver(resource.data.patientId) ||
         isVerifiedPatient(resource.data.patientId)
       );
 
-      allow create, update: if isAuthenticated() && (
-        isCaregiver() ||
+      // CREATE-ONLY: Cognitive game results are immutable event records
+      allow create: if isAuthenticated() && (
+        isAssignedCaregiver(request.resource.data.patientId) ||
         isVerifiedPatient(request.resource.data.patientId)
       )
       && request.resource.data.patientId is string
       && request.resource.data.gameId is string
       && request.resource.data.score is number
       && request.resource.data.score >= 0
-      && request.resource.data.score <= 100;
+      && request.resource.data.score <= 100
+      && request.resource.data.timestamp is string;
 
+      allow update: if false; // Immutable
       allow delete: if false;
     }
   }

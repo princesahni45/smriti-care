@@ -14,6 +14,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/game_result.dart';
+import '../models/user_model.dart';
 
 class GameStorageService {
   GameStorageService._();
@@ -259,6 +260,13 @@ class GameStorageService {
       return;
     }
 
+    // Require cloud-authorized session before uploading patient game telemetry
+    if (UserSessionService.instance.isPatient &&
+        !UserSessionService.instance.isCloudVerified) {
+      debugPrint('[GameStorageService] Game sync deferred: patient session is not cloud-verified.');
+      return;
+    }
+
     try {
       await database
           .collection('patientGameResults')
@@ -290,6 +298,11 @@ class GameStorageService {
     final database = _firestore;
 
     if (database == null) {
+      return 0;
+    }
+
+    if (UserSessionService.instance.isPatient &&
+        !UserSessionService.instance.isCloudVerified) {
       return 0;
     }
 

@@ -496,22 +496,20 @@ class CaregiverService {
     String resolvedCgId = currentCg.email;
     String resolvedCgName = caregiverName ?? currentCg.name;
 
-    // Check Firestore if available
+    // Check Firestore if available via secure minimal caregiverCodeDirectory lookup
     final db = _firestore;
     if (db != null && !isMatch) {
       try {
-        final query = await db
-            .collection('caregivers')
-            .where('caregiverCode', isEqualTo: caregiverCodeOrEmail.trim().toUpperCase())
-            .limit(1)
-            .get();
-        if (query.docs.isNotEmpty) {
+        final codeClean = caregiverCodeOrEmail.trim().toUpperCase();
+        final doc = await db.collection('caregiverCodeDirectory').doc(codeClean).get();
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
           isMatch = true;
-          resolvedCgId = query.docs.first.id;
-          resolvedCgName = query.docs.first.data()['name'] as String? ?? 'Caregiver';
+          resolvedCgId = data['caregiverId'] as String? ?? codeClean;
+          resolvedCgName = data['caregiverName'] as String? ?? 'Caregiver';
         }
       } catch (e) {
-        debugPrint('Firestore caregiver lookup note: $e');
+        debugPrint('Firestore caregiverCodeDirectory lookup note: $e');
       }
     }
 

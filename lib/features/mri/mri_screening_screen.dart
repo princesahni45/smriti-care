@@ -23,6 +23,7 @@ import '../../core/models/mri_models.dart';
 import '../../core/services/mri_screening_service.dart';
 import '../../core/services/mri_file_storage_service.dart';
 import '../../core/constants/app_constants.dart';
+import '../../config/api_config.dart';
 
 class MriScreeningScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -420,21 +421,21 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                     children: [
                       ActionChip(
                         avatar: const Icon(
-                          Icons.usb_rounded,
+                          Icons.wifi_tethering_rounded,
                           size: 16,
                           color: AppColors.teal,
                         ),
-                        label: const Text(
-                          'USB (127.0.0.1:8000)',
-                          style: TextStyle(fontSize: 11),
+                        label: Text(
+                          'Hotspot (${ApiConfig.hotspotUrl.replaceAll('http://', '')})',
+                          style: const TextStyle(fontSize: 11),
                         ),
                         backgroundColor:
-                            controller.text == 'http://127.0.0.1:8000'
+                            controller.text == ApiConfig.hotspotUrl
                                 ? AppColors.tealPale
                                 : null,
                         onPressed: () {
                           setDialogState(() {
-                            controller.text = 'http://127.0.0.1:8000';
+                            controller.text = ApiConfig.hotspotUrl;
                           });
                         },
                       ),
@@ -444,18 +445,37 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                           size: 16,
                           color: AppColors.teal,
                         ),
-                        label: const Text(
-                          'Wi-Fi (192.168.9.221:8000)',
-                          style: TextStyle(fontSize: 11),
+                        label: Text(
+                          'Wi-Fi (${ApiConfig.wifiLanUrl.replaceAll('http://', '')})',
+                          style: const TextStyle(fontSize: 11),
                         ),
                         backgroundColor:
-                            controller.text == 'http://192.168.9.221:8000'
+                            controller.text == ApiConfig.wifiLanUrl
                                 ? AppColors.tealPale
                                 : null,
                         onPressed: () {
                           setDialogState(() {
-                            controller.text =
-                                'http://192.168.9.221:8000';
+                            controller.text = ApiConfig.wifiLanUrl;
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        avatar: const Icon(
+                          Icons.usb_rounded,
+                          size: 16,
+                          color: AppColors.teal,
+                        ),
+                        label: Text(
+                          'USB (${ApiConfig.usbUrl.replaceAll('http://', '')})',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        backgroundColor:
+                            controller.text == ApiConfig.usbUrl
+                                ? AppColors.tealPale
+                                : null,
+                        onPressed: () {
+                          setDialogState(() {
+                            controller.text = ApiConfig.usbUrl;
                           });
                         },
                       ),
@@ -465,17 +485,17 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                           size: 16,
                           color: AppColors.teal,
                         ),
-                        label: const Text(
-                          'Emulator (10.0.2.2:8000)',
-                          style: TextStyle(fontSize: 11),
+                        label: Text(
+                          'Emulator (${ApiConfig.emulatorUrl.replaceAll('http://', '')})',
+                          style: const TextStyle(fontSize: 11),
                         ),
                         backgroundColor:
-                            controller.text == 'http://10.0.2.2:8000'
+                            controller.text == ApiConfig.emulatorUrl
                                 ? AppColors.tealPale
                                 : null,
                         onPressed: () {
                           setDialogState(() {
-                            controller.text = 'http://10.0.2.2:8000';
+                            controller.text = ApiConfig.emulatorUrl;
                           });
                         },
                       ),
@@ -485,7 +505,7 @@ class _MriScreeningScreenState extends State<MriScreeningScreen> {
                   TextField(
                     controller: controller,
                     decoration: InputDecoration(
-                      hintText: 'http://127.0.0.1:8000',
+                      hintText: ApiConfig.baseUrl,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
