@@ -39,7 +39,7 @@ class AppConstants {
       'http://10.0.2.2:8000';
 
   static const String kApiBaseUrlPhysicalDevice =
-      'http://192.168.9.221:8000';
+      'http://192.168.137.1:8000';
 
   static const String kApiBaseUrlUsbReverse =
       'http://127.0.0.1:8000';
@@ -48,12 +48,9 @@ class AppConstants {
       'http://localhost:8000';
 
   // Active API URL.
-  //
-  // Current configuration uses USB ADB reverse.
-  // Change this when testing with another connection method.
-
+  // Defaults to reachable Hotspot / Wi-Fi LAN IP.
   static const String kApiBaseUrl =
-      kApiBaseUrlUsbReverse;
+      kApiBaseUrlPhysicalDevice;
 
   // ── API Endpoint Paths ────────────────────────────────────────────────────
 

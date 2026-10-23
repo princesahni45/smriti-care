@@ -77,17 +77,24 @@ class StepSyncService {
       }
 
       // Security check: If running in patient mode with a verified session,
-      // enforce that steps are only written for the verified patient ID.
-      // Do not trust an arbitrary patient ID provided by the client alone.
+      // enforce that steps are only written for the verified patient ID,
+      // and only if the session has been authorized in the cloud.
+      // Offline verification alone must not permit cloud writes.
       final verifiedPatientId = UserSessionService.instance.verifiedPatientId;
-      if (UserSessionService.instance.isPatient &&
-          verifiedPatientId != null &&
-          verifiedPatientId != record.patientId) {
-        debugPrint(
-          '[StepSyncService] Security rejected upload: record patientId ${record.patientId} '
-          'does not match verified patient session $verifiedPatientId',
-        );
-        return false;
+      if (UserSessionService.instance.isPatient) {
+        if (!UserSessionService.instance.isCloudVerified) {
+          debugPrint(
+            '[StepSyncService] Step sync deferred: session is not cloud-authorized.',
+          );
+          return false;
+        }
+        if (verifiedPatientId != null && verifiedPatientId != record.patientId) {
+          debugPrint(
+            '[StepSyncService] Security rejected upload: record patientId ${record.patientId} '
+            'does not match verified patient session $verifiedPatientId',
+          );
+          return false;
+        }
       }
 
       final firestore = FirebaseFirestore.instance;

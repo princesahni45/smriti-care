@@ -16,6 +16,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import '../models/patient_access_code.dart';
 import '../models/user_model.dart';
@@ -108,6 +109,20 @@ class PatientCodeService {
       _seedDefaultCodesIfEmpty();
       _isInitialized = true;
     }
+  }
+
+  /// Reset internal state and delete test cache for testing purposes.
+  @visibleForTesting
+  Future<void> resetForTesting() async {
+    _localCodes.clear();
+    _isInitialized = false;
+    try {
+      final file = await _getStorageFile();
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {}
+    await init();
   }
 
   Future<File> _getStorageFile() async {
@@ -260,7 +275,9 @@ class PatientCodeService {
     final db = _firestore;
     if (db != null) {
       try {
-        await db.collection('patientAccessCodes').doc(candidateCode).set(accessCode.toMap());
+        final codeMap = accessCode.toMap();
+        codeMap['expiresAtTimestamp'] = Timestamp.fromDate(accessCode.expiresAt);
+        await db.collection('patientAccessCodes').doc(candidateCode).set(codeMap);
         // Also update pointer in patient document
         await db.collection('patients').doc(patientId).set({
           'activeAccessCode': candidateCode,
@@ -360,10 +377,69 @@ class PatientCodeService {
   ///
   /// Steps:
   /// 1. Normalize code (case-insensitive, trims hyphens/spaces).
-  /// 2. If online: verify against Firestore `patientAccessCodes/{code}`.
-  /// 3. If offline / test mode: verify against cached local codes.
-  /// 4. Check if active and not expired.
-  /// 5. Return success with elderly-friendly error handling.
+  /// 2. Authenticate anonymously with Firebase Auth if available so the client
+  ///    has an authenticated UID prior to querying Firestore.
+  /// 3. Verify against Firestore `patientAccessCodes/{code}` or local cache.
+  /// 4. Check active, not expired, and not already linked (race-condition protection).
+  /// 5. Execute atomic WriteBatch linking the code and creating patientSessions/{uid}.
+  /// 6. Return success with elderly-friendly error handling.
+  /// Calls the secure Cloud Function verifyAndLinkPatientCode if deployed.
+  Future<({bool success, String? patientId, String? patientName, String? error})?> _callCloudFunctionVerification({
+    required String code,
+    required String anonymousUid,
+  }) async {
+    try {
+      if (Firebase.apps.isEmpty) return null;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return null;
+      final token = await user.getIdToken();
+      final projectId = Firebase.app().options.projectId;
+      if (projectId.isEmpty) return null;
+
+      final url = Uri.parse(
+        'https://us-central1-$projectId.cloudfunctions.net/verifyAndLinkPatientCode',
+      );
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'data': {'code': code}
+        }),
+      ).timeout(const Duration(seconds: 6));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = decoded['result'] ?? decoded['data'];
+        if (data is Map<String, dynamic> && data['success'] == true) {
+          return (
+            success: true,
+            patientId: data['patientId'] as String?,
+            patientName: data['patientName'] as String?,
+            error: null,
+          );
+        }
+      }
+    } catch (_) {
+      // Cloud Function unreachable or not configured; fall back to local/batch verification
+    }
+    return null;
+  }
+
+  /// Verifies a patient code entered by an elderly user and resolves patient identity.
+  ///
+  /// Steps:
+  /// 1. Normalize code (case-insensitive, trims hyphens/spaces).
+  /// 2. Authenticate anonymously with Firebase Auth FIRST so the client
+  ///    has an authenticated UID prior to any backend/cloud operations.
+  /// 3. Verify via Cloud Function if available (zero client-side PII exposure).
+  /// 4. Fall back to local store if Cloud Function is unavailable/offline.
+  /// 5. Check active, not expired, and not already linked (race-condition protection).
+  /// 6. Execute atomic WriteBatch linking the code and creating patientSessions/{uid}.
+  /// 7. Mark session isCloudVerified only if the cloud accepted the link.
+  /// 8. Return success with elderly-friendly error handling.
   Future<PatientCodeVerificationResult> verifyPatientCode(String rawInput) async {
     await init();
     final clean = normalizeCode(rawInput);
@@ -374,43 +450,8 @@ class PatientCodeService {
       );
     }
 
-    PatientAccessCode? foundCode;
-
-    // 1. Try Firestore verification first
-    final db = _firestore;
-    if (db != null) {
-      try {
-        final doc = await db.collection('patientAccessCodes').doc(clean).get();
-        if (doc.exists && doc.data() != null) {
-          foundCode = PatientAccessCode.fromMap(doc.data()!);
-        }
-      } catch (e) {
-        debugPrint('[PatientCodeService] Firestore read error: $e');
-      }
-    }
-
-    // 2. Fall back to local store if Firestore unavailable or offline
-    foundCode ??= _localCodes[clean];
-
-    if (foundCode == null) {
-      return PatientCodeVerificationResult.failure(
-        'That code is not correct. Please ask your caregiver to check it.',
-      );
-    }
-
-    if (!foundCode.isActive) {
-      return PatientCodeVerificationResult.failure(
-        'This code is no longer active. Please ask your caregiver for a new code.',
-      );
-    }
-
-    if (foundCode.isExpired) {
-      return PatientCodeVerificationResult.failure(
-        'This code has expired. Please ask your caregiver for a new code.',
-      );
-    }
-
-    // 3. Authenticate anonymously with Firebase Auth (if available)
+    // 1. Authenticate anonymously with Firebase Auth FIRST (if available)
+    // Ensures client has request.auth.uid for authenticated Firestore calls.
     String? anonymousUid;
     try {
       if (Firebase.apps.isNotEmpty) {
@@ -433,48 +474,118 @@ class PatientCodeService {
       debugPrint('[PatientCodeService] Anonymous auth note (offline or test environment): $e');
     }
 
-    // 4. Mark as linked locally and in Firestore
+    // 2. Attempt trusted Cloud Function redemption first (Priority 2)
+    if (anonymousUid != null) {
+      final cloudRes = await _callCloudFunctionVerification(
+        code: clean,
+        anonymousUid: anonymousUid,
+      );
+      if (cloudRes != null && cloudRes.success && cloudRes.patientId != null) {
+        final verifiedPatientId = cloudRes.patientId!;
+        final verifiedPatientName = cloudRes.patientName ?? 'Patient';
+
+        UserSessionService.instance.setVerifiedPatientSession(
+          anonymousUid: anonymousUid,
+          patientId: verifiedPatientId,
+          isCloudVerified: true,
+        );
+        await CaregiverService.instance.selectPatient(verifiedPatientId);
+        UserSessionService.instance.setActiveRole(UserRole.patient);
+
+        final cloudCode = PatientAccessCode(
+          code: clean,
+          patientId: verifiedPatientId,
+          caregiverId: '',
+          patientName: verifiedPatientName,
+          caregiverName: '',
+          createdAt: DateTime.now(),
+          expiresAt: DateTime.now().add(const Duration(days: 30)),
+          isActive: true,
+          isLinked: true,
+          linkedAt: DateTime.now(),
+        );
+
+        _localCodes[clean] = cloudCode;
+        await _persistLocal();
+
+        return PatientCodeVerificationResult.success(cloudCode);
+      }
+    }
+
+    // 3. Fall back to local store (preserves offline SOS and local code cache)
+    final foundCode = _localCodes[clean];
+
+    if (foundCode == null) {
+      return PatientCodeVerificationResult.failure(
+        'That code is not correct. Please ask your caregiver to check it.',
+      );
+    }
+
+    if (!foundCode.isActive) {
+      return PatientCodeVerificationResult.failure(
+        'This code is no longer active. Please ask your caregiver for a new code.',
+      );
+    }
+
+    if (foundCode.isExpired) {
+      return PatientCodeVerificationResult.failure(
+        'This code has expired. Please ask your caregiver for a new code.',
+      );
+    }
+
+    // 4. Check if already linked (prevent duplicate / concurrent re-use)
+    if (foundCode.isLinked) {
+      return PatientCodeVerificationResult.failure(
+        'This code has already been linked to a device. Please ask your caregiver for a new code.',
+      );
+    }
+
+    // 5. Atomic Batch: create patientSessions and link patientAccessCodes simultaneously
     final updated = foundCode.copyWith(
       isLinked: true,
       linkedAt: DateTime.now(),
     );
-    _localCodes[clean] = updated;
-    await _persistLocal();
 
-    if (db != null) {
+    bool cloudBatchCommitted = false;
+    final db = _firestore;
+    if (db != null && anonymousUid != null) {
       try {
+        final batch = db.batch();
+        final sessionDoc = db.collection('patientSessions').doc(anonymousUid);
+        final codeDoc = db.collection('patientAccessCodes').doc(clean);
+
+        batch.set(sessionDoc, {
+          'patientId': updated.patientId,
+          'code': clean,
+          'anonymousUid': anonymousUid,
+          'createdAt': FieldValue.serverTimestamp(),
+          'isLinked': true,
+        });
+
         final updatePayload = <String, dynamic>{
           'isLinked': true,
           'linkedAt': DateTime.now().toIso8601String(),
+          'linkedUid': anonymousUid,
         };
-        if (anonymousUid != null) {
-          updatePayload['linkedUid'] = anonymousUid;
-        }
-        await db.collection('patientAccessCodes').doc(clean).update(updatePayload);
-      } catch (_) {}
+        batch.update(codeDoc, updatePayload);
 
-      // Securely associate anonymous UID with verified patientId in patientSessions
-      if (anonymousUid != null) {
-        try {
-          await db.collection('patientSessions').doc(anonymousUid).set({
-            'patientId': updated.patientId,
-            'code': clean,
-            'anonymousUid': anonymousUid,
-            'createdAt': FieldValue.serverTimestamp(),
-            'updatedAt': FieldValue.serverTimestamp(),
-            'isLinked': true,
-          }, SetOptions(merge: true));
-        } catch (e) {
-          debugPrint('[PatientCodeService] patientSessions session record note: $e');
-        }
+        await batch.commit();
+        cloudBatchCommitted = true;
+      } catch (e) {
+        debugPrint('[PatientCodeService] Atomic batch commit note: $e');
       }
     }
 
-    // 5. Update session in memory
+    // 6. Update local cache
+    _localCodes[clean] = updated;
+    await _persistLocal();
+
+    // 7. Update session in memory (mark cloud verified only if cloud committed)
     if (anonymousUid != null) {
       UserSessionService.instance.setVerifiedPatientSession(
         anonymousUid: anonymousUid,
         patientId: updated.patientId,
+        isCloudVerified: cloudBatchCommitted,
       );
     }
     await CaregiverService.instance.selectPatient(updated.patientId);

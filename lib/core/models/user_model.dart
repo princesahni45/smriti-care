@@ -311,6 +311,10 @@ class UserSessionService {
   // never from user-supplied input alone.
   String? _verifiedPatientId;
 
+  // Tracks whether the session was verified via server/cloud authorization
+  // vs offline local storage. Offline verification must never permit cloud writes.
+  bool _isCloudVerified = false;
+
   UserRole get activeRole => _activeRole;
 
   bool get isPatient =>
@@ -329,6 +333,9 @@ class UserSessionService {
   /// Do NOT trust a patientId from any other source; always prefer this.
   String? get verifiedPatientId => _verifiedPatientId;
 
+  /// Whether the session was verified by Cloud Functions / Firestore backend.
+  bool get isCloudVerified => _isCloudVerified;
+
   void setActiveRole(UserRole role) {
     _activeRole = role;
   }
@@ -339,14 +346,17 @@ class UserSessionService {
   void setVerifiedPatientSession({
     required String anonymousUid,
     required String patientId,
+    bool isCloudVerified = false,
   }) {
     _anonymousUid = anonymousUid;
     _verifiedPatientId = patientId;
+    _isCloudVerified = isCloudVerified;
   }
 
   /// Clears the patient session (e.g. on sign-out or app reset).
   void clearPatientSession() {
     _anonymousUid = null;
     _verifiedPatientId = null;
+    _isCloudVerified = false;
   }
 }

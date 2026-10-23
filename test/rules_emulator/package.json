@@ -1,0 +1,14 @@
+{
+  "name": "smriti-care-emulator-rules-tests",
+  "version": "1.0.0",
+  "description": "Firestore Security Rules unit tests using @firebase/rules-unit-testing",
+  "main": "firestore_rules.spec.js",
+  "scripts": {
+    "test": "mocha firestore_rules.spec.js --timeout 20000"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.3",
+    "mocha": "^10.4.0"
+  }
+}

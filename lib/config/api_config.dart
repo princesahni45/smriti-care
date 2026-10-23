@@ -24,13 +24,28 @@ class ApiConfig {
 
   // ── Backend URLs ──────────────────────────────────────────────
 
-  // Default URL for ADB reverse over USB cable.
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  /// Central configurable default backend URL.
+  /// Can be overridden at compile-time via:
+  ///   flutter run --dart-define=BACKEND_URL=http://<YOUR_IP>:8000
+  /// Defaults to the laptop's Mobile Hotspot IP or Wi-Fi LAN IP.
+  static const String defaultUrl = String.fromEnvironment(
+    'BACKEND_URL',
+    defaultValue: 'http://192.168.137.1:8000',
+  );
 
-  // Laptop LAN IP for physical Android device on same Wi-Fi.
-  static const String wifiLanUrl = 'http://192.168.9.221:8000';
+  /// Active default URL used by services across the app.
+  static const String baseUrl = defaultUrl;
 
-  // Android emulator URL.
+  /// Mobile Hotspot IP (Windows Mobile Hotspot default is 192.168.137.1).
+  static const String hotspotUrl = 'http://192.168.137.1:8000';
+
+  /// Laptop Wi-Fi LAN IP (update as needed from `ipconfig`).
+  static const String wifiLanUrl = 'http://10.21.226.78:8000';
+
+  /// ADB reverse over USB cable.
+  static const String usbUrl = 'http://127.0.0.1:8000';
+
+  /// Android emulator URL.
   static const String emulatorUrl = 'http://10.0.2.2:8000';
 
   // ── Endpoint paths ────────────────────────────────────────────
